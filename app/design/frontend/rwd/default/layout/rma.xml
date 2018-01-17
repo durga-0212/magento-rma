@@ -6,7 +6,14 @@ and open the template in the editor.
 -->
 <layout version="0.1.0">
     <customer_account>
-        
-    </customer_account>  
-    
+        <reference name="left_first">
+            <block type="rma/account_navigation" name="rma_account_navigation" template="rma/account/navigation.phtml">
+                <action method="addMyLink" module="test_rma">
+                    <name>rma</name>
+                    <path>rma/history</path>
+                    <label>Rma</label> 
+                </action>
+            </block>
+        </reference> 
+    </customer_account> 
 </layout>
