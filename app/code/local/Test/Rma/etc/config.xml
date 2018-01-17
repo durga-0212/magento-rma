@@ -10,14 +10,7 @@ and open the template in the editor.
             <version>0.1.0</version>    <!-- Version of module -->
         </Test_Rma>
     </modules>   
-    <global>
-        <!-- ... -->
-        <helpers>
-            <rma>
-                <class>Test_Rma_Helper</class>
-            </rma>
-        </helpers>    
-        <!-- ... -->        
+    <global>        
         <blocks>
             <rma>
                 <class>Test_Rma_Block</class>
@@ -42,4 +35,25 @@ and open the template in the editor.
             </updates>
         </layout>
     </frontend>
+    <adminhtml>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <rma_section>
+                                            <title>RMA</title>
+                                        </rma_section>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    </adminhtml>
 </config>
