@@ -1,45 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
+<?xml version="1.0"?>
 <config>  
-    <modules>
-        <Test_Rma>
-            <version>0.1.0</version>    <!-- Version of module -->
-        </Test_Rma>
-    </modules>   
-    <global>
-        <!-- ... -->
-        <helpers>
-            <rma>
-                <class>Test_Rma_Helper</class>
-            </rma>
-        </helpers>    
-        <!-- ... -->        
+    <global>           
         <blocks>
-            <rma>
-                <class>Test_Rma_Block</class>
-            </rma>
+            <customer>
+                <rewrite>
+                    <account_navigation>Test_Rma_Block_Account_Navigation</account_navigation>
+                </rewrite>
+            </customer>
         </blocks>
     </global>
-    <frontend>
-        <routers>
-            <test_rma>
-                <use>standard</use>
-                <args>
-                    <module>Test_Rma</module>
-                    <frontName>rma</frontName>
-                </args>
-            </test_rma>
-        </routers>       
-      <layout>
-            <updates>
-                <test_rma>
-                    <file>rma.xml</file>
-                </test_rma>
-            </updates>
-        </layout>
-    </frontend>
 </config>
