@@ -4,7 +4,16 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
-<config>             
+<config>
+    <global>
+        <blocks>
+            <customer>
+                <rewrite>
+                    <account_navigation>Test_Rma_Block_Account_Navigation</account_navigation>
+                </rewrite>
+            </customer>
+        </blocks>
+    </global>             
     <adminhtml>
         <acl>
             <resources>
@@ -26,4 +35,22 @@ and open the template in the editor.
             </resources>
         </acl>
     </adminhtml>
+    <frontend>
+        <routers>
+            <rma>
+                <use>standard</use>
+                <args>
+                    <module>Test_Rma</module>
+                    <frontName>rma</frontName>                    
+                </args>
+            </rma> 
+        </routers>
+        <layout>
+        <updates>
+            <rma>
+            <file>rma.xml</file>
+            </rma>
+        </updates>
+        </layout>
+    </frontend>
 </config>

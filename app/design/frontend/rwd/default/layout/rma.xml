@@ -1,19 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
+<?xml version="1.0" ?>
 <layout version="0.1.0">
-    <customer_account>
-        <reference name="left_first">
-            <block type="rma/account_navigation" name="rma_account_navigation" template="rma/account/navigation.phtml">
-                <action method="addMyLink" module="test_rma">
-                    <name>rma</name>
-                    <path>rma/history</path>
-                    <label>Rma</label> 
-                </action>
-            </block>
-        </reference> 
-    </customer_account> 
+    <customer_account translate="label">
+        <reference name="customer_account_navigation">
+            <action method="addLink"><name>rma</name><path>rma/index/</path><label>Rma</label></action>            
+        </reference>
+    </customer_account>
 </layout>
