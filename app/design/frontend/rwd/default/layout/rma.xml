@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <layout version="0.1.0">
     <customer_account translate="label">
-        <reference name="customer_account_navigation">
-            <action method="addLink"><name>rma</name><path>rma/index/</path><label>Rma</label></action>            
-        </reference>
+        <reference name="customer_account_navigation">                    
+            <action method="addLink"><name>rma</name><path>rma/index</path><label>Rma</label></action>           
+         </reference>
     </customer_account>
 </layout>
