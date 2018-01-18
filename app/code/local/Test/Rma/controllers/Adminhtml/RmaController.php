@@ -1,15 +1,15 @@
 <?php
+
 /* 
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-class Test_Rma_IndexController extends Mage_Core_Controller_Front_Action
+class Test_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Action
 {
     public function indexAction()
     {
-       $result = Mage::getStoreConfig('rma_section/rma_group/rma_field');
-       echo $result;
-       
+        echo "test";die;
     }
 }
+
