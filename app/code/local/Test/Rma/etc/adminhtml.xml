@@ -1,0 +1,19 @@
+<config>
+    <menu>
+        <sales translate="title" module="sales">
+            <children>
+                <rma>
+                    <title>RMA</title>
+                    <sort_order>30</sort_order>
+                    <children>
+                        <rma_grid>
+                           <title>RMA</title>
+                           <action>rma/adminhtml_rma/</action>
+                           <sort_order>10</sort_order> 
+                        </rma_grid>
+                    </children>
+                </rma>
+            </children>
+        </sales>
+    </menu>
+</config>
