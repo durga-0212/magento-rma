@@ -6,12 +6,13 @@ and open the template in the editor.
 -->
 <config>
     <global>
-        <blocks>
+<!--        <blocks>
             <customer>
                 <rewrite>
                     <account_navigation>Test_Rma_Block_Account_Navigation</account_navigation>
                 </rewrite>
             </customer>
+<<<<<<< HEAD
         </blocks>
     </global>
     <admin>
@@ -25,6 +26,10 @@ and open the template in the editor.
             </rma>
         </routers>
     </admin>             
+=======
+        </blocks>-->
+    </global>             
+>>>>>>> durga
     <adminhtml>
         <acl>
             <resources>
