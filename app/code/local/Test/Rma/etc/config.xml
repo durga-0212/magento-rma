@@ -13,7 +13,18 @@ and open the template in the editor.
                 </rewrite>
             </customer>
         </blocks>
-    </global>             
+    </global>
+    <admin>
+        <routers>
+            <rma>
+               <use>admin</use>
+                <args>
+                    <module>Test_Rma</module>
+                    <frontName>rma</frontName>                    
+                </args> 
+            </rma>
+        </routers>
+    </admin>             
     <adminhtml>
         <acl>
             <resources>
