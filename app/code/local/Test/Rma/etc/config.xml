@@ -5,15 +5,17 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <config>
-    <global>
-<!--        <blocks>
-            <customer>
-                <rewrite>
-                    <account_navigation>Test_Rma_Block_Account_Navigation</account_navigation>
-                </rewrite>
-            </customer>
-        </blocks>-->
-    </global>             
+    <admin>
+        <routers>
+            <rma>
+               <use>admin</use>
+                <args>
+                    <module>Test_Rma</module>
+                    <frontName>rma</frontName>                    
+                </args> 
+            </rma>
+        </routers>
+    </admin>             
     <adminhtml>
         <acl>
             <resources>
