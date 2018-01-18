@@ -6,13 +6,13 @@ and open the template in the editor.
 -->
 <config>
     <global>
-        <blocks>
+<!--        <blocks>
             <customer>
                 <rewrite>
                     <account_navigation>Test_Rma_Block_Account_Navigation</account_navigation>
                 </rewrite>
             </customer>
-        </blocks>
+        </blocks>-->
     </global>             
     <adminhtml>
         <acl>
