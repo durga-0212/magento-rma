@@ -5,16 +5,6 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <config>
-    <global>
-<!--        <blocks>
-            <customer>
-                <rewrite>
-                    <account_navigation>Test_Rma_Block_Account_Navigation</account_navigation>
-                </rewrite>
-            </customer>
-<<<<<<< HEAD
-        </blocks>
-    </global>
     <admin>
         <routers>
             <rma>
@@ -26,10 +16,6 @@ and open the template in the editor.
             </rma>
         </routers>
     </admin>             
-=======
-        </blocks>-->
-    </global>             
->>>>>>> durga
     <adminhtml>
         <acl>
             <resources>
