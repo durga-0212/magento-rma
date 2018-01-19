@@ -5,6 +5,39 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <config>
+    <modules>
+        <test_rma>
+            <version>0.1.0</version> 
+        </test_rma>
+    </modules>
+    <global>
+        <models>
+            <rma>
+                <class>Test_Rma_Model</class>
+                <resourceModel>rma_resource</resourceModel>
+            </rma>
+            <rma_resource>
+                <class>Test_Rma_Model_Resource</class>
+                <entities>
+                    <order>
+                        <table>rma_order</table>
+                    </order>
+                </entities>
+            </rma_resource>
+        </models>
+        <resources>
+            <rma_setup>
+                <setup>
+                    <module>Test_Rma</module>
+                </setup>
+            </rma_setup>
+        </resources>        
+        <blocks>
+            <rma>
+                <class>Test_Rma_Block</class>
+            </rma>
+        </blocks>
+    </global>
     <admin>
         <routers>
             <rma>

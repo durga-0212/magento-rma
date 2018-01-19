@@ -5,4 +5,19 @@
             <action method="addLink"><name>rma</name><path>rma/index</path><label>Rma</label></action>           
          </reference>
     </customer_account>
-</layout>
+    
+     <rma_index_index translate="label">
+        <label>Customer My Account Returns History</label>
+        <update handle="customer_account"/>
+        <reference name="my.account.wrapper">
+            <block type="rma/return_history" name="rma.return.history">
+                <block type="core/text_list" name="rma.return.history.info" as="info" translate="label">
+                    <label>Returns History Info</label>
+                </block>
+            </block>
+            <block type="rma/return_history" name="customer.account.link.back" template="customer/account/link/back.phtml"/>
+        </reference>
+    </rma_index_index>
+    
+    </layout>
+
