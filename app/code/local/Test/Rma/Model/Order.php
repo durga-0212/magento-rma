@@ -8,6 +8,6 @@ class Test_Rma_Model_Order extends Mage_Core_Model_Abstract
 {
     protected function _construct() 
     {
-        $this->init('rma/order');
+        $this->_init('rma/order');
     }
 }
