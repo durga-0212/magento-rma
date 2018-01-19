@@ -37,6 +37,11 @@ and open the template in the editor.
                 <class>Test_Rma_Block</class>
             </rma>
         </blocks>
+        <helpers>
+            <rma>
+                <class>Test_Rma_Helper</class>
+            </rma>
+        </helpers>
     </global>
     <admin>
         <routers>
