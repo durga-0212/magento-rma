@@ -24,6 +24,4 @@
             <block type="rma/adminhtml_rma" name="rma" />
         </reference>
     </rma_adminhtml_rma_index>
-    
 </layout>
-
