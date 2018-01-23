@@ -19,6 +19,18 @@
         </reference>
     </rma_index_index>
     
+    <rma_index_view translate="label">
+        <label>Customer Return Order History</label>
+        <update handle="customer_account"/>
+            <reference name="my.account.wrapper">
+                <block type="rma/return_order_history" name="rma.return.order.history">
+                   <block type="core/text_list" name="rma.return.order.history" as="info" translate="label">
+                    <label>Return Order History Info</label>
+                </block>  
+                </block>
+            </reference>
+    </rma_index_view>
+    
     <rma_adminhtml_rma_index>
         <reference name="content">
             <block type="rma/adminhtml_rma" name="rma" />
