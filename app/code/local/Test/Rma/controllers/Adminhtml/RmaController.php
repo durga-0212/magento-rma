@@ -13,8 +13,6 @@ class Test_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Action
         $this->_title($this->__("RMA Detail"));
         $this->loadLayout();
         $this->renderLayout();
-        Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
+        //Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
     }
 }
-
-

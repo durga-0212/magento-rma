@@ -17,14 +17,14 @@ class Test_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_Grid
     
     protected function _prepareCollection()
     {
-        $collection = Mage::getModel('rma/rma_order')->getCollection();
+        $collection = Mage::getModel('rma/order')->getCollection();
         $this->setCollection($collection);
         return parent::_prepareCollection();
     }
     
     protected function _prepareColumns()
     {   
-        $this->addColumn('entity_id', array(
+        $this->addColumn('id', array(
           'header'    => Mage::helper('rma')->__('ID'),
           'align'     =>'right',
           'width'     => '10px',
@@ -49,8 +49,21 @@ class Test_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_Grid
             'header'    => Mage::helper('rma')->__('Customer Name'),
             'width'     => '150px',
             'align'     =>'content',
-            'index'     => 'customer_name',
+            'index'     =>'customer_name',
         ));
+        
+        $this->addColumn('status', array(
+            'header'    => Mage::helper('rma')->__('Status'),
+            'width'     => '150px',
+            'align'     =>'content',
+            'index'     =>'status',
+        ));
+        
         return parent::_prepareColumns();
+    }
+    
+    public function getRowUrl($row)
+    {
+         return $this->getUrl('*/*/edit', array('id' => $row->getId()));
     }
 }
