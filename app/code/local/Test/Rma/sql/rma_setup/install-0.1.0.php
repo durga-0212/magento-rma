@@ -17,15 +17,15 @@ $table = $installer->getConnection()
         'primary'   => true,
         ), 'Entity Id')
      ->addColumn('order_id', Varien_Db_Ddl_Table::TYPE_INTEGER, 11, array(        
-         'unasigned' => true,
+         'unsigned' => true,
          'nullable'  => false,
           ), 'Order Id')
       ->addColumn('increment_id', Varien_Db_Ddl_Table::TYPE_INTEGER, 11,array(
-          'unasigned' => true,
+          'unsigned' => true,
           'nullable'  => false,
          ), 'Increment Id')
        ->addColumn('order_increment_id', Varien_Db_Ddl_Table::TYPE_INTEGER, 11, array(
-           'unasigned' => true,
+           'unsigned' => true,
            'nullable'  => false,
          ), 'Order Increment ID')
        ->addColumn('order_date', Varien_Db_Ddl_Table::TYPE_DATE, null, array(
@@ -33,11 +33,11 @@ $table = $installer->getConnection()
         ->addColumn('date_requested', Varien_Db_Ddl_Table::TYPE_TIMESTAMP, null, array(
           ), 'Date Requested') 
         ->addColumn('store_id', Varien_Db_Ddl_Table::TYPE_INTEGER, 11,array(
-            'unasigned' => true,
+            'unsigned' => true,
             'nullable' => false
           ), 'Store Id')
         ->addColumn('customer_id', Varien_Db_Ddl_Table::TYPE_INTEGER, 11, array(
-            'unasigned' =>true,
+            'unsigned' =>true,
             'nullable' => false
            ), 'Customer Id')
         ->addColumn('customer_name', Varien_Db_Ddl_Table::TYPE_VARCHAR, 255, array(
