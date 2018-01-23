@@ -37,4 +37,14 @@ class Test_Rma_IndexController extends Mage_Core_Controller_Front_Action
       // echo $result;
        
     }
+    
+    public function addrequestAction() {
+        echo 'test'; die;
+    }
+    
+    
+    public function viewAction()
+    {
+        echo 'test'; die;
+    }
 }
