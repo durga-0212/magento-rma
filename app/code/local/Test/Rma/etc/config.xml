@@ -49,6 +49,13 @@ and open the template in the editor.
             <rma>
                 <class>Test_Rma_Block</class>
             </rma>
+        </blocks>       
+        <blocks>
+            <adminhtml>
+            <rewrite>
+                <catalog_product_grid>Test_Rma_Block_Adminhtml_Product_Grid</catalog_product_grid>
+            </rewrite>
+            </adminhtml>
         </blocks>
         <helpers>
             <rma>

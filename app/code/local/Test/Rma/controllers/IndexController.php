@@ -45,6 +45,9 @@ class Test_Rma_IndexController extends Mage_Core_Controller_Front_Action
     
     public function viewAction()
     {
-        echo 'test'; die;
+         $this->loadLayout();
+         $this->_initLayoutMessages('catalog/session');
+         $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
+         $this->renderLayout();
     }
 }
