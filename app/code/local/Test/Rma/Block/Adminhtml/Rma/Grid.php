@@ -59,11 +59,26 @@ class Test_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_Grid
             'index'     =>'status',
         ));
         
+        $this->addExportType('*/*/exportCsv', Mage::helper('rma')->__('CSV')); 
+	$this->addExportType('*/*/exportExcel', Mage::helper('rma')->__('Excel'));
         return parent::_prepareColumns();
     }
     
     public function getRowUrl($row)
     {
          return $this->getUrl('*/*/edit', array('id' => $row->getId()));
+    }
+    
+    protected function _prepareMassaction()
+    {
+        $this->setMassactionIdField('entity_id');
+        $this->getMassactionBlock()->setFormFieldName('id');
+        $this->getMassactionBlock()->setUseSelectAll(true);
+        $this->getMassactionBlock()->addItem('remove_message', array(
+                         'label'=> Mage::helper('rma')->__('Remove Message'),
+                         'url'  => $this->getUrl('*/adminhtml_rma/massRemove'),
+                         'confirm' => Mage::helper('rma')->__('Are you sure?')
+                ));
+        return $this;
     }
 }
