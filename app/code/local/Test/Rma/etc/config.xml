@@ -66,8 +66,16 @@ and open the template in the editor.
                 </args> 
             </rma>
         </routers>
+        
     </admin>             
     <adminhtml>
+        <layout>
+            <updates>
+                <rma>
+                    <file>rma.xml</file>
+                </rma>
+            </updates>
+        </layout>
         <acl>
             <resources>
                 <admin>
@@ -99,11 +107,11 @@ and open the template in the editor.
             </rma> 
         </routers>
         <layout>
-        <updates>
-            <rma>
-            <file>rma.xml</file>
-            </rma>
-        </updates>
+            <updates>
+                <rma>
+                    <file>rma.xml</file>
+                </rma>
+            </updates>
         </layout>
     </frontend>
 </config>
