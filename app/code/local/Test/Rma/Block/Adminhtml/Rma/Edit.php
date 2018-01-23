@@ -24,8 +24,6 @@ class Test_Rma_Block_Adminhtml_Rma_Edit extends Mage_Adminhtml_Block_Widget_Form
                 "class"     => "save",
         ), -100);
 
-
-
         $this->_formScripts[] = "
             function saveAndContinueEdit(){
                 editForm.submit($('edit_form').action+'back/edit/');
@@ -37,7 +35,7 @@ class Test_Rma_Block_Adminhtml_Rma_Edit extends Mage_Adminhtml_Block_Widget_Form
     {
         if( Mage::registry('rma_data') && Mage::registry('rma_data')->getId() )
          {
-              return Mage::helper("rma")->__("Edit RMA %s",$this->htmlEscape(Mage::registry('rma_data')->getTitle()));
+              return Mage::helper("rma")->__("Edit RMA Order %s",$this->htmlEscape(Mage::registry('rma_data')->getIncrementId()));
          }
          else
          {
