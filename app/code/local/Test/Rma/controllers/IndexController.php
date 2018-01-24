@@ -29,17 +29,19 @@ class Test_Rma_IndexController extends Mage_Core_Controller_Front_Action
      */
     public function indexAction()
     {
-         $this->loadLayout();
-         $this->_initLayoutMessages('catalog/session');
-         $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
-         $this->renderLayout();
-      // $result = Mage::getStoreConfig('rma_section/rma_group/rma_field');
-      // echo $result;
+        $this->loadLayout();
+        $this->_initLayoutMessages('catalog/session');
+        $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
+        $this->renderLayout();
+        // $result = Mage::getStoreConfig('rma_section/rma_group/rma_field');
+        // echo $result;
        
     }
     
-    public function addrequestAction() {
-        echo 'test'; die;
+    public function addrequestAction() 
+    {
+        $this->loadLayout();
+        $this->renderLayout();
     }
     
     
@@ -61,5 +63,11 @@ class Test_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $url = Mage::helper('core/http')->getHttpReferer() ? Mage::helper('core/http')->getHttpReferer():$this->_getRefererUrl();
                Mage::app()->getResponse()->setRedirect($url);  
        }
+    }
+    
+    public function productinfoAction()
+    {
+        $data = $this->getRequest()->getParam('OrderId');
+        $productInfo = Mage::getModel('rma/order')->getProductsById($data);
     }
 }

@@ -38,7 +38,16 @@
         </reference>
     </rma_adminhtml_rma_index>
     
-    
+    <rma_index_addrequest>
+        <label>Create New RMA Request</label>
+        <update handle="customer_account"/>
+            <reference name="my.account.wrapper">
+                <block type="rma/return_order_request" name="rma.return.order.request">
+                  
+                    
+                </block>
+            </reference>
+    </rma_index_addrequest>
     
 </layout>
 
