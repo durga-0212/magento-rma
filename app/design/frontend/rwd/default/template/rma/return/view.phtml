@@ -1,7 +1,155 @@
 <?php
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Magento Enterprise Edition
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Magento Enterprise Edition End User License Agreement
+ * that is bundled with this package in the file LICENSE_EE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.magento.com/license/enterprise-edition
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magento.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magento.com for more information.
+ *
+ * @category    design
+ * @package     enterprise_default
+ * @copyright Copyright (c) 2006-2014 X.commerce, Inc. (http://www.magento.com)
+ * @license http://www.magento.com/license/enterprise-edition
  */
+/** @var $this Enterprise_Rma_Block_Return_View */
+?>
+<?php
+    $_rma = $this->getReturns();
+    $_order = $this->getOrders();
+    $product_data=$this->getProducts();
+    $additionalData = $this->getAdditionalData();    
+?>
 
+<div class="page-title">
+    <h1><?php echo $this->__('RMA') ?> #<?php echo $_rma->getIncrementId()?> - <?php echo $this->escapeHtml($_rma->getStatus()) ?></h1>
+</div>
+
+<div class="col2-set">
+    <div class="box">
+        <div class="box-content">
+            <div class="col-1">
+                <div class="info-box">
+                    <h3 class="box-title"><?php echo $this->__('Request Information') ?></h3>
+                    <p class="box-content">
+                        <br />
+                        <?php echo $this->__('ID') ?>: <?php echo $this->escapeHtml($_rma->getIncrementId()) ?><br />
+                        <?php echo $this->__('Order ID') ?>: <a href="<?php echo $this->getOrderUrl($_rma) ?>"><?php echo $this->escapeHtml($_rma->getOrderIncrementId()) ?></a><br />
+                        <?php echo $this->__('Date Requested') ?>: <?php echo Mage::helper('core')->formatDate($_rma->getDateRequested()) ?><br />
+                        <?php echo $this->__('Email Address') ?>: <?php echo $this->escapeHtml($_order->getCustomerEmail()) ?><br />
+                        <?php echo $this->__('Contact Email Address') ?>: <?php echo $this->escapeHtml($_rma->getCustomerEmail()) ?>
+                    </p>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="info-box">
+                    <h3 class="box-title"><?php echo $this->__('Shipping Address') ?></h3>
+                    <address class="box-content">
+                        <?php  echo $order_Address= $_order->getShippingAddress()->getFormated(true); ?>
+                    </address>
+                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="wrapper"></div>
+<h3 class="box-title"><?php echo $this->__('Items Return Requested For') ?></h3>
+<table class="data-table" id="my-returns-items-table">
+    <col width="200" />
+    <col width="200" />
+    <col />
+    <col />
+    <col />
+    <col />
+    <col />
+    <col width="200" />
+    <thead>
+        <tr>
+            <th><span class="nobr"><?php echo $this->__('Product Name') ?></span></th>
+            <th><?php echo $this->__('SKU') ?></th>
+            <th><?php echo $this->__('Condition') ?></th>
+            <th><?php echo $this->__('Resolution') ?></th>
+            <th><span class="nobr"><?php echo $this->__('Request Qty') ?></span></th>
+            <th><?php echo $this->__('Qty') ?></th>
+            <th><?php echo $this->__('Status') ?></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php       
+        foreach ($this->getItems() as $key=>$item): ?>
+        <tr>
+            <td>
+                <?php echo $this->escapeHtml($item->getProductName()) ?>               
+            </td>
+            <td><?php echo $this->escapeHtml($item->getProductSku()) ?></span></td>
+            <td><?php echo $this->escapeHtml($item->getCondition()) ?></td>
+            <td><?php echo $this->escapeHtml($item->getResolution()) ?></td>
+            <td><?php echo $this->escapeHtml(round($item->getQtyRequested())); ?></td>
+            <td><?php echo $this->escapeHtml($item->getQty($item));?></td>
+            <td><span class="nobr"><?php echo $this->escapeHtml($item->getStatus()) ?></span></td>            
+        </tr>       
+        <?php endforeach; ?>
+        <tr><td colspan="8"></td></tr>
+    </tbody>
+</table>
+<div class="wrapper"></div>
+<form method="post" id="rma_comment" action="<?php echo $this->getUrl('rma/index/saveComment');?>">
+    <div class="box">
+        <div class="box-content">
+            <div class="info-box">
+                <h3 class="box-title">Leave Comment</h3>
+                <p class="box-content">
+                    Comment Text  
+                    <textarea id="rma_comment_text" style="height:6em;width:99%;" cols="5" rows="3" name="comment" class="required-entry"></textarea>
+                </p>
+                <input type="hidden" name="rma_entity_id" value="<?php echo $_rma->getId();?>">
+                <input type="hidden" name="status" value="<?php echo $this->escapeHtml($_rma->getStatus()) ?>">
+                <input type="hidden" name="is_visible_on_front" value="1">
+                <div class="box-content buttons-set">
+                    <button type="submit" class="button" id="submit.save"><span><span>Submit Comment</span></span></button>
+                </div>
+                <div class="clear"></div>
+                <div class="divider"></div>
+                <ul class="note-list box-content">
+                    <?php
+                    $_order_history=$this->getRmaHistory();                 
+                    if($_order_history):
+                        foreach ($_order_history as $order_history) :                        
+                        $created_at = date("m-d-y h:i:A", Mage::getModel("core/date")->timestamp($order_history->getCreatedAt()));
+                        if(!empty($order_history->getIsAdmin()))
+                        {
+                            $username='customer Service';
+                        }
+                        else{
+                            $username=$order_history->getCustomerName();
+                        }
+                    ?>
+                   <li>
+                        <strong><?php echo $created_at;?></strong>
+                        <span class="separator">|</span>
+                        <strong><?php echo $username;?></strong>
+                        <br />
+                        <span><?php echo $order_history->getComment(); ?></span>
+                        <div class="divider"></div>
+                    </li>
+                    <?php
+                endforeach;
+                    endif;
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+</form>

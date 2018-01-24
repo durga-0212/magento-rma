@@ -24,10 +24,11 @@
         <update handle="customer_account"/>
             <reference name="my.account.wrapper">
                 <block type="rma/return_order_view" name="rma.return.order.view">
-                   <block type="core/text_list" name="rma.return.order.view" as="info" translate="label">
-                    <label>Return Order History Info</label>
-                </block>  
+<!--                   <block type="core/text_list" name="rma.return.order.view" as="info" translate="label">
+                    <label>Return Order History Info</label>-->
+<!--                </block>  -->
                 </block>
+                <block type="rma/return_history" name="customer.account.link.back" template="customer/account/link/back.phtml"/>
             </reference>
     </rma_index_view>
     
