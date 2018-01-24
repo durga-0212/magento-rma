@@ -7,7 +7,7 @@ and open the template in the editor.
 <config>
     <modules>
         <Test_Rma>
-            <version>0.1.3</version> 
+            <version>0.1.4</version> 
         </Test_Rma>
     </modules>
     <global>
@@ -22,6 +22,15 @@ and open the template in the editor.
                     <order>
                         <table>rma_order</table>
                     </order>
+                    <rma_item>
+                        <table>rma_order_item</table>
+                    </rma_item>
+                    <rma_history>
+                        <table>rma_order_history</table>
+                    </rma_history>
+                    <rma_attributes>
+                        <table>rma_attributes</table>
+                    </rma_attributes>
                 </entities>
             </rma_resource>
         </models>
@@ -72,8 +81,7 @@ and open the template in the editor.
                     <frontName>rma</frontName>                    
                 </args> 
             </rma>
-        </routers>
-        
+        </routers>        
     </admin>             
     <adminhtml>
         <layout>

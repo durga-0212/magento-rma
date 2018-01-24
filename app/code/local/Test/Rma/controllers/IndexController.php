@@ -45,9 +45,21 @@ class Test_Rma_IndexController extends Mage_Core_Controller_Front_Action
     
     public function viewAction()
     {
-         $this->loadLayout();
-         $this->_initLayoutMessages('catalog/session');
-         $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
+         $this->loadLayout();        
+        // $this->_initLayoutMessages('catalog/session');
+        // $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
          $this->renderLayout();
+         // Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
+    }
+    
+    public function saveCommentAction() {
+       $postData= $this->getRequest()->getParams();
+       $postData['created_at']=Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s');      
+       $modelObj=Mage::getModel('rma/rma_history')->setData($postData)->save();
+       if($modelObj)
+       {
+        $url = Mage::helper('core/http')->getHttpReferer() ? Mage::helper('core/http')->getHttpReferer():$this->_getRefererUrl();
+               Mage::app()->getResponse()->setRedirect($url);  
+       }
     }
 }
