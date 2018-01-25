@@ -25,8 +25,9 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
                        ->addAttributeToSelect('name')
                        ->addAttributeToSelect('sku')
                        ->addAttributeToSelect('qty_ordered')
-                       ->addAttributeToFilter('order_id',$id)->getData();
-        print_r($productInfo);die;
+                       ->addAttributeToSelect('base_row_total')
+                       ->addAttributeToFilter('order_id',$id)
+                       ->getData();
         return ($productInfo);
     }
 }
