@@ -8,17 +8,17 @@
 <div class="page-title">
     <h1><?php echo $this->__('Create New RMA') ?></h1>
 </div>
- <?php $orderInfo = $this->getOrders();
- if(count($orderInfo)>0): ?>
+<?php $orderInfo = $this->getOrders();
+if(count($orderInfo)>0): ?>
 <select name="order" id="selectOrder">
- <option value="">-- Select Orders --</option>
- <?php foreach($orderInfo as $_order): ?>
- <option value="<?php echo $_order->getId() ?>">
- <?php echo $_order->getIncrementId().",".$_order->getGrandTotal() ?>
- </option>
- <?php endforeach; ?>
- </select>
- <?php endif; ?>
+<option value="">-- Select Orders --</option>
+<?php foreach($orderInfo as $_order): ?>
+<option value="<?php echo $_order->getId() ?>">
+<?php echo $_order->getIncrementId().",".$_order->getGrandTotal() ?>
+</option>
+<?php endforeach; ?>
+</select>
+<?php endif; ?>
 
 <table class="data-table orders" id="my-rma-table" >
     <col width="1" />
@@ -39,11 +39,11 @@
             <th class="view"><?php echo $this->__('ACTION'); ?></th>
         </tr>
     </thead>
-<!--    <tbody>
+<!--    <tbody id="results">
         <?php //$_odd = ''; ?>
-        <?php //foreach ($orderInfo as $_return): ?>
+        <?php //foreach ($results as $key => $value): ?>
         <tr>
-            <td class="number"><?php //echo $_return->getId(); ?></td>
+            <td class="number"><?php echo $value['name']; ?></td>
             <td class="number"><?php //echo $_return->getIncrementId(); ?></td>
             <td class="number"><?php //echo $_return->getProductId(); ?></td>
             <td class="total"><?php //echo Mage::helper('core')->currency($_return->getGrandTotal(), true, true); ?></td>
@@ -61,21 +61,18 @@
     $j("#selectOrder").change( function() {
     var selectedOption = $j("#selectOrder option:selected");
     var selectedValue = selectedOption.val();
-    alert(selectedValue);
     $j.ajax({
             type: "POST",
             url: "<?php echo $this->getUrl('rma/index/productinfo')?>",
             data: {OrderId:selectedValue},
-            success: function(msg) {
-                alert(msg);
+            success: function(response) {
+                jQuery('#results').html(response);
             },
             error: function() {
                 alert("error");
             }
         });
-    });
- 
-    
+    });   
 //]]>
 </script>
 

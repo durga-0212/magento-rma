@@ -19,5 +19,9 @@ class Thycart_Rma_Block_Return_Order_Request extends Mage_Core_Block_Template
         return $orderInfo;
     }
      
+    public function getPid($data)
+    {
+        print_r($data);exit;
+    }
 }
 
