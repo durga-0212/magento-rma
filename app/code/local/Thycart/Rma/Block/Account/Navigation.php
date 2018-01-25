@@ -6,13 +6,16 @@
  */
 class Thycart_Rma_Block_Account_Navigation extends Mage_Customer_Block_Account_Navigation
 {
+    public function removeLinkByName($name) {
+        unset($this->_links[$name]);
+    }
     
     public function addDashboardLink($name,$path,$label) {
         $result = Mage::getStoreConfig('rma_section/rma_group/rma_field');
         if($result)
         {
-            $this->addLink($name, $path, $label); 
-        }        
+        $this->addLink($name, $path, $label); 
+        }
     }
 }
 
