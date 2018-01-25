@@ -21,8 +21,12 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
     
     public function getProductsById($id)
     {
-        $productInfo = Mage::getResourceModel('sales/order_item');
+        $productInfo = Mage::getModel('sales/order_item')->getCollection()
+                       ->addAttributeToSelect('name')
+                       ->addAttributeToSelect('sku')
+                       ->addAttributeToSelect('qty_ordered')
+                       ->addAttributeToFilter('order_id',$id)->getData();
         print_r($productInfo);die;
-        return ($productInfo->getData());
+        return ($productInfo);
     }
 }

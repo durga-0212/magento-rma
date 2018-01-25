@@ -18,12 +18,6 @@ class Thycart_Rma_Block_Return_Order_Request extends Mage_Core_Block_Template
         $orderInfo = Mage::getModel('rma/order')->getOrdersById();       
         return $orderInfo;
     }
-    
-    public function getProducts()
-    {
-        $productInfo = Mage::getModel('rma/order')->getProductsById();
-        return $productInfo;
-    }
-   
+     
 }
 

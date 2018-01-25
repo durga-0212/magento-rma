@@ -69,5 +69,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     {
         $data = $this->getRequest()->getParam('OrderId');
         $productInfo = Mage::getModel('rma/order')->getProductsById($data);
+        print_r($productInfo);die;
+        $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($productInfo));
     }
 }
