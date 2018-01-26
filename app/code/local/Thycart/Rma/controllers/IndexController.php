@@ -70,17 +70,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $data = $this->getRequest()->getParam('OrderId');
         $productInfo = Mage::getModel('rma/order')->getProductsById($data);
         Mage::register('productInfo', $productInfo);
-<<<<<<< HEAD
         $output = $this->getLayout()->createBlock('rma/return_order_request')->setTemplate('rma/return/ajaxproduct.phtml')->toHtml();
         $this->getResponse()->setBody($output);        
-=======
-        $output=$this->getLayout()->createBlock('rma/return_order_request')->setTemplate('rma/return/ajaxproduct.phtml')->toHtml();
-         echo $output;       
-// $block = $this->getLayout()->createBlock('rma/return_order_request');
-//                ->getPid($productInfo);
-        //$block->setTemplate('rma/return/ajaxproduct.phtml');
-       // $this->getLayout()->getBlock('content')->append($block);
-        //$this->renderLayout();
->>>>>>> durga
+
     }
 }
