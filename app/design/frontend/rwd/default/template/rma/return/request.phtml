@@ -26,33 +26,18 @@ if(count($orderInfo)>0): ?>
     <col width="1" />
     <col width="1" />
     <col width="1" />
-    <col width="1" />
-    <col width="1" />
     <thead>
         <tr>
             <th class="number"><?php echo $this->__('PRODUCT NAME') ?></th>
             <th class="number"><?php echo $this->__('SKU') ?></th>
             <th class="number"><?php echo $this->__('QUANTITY') ?></th>
             <th class="total"><span class="nobr"><?php echo $this->__('PRICE') ?></span></th>
-            <th class="status"><span class="nobr"><?php echo $this->__('RMA STATUS') ?></span></th>
-            <th class="date"><?php echo $this->__('DATE'); ?></th>
             <th class="view"><?php echo $this->__('ACTION'); ?></th>
         </tr>
     </thead>
-<!--    <tbody id="results">
-        <?php //$_odd = ''; ?>
-        <?php //foreach ($results as $key => $value): ?>
-        <tr>
-            <td class="number"><?php //echo $value['name']; ?></td>
-            <td class="number"><?php //echo $_return->getIncrementId(); ?></td>
-            <td class="number"><?php //echo $_return->getProductId(); ?></td>
-            <td class="total"><?php //echo Mage::helper('core')->currency($_return->getGrandTotal(), true, true); ?></td>
-            <td class="status"><em><?php //echo $_return->getStatus() ?></em></td>
-            <td class="date"><span class="nobr"><?php //echo Mage::helper('core')->formatDate($_return->getDateRequested());?></span></td>
-            <td class="view"><a href="<?php //echo $this->getViewUrl($_return);?>"><span>View RMA</span></a></td>           
-        </tr>
-        <?php //endforeach; ?>
-    </tbody>-->
+    <tbody id="results">
+            
+    </tbody>
 </table>
 
 <script type="text/javascript">
@@ -66,7 +51,8 @@ if(count($orderInfo)>0): ?>
             url: "<?php echo $this->getUrl('rma/index/productinfo')?>",
             data: {OrderId:selectedValue},
             success: function(response) {
-                jQuery('#results').html(response);
+                
+                jQuery('#results').append(response);
             },
             error: function() {
                 alert("error");

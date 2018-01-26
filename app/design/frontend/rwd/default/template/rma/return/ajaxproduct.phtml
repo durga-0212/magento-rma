@@ -1,12 +1,19 @@
-<?php
-    $productInfo = Mage::registry('productInfo');
-    echo "in phtml";
-    print_r($productInfo);die;
+<?php   
 /* 
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 ?>
-
-
+<?php
+    $productInfo = Mage::registry('productInfo'); 
+    //print_r($productInfo);die;
+    foreach($productInfo as $key => $value):?>
+        <tr>
+            <td class="number"><?php echo $value['name']; ?></td>
+            <td class="number"><?php echo $value['sku']; ?></td>
+            <td class="number"> <input type="text" value="<?php echo $value['qty_ordered']; ?>"></td>
+            <td class="total"><?php echo $value['base_row_total'] ?></td>
+            <td><input type="radio" name="gender" value="male" checked><br></td>
+        </tr>
+    <?php endforeach; ?>
