@@ -6,16 +6,21 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tabs extends Mage_Adminhtml_Block_Wid
         parent::__construct();
         $this->setId("rma_tabs");
         $this->setDestElementId("edit_form");
-        $this->setTitle(Mage::helper("rma")->__("RMA"));
+        $this->setTitle(Mage::helper("rma")->__("RMA Information"));
     }
     
     protected function _beforeToHtml()
     {
         $this->addTab("form_section", array(
-        "label" => Mage::helper("rma")->__("RMA"),
+        "label" => Mage::helper("rma")->__("General Information"),
         "title" => Mage::helper("rma")->__("RMA Detail"),
-        "content" => $this->getLayout()->createBlock("rma/adminhtml_rma_edit_tab_form")->toHtml(),
+        "url"  =>  $this->getUrl('*/*/edit', array('_current' => true)),      
         ));
+        $this->addTab('Form_Rma_Grid', array(
+                'label'     => Mage::helper('rma')->__('Rma Grid'),
+                'url'       => $this->getUrl('*/*/productGrid', array('_current' => true)),
+                'class'     => 'ajax',
+            ));      
         return parent::_beforeToHtml();
     }
 

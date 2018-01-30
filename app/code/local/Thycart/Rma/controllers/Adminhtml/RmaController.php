@@ -68,6 +68,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
 
 
                     $this->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_edit"))->_addLeft($this->getLayout()->createBlock("rma/adminhtml_rma_edit_tabs"));
+                    $this->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_edit_tab_form"));
                     $this->renderLayout();
              } 
             else {
@@ -82,5 +83,19 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
             $this->_forward('edit');
     }
     
+    public function productGridAction() { 
+      
+      // $this->loadLayout();
+      //  $this->getLayout()->createBlock("rma/adminhtml_rma_edit_tab_productgrid");
+       $this->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_edit_tab_productgrid"));                    
+       // $this->renderLayout();
+    }
+    
+    public function editRmaAction() {
+        echo 'tesxddx';
+         $this->loadLayout();
+        //$this->getLayout()->createBlock("rma/adminhtml_rma_edit_tab_form")->toHtml();  
+        $this->renderLayout();
+        }
     
 }

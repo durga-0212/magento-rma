@@ -17,7 +17,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_G
     
     protected function _prepareCollection()
     {
-        $collection = Mage::getModel('rma/order')->getCollection();
+        $collection = Mage::getModel('rma/order')->getCollection();       
         $this->setCollection($collection);
         return parent::_prepareCollection();
     }
@@ -57,6 +57,26 @@ class Thycart_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_G
             'width'     => '150px',
             'align'     =>'content',
             'index'     =>'status',
+        ));
+        
+         $this->addColumn('action',
+            array(
+                'header'    => Mage::helper('rma')->__('Action'),
+                'width'     => '50px',
+                'type'      => 'action',
+                'getter'     => 'getId',
+                'actions'   => array(
+                    array(
+                        'caption' => Mage::helper('rma')->__('View'),
+                        'url'     => array(
+                            'base'=>'*/*/edit'                           
+                        ),
+                        'field'   => 'id'
+                    )
+                ),
+                'filter'    => false,
+                'sortable'  => false,
+                'index'     => 'stores',
         ));
         
         $this->addExportType('*/*/exportCsv', Mage::helper('rma')->__('CSV')); 
