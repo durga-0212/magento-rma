@@ -10,13 +10,15 @@
 </div>
 
 <?php $orderInfo = $this->getOrders();
-if(count($orderInfo)>0): ?>
+    if(count($orderInfo)>0) : ?>
     <select name="order" id="selectOrder">
     <option value="">-- Select Orders --</option>
-    <?php foreach($orderInfo as $_order): ?>
+    <?php foreach($orderInfo as $_order): 
+    if($_order['status'] == 'complete'):?>
     <option value="<?php echo $_order->getId() ?>">
     <?php echo $_order->getIncrementId().",".$_order->getGrandTotal() ?>
     </option>
+    <?php endif;?>
     <?php endforeach; ?>
     </select>
 <?php endif; ?>
@@ -37,9 +39,9 @@ if(count($orderInfo)>0): ?>
         </tr>
     </thead>
      
-        <tr id="results">
+    <tbody id="results">
             
-        </tr>
+    </tbody>
     
 
         <tr>
@@ -94,15 +96,9 @@ if(count($orderInfo)>0): ?>
             url: "<?php echo $this->getUrl('rma/index/productinfo')?>",
             data: {OrderId:selectedValue},
             success: function(response) {
-                
-                if(response)
-                {
-                    $j('#results').append(response);
-                }
-                else
-                {
-                    $j( "#results" ).empty();
-                }
+                   
+                    $j('#results').empty();
+                    $j('#results').append(response);               
             },
             error: function() {
                 alert("error");
