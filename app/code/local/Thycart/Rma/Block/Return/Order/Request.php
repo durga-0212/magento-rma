@@ -9,8 +9,7 @@ class Thycart_Rma_Block_Return_Order_Request extends Mage_Core_Block_Template
 {
     public function __construct() 
     {
-        $this->setTemplate('rma/return/request.phtml');
-            
+        $this->setTemplate('rma/return/request.phtml');    
     }
     
     public function getOrders()
