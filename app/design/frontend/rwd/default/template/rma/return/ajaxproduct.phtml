@@ -30,7 +30,12 @@
     
         <?php
             $product_price = isset($value['base_original_price'])? $value['base_original_price']: '';
-        endif;
+        else:?> 
+            <tr>
+                <td colspan="5" style=" text-align: center; font-size: 50px;">Product cannot be return</td>
+            </tr>
+            <?php endif;
+        
     endforeach; 
     
 ?>
@@ -40,7 +45,7 @@
     var $j = jQuery.noConflict();
     $j("#productQty").change( function() {
     var selectedQty = $j('#productQty').val();
-    var selectedPrice = '<?php echo $product_price; ?>';
+    var selectedPrice = '<?php echo isset($product_price)?$product_price:''; ?>';
     $j.ajax({
             type: "POST",
             url: "<?php echo $this->getUrl('rma/index/calculatePrice')?>",

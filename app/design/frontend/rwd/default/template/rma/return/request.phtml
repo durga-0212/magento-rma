@@ -100,15 +100,9 @@
             data: {OrderId:selectedValue},
             success: function(response) {
                    
-                    if(response)
-                    {
-                        $j('#results').empty();
-                        $j('#results').append(response);
-                    }
-                    else
-                    {
-                        $j('#results').append("Product can not be returned");
-                    }
+                $j('#results').empty();
+                $j('#results').append(response);
+                   
             },
             error: function() {
                 alert("error");
