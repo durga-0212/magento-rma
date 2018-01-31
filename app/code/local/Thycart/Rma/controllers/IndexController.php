@@ -102,4 +102,12 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         }
         
     }
+    
+    public function calculatePriceAction()
+    {
+        $product_Qty = $this->getRequest()->getParam('product_Qty');
+        $product_price = $this->getRequest()->getParam('product_price');
+        $result = $product_Qty*$product_price;
+        $this->getResponse()->setBody($result);   
+    }
 }
