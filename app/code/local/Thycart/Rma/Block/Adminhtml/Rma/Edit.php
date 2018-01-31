@@ -34,7 +34,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit extends Mage_Adminhtml_Block_Widget_F
     {
         if( Mage::registry('rma_data') && Mage::registry('rma_data')->getId() )
          {
-              return Mage::helper("rma")->__("Edit RMA Order %s",$this->htmlEscape(Mage::registry('rma_data')->getIncrementId()));
+              return Mage::helper("rma")->__("View RMA Order %s",$this->htmlEscape(Mage::registry('rma_data')->getIncrementId()));
          }
          else
          {

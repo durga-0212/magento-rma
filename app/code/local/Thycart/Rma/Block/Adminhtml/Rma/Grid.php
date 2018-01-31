@@ -69,7 +69,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_G
                     array(
                         'caption' => Mage::helper('rma')->__('View'),
                         'url'     => array(
-                            'base'=>'*/*/edit'                           
+                            'base'=>'*/*/view'                           
                         ),
                         'field'   => 'id'
                     )
@@ -86,7 +86,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_G
     
     public function getRowUrl($row)
     {
-        return $this->getUrl('*/*/edit', array('id' => $row->getId()));
+        return $this->getUrl('*/*/view', array('id' => $row->getId()));
     }
     
     protected function _prepareMassaction()
