@@ -67,10 +67,12 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     {
         $data = $this->getRequest()->getParam('OrderId');
         $productInfo = Mage::getModel('rma/order')->getProductsById($data);
-        $productModel = Mage::getModel('catalog/product')->load($productInfo[0]['product_id']);
-        //$return = $productModel->getIsReturnable();
-        
-        //echo "<pre>";print_r($productModel->getData());die;
+        foreach($productInfo as $key => $value)
+        {
+            $productModel = Mage::getModel('catalog/product')->load($value['product_id']);
+            $return = $productModel->getIsReturnable();
+            $productInfo[$key]['is_returnable'] =  $return;            
+        }
         Mage::register('productInfo', $productInfo);
         $output = $this->getLayout()->createBlock('rma/return_order_request')->setTemplate('rma/return/ajaxproduct.phtml')->toHtml();
         $this->getResponse()->setBody($output);        
@@ -81,7 +83,23 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     {
         $data = $this->getRequest()->getParams();
         $orderModel = Mage::getModel('rma/order');
-        
+        //print_r($data);die;
+        $customerModel = Mage::getSingleton('customer/session')->getCustomer();
+        $orderModel->setData(array('order_id'=>$data['order_id'],'increment_id'=>$data['increment_id'],'order_increment_id'=>$data['increment_id'],'order_date'=>$data['order_date'],'store_id'=> $data['store_id'],'customer_id'=>$customerModel->getEntityId(),'customer_name'=>$customerModel->getName(),'customer_email'=>$customerModel->getEmail(),'status'=>'pending'));
+        //echo "<pre>";print_r($orderModel->getData());die;
+        if($orderModel->save())
+        {
+            $rmaItemModel = Mage::getModel('rma/rma_item');
+            $rmaItemModel->setData(array('rma_entity_id'=> $orderModel->getId(),'qty_ordered'=>$data['qty_ordered'],'qty_requested'=>$data['quantity'],'order_item_id'=>$data['item_id'],'product_name'=>$data['name'],'product_sku'=>$data['sku'],'product_options'=>$data['product_options'],'status'=>'pending'));
+            //print_r($rmaItemModel->getData());die;
+            $rmaItemModel->save();
+            $rmaHistoryModel = Mage::getModel('rma/rma_history');
+            $rmaHistoryModel->setData(array('rma_entity_id'=> $orderModel->getId(),'is_visible_on_front'=>1,'comment'=>'Your RMA request has been placed','status'=>'pending','is_admin'=>1));
+            $rmaHistoryModel->save();
+            $rmaAttributeModel = Mage::getModel('rma/rma_attributes');
+            $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'condition'=>$data['condition'],'reason'=>$data['reason'],'status'=>$data['status']));
+            $rmaAttributeModel->save();
+        }
         
     }
 }
