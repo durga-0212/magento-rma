@@ -29,7 +29,7 @@
             <input type="hidden" name="product_options" value="<?php echo $value['product_options'];?>">
     
         <?php
-            $product_price = $value['base_original_price'];
+            $product_price = isset($value['base_original_price'])? $value['base_original_price']: '';
         endif;
     endforeach; 
     
