@@ -54,8 +54,8 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
     {		
 
         $this->_title($this->__("RMA"));
-        $this->_title($this->__("RMA Detail"));
-        $this->_title($this->__("Edit RMA"));
+       // $this->_title($this->__("RMA Detail"));
+     //   $this->_title($this->__("Edit RMA"));
 
             $id = $this->getRequest()->getParam("id");
             $model = Mage::getModel("rma/order")->load($id);
@@ -69,12 +69,17 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
 
                     $this->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_edit"))->_addLeft($this->getLayout()->createBlock("rma/adminhtml_rma_edit_tabs"));
                     $this->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_edit_tab_form"));
-                    $this->renderLayout();
+                    $this->renderLayout();             ;
              } 
             else {
                     Mage::getSingleton("adminhtml/session")->addError(Mage::helper("rma")->__("RMA does not exist."));
                     $this->_redirect("*/*/");
             }
+    }
+    
+    public function viewAction()
+    {
+        
     }
 
 
@@ -83,12 +88,10 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
             $this->_forward('edit');
     }
     
-    public function productGridAction() { 
-      
-      // $this->loadLayout();
-      //  $this->getLayout()->createBlock("rma/adminhtml_rma_edit_tab_productgrid");
-       $this->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_edit_tab_productgrid"));                    
-       // $this->renderLayout();
+    public function productGridAction() {       
+       $this->loadLayout();
+      $this->getLayout()->getBlock('adminhtml.rma.edit.tab.productgrid'); 
+     $this->renderLayout();        
     }
     
     public function editRmaAction() {
@@ -96,6 +99,10 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
          $this->loadLayout();
         //$this->getLayout()->createBlock("rma/adminhtml_rma_edit_tab_form")->toHtml();  
         $this->renderLayout();
+        }
+        
+        public function saveAction() {
+            //echo 'test'; die;
         }
     
 }

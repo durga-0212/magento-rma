@@ -19,6 +19,12 @@
         </reference>
     </rma_index_index>
     
+    <rma_adminhtml_rma_productgrid>
+        <block type="core/text_list" name="root" output="toHtml">
+            <block type="rma/adminhtml_rma_edit_tab_product" name="adminhtml.rma.edit.tab.productgrid"/>
+        </block>
+    </rma_adminhtml_rma_productgrid>
+    
     <rma_adminhtml_rma_index>
         <reference name="content">
             <block type="rma/adminhtml_rma" name="rma" />
