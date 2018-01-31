@@ -8,18 +8,19 @@
 <div class="page-title">
     <h1><?php echo $this->__('Create New RMA') ?></h1>
 </div>
+
 <?php $orderInfo = $this->getOrders();
 if(count($orderInfo)>0): ?>
-<select name="order" id="selectOrder">
-<option value="">-- Select Orders --</option>
-<?php foreach($orderInfo as $_order): ?>
-<option value="<?php echo $_order->getId() ?>">
-<?php echo $_order->getIncrementId().",".$_order->getGrandTotal() ?>
-</option>
-<?php endforeach; ?>
-</select>
+    <select name="order" id="selectOrder">
+    <option value="">-- Select Orders --</option>
+    <?php foreach($orderInfo as $_order): ?>
+    <option value="<?php echo $_order->getId() ?>">
+    <?php echo $_order->getIncrementId().",".$_order->getGrandTotal() ?>
+    </option>
+    <?php endforeach; ?>
+    </select>
 <?php endif; ?>
-
+<form name="requestForm" method="POST" action="<?php echo Mage::getUrl('rma/index/save'); ?>">
 <table class="data-table orders" id="my-rma-table" >
     <col width="1" />
     <col width="1" />
@@ -29,16 +30,58 @@ if(count($orderInfo)>0): ?>
     <thead>
         <tr>
             <th class="number"><?php echo $this->__('PRODUCT NAME') ?></th>
-            <th class="number"><?php echo $this->__('SKU') ?></th>
+            <th class=""><?php echo $this->__('SKU') ?></th>
             <th class="number"><?php echo $this->__('QUANTITY') ?></th>
             <th class="total"><span class="nobr"><?php echo $this->__('PRICE') ?></span></th>
             <th class="view"><?php echo $this->__('ACTION'); ?></th>
         </tr>
     </thead>
-    <tbody id="results">
+     
+        <tr id="results">
             
-    </tbody>
-</table>
+        </tr>
+    
+
+        <tr>
+            <td><label>Resolution</label></td>
+            <td>
+                <select name="resolution_type">
+                    <option value="Refund">Refund</option>
+                    <option value="Store Credit">Store Credit</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Reason</label></td>
+            <td><input type="text" name="reason"></td>
+        </tr>
+        <tr>
+            <td><label>Condition</label></td>
+            <td>
+                <select name="condition">
+                    <option value="Packed">Packed</option>
+                    <option value="Unpacked">Unpacked</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Status</label></td>
+            <td>
+                <select name="status">
+                    <option value="Delivered">Pending</option>
+                    <option value="Not Delivered">Closed</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit">
+            </td>
+        </tr>
+        
+    </table>
+    
+</form>
 
 <script type="text/javascript">
     //<![CDATA[
@@ -52,7 +95,14 @@ if(count($orderInfo)>0): ?>
             data: {OrderId:selectedValue},
             success: function(response) {
                 
-                jQuery('#results').append(response);
+                if(response)
+                {
+                    $j('#results').append(response);
+                }
+                else
+                {
+                    $j( "#results" ).empty();
+                }
             },
             error: function() {
                 alert("error");
@@ -61,4 +111,3 @@ if(count($orderInfo)>0): ?>
     });   
 //]]>
 </script>
-
