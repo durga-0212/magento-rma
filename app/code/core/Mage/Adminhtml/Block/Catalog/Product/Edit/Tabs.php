@@ -56,7 +56,6 @@ class Mage_Adminhtml_Block_Catalog_Product_Edit_Tabs extends Mage_Adminhtml_Bloc
                 ->setAttributeSetFilter($setId)
                 ->setSortOrder()
                 ->load();
-
             foreach ($groupCollection as $group) {
                 $attributes = $product->getAttributes($group->getId(), true);
                 // do not add groups without attributes

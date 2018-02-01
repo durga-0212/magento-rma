@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
 <layout version="0.1.0">
     <customer_account translate="label">
-        <reference name="customer_account_navigation">                    
-            <action method="addDashboardLink"><name>rma</name><path>rma/index</path><label>Rma</label></action>           
-        </reference>
+       <block type="rma/account_navigation" name="rma_account_navigation">                        
+            <action method="addDashboardLink"><name>rma</name><path>rma/index</path><label>Rma</label></action>                       
+        </block>
     </customer_account>
     
     <rma_index_index translate="label">

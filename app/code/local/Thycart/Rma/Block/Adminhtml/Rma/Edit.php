@@ -17,7 +17,6 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit extends Mage_Adminhtml_Block_Widget_F
         $this->_updateButton("delete", "label", Mage::helper("rma")->__("Delete"));
 
 
-
         $this->_addButton("saveandcontinue", array(
                 "label"     => Mage::helper("rma")->__("Save And Continue Edit"),
                 "onclick"   => "saveAndContinueEdit()",

@@ -13,7 +13,7 @@ class Thycart_Rma_Block_Return_Order_View extends Mage_Core_Block_Template
         $order_id=$this->getRequest()->getParam('order_id');
         $order = Mage::getModel('sales/order')->load($order_id);
         if ($order->getId()) {
-            $this->setOrders($order);           
+            $this->setOrdersinfo($order);           
          }       
         $returns=Mage::getModel('rma/order')->load($order_id, 'order_id');
                  $this->setReturns($returns);                
