@@ -63,10 +63,16 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                     $this->_addBreadcrumb(Mage::helper("adminhtml")->__("Rma"), Mage::helper("adminhtml")->__("Rma"));
 
 
+<<<<<<< HEAD
                    // $this->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_edit"))->_addLeft($this->getLayout()->createBlock("rma/adminhtml_rma_edit_tabs"));
                     //$this->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_edit_tab_form"));
                     $this->renderLayout();
                    // Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
+=======
+                    $this->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_edit"))->_addLeft($this->getLayout()->createBlock("rma/adminhtml_rma_edit_tabs"));
+                    $this->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_edit_tab_form"));
+                    $this->renderLayout();             
+>>>>>>> anjali
              } 
             else {
                     Mage::getSingleton("adminhtml/session")->addError(Mage::helper("rma")->__("RMA does not exist."));

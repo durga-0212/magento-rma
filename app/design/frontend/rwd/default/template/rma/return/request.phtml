@@ -8,7 +8,7 @@
 <div class="page-title">
     <h1><?php echo $this->__('Create New RMA') ?></h1>
 </div>
-
+<label><h4>Order Id : </h4></label>
 <?php $orderInfo = $this->getOrders();
     if(count($orderInfo)>0) : ?>
     <select name="order" id="selectOrder">
@@ -16,7 +16,7 @@
     <?php foreach($orderInfo as $_order): 
     if($_order['status'] == 'complete'):?>
     <option value="<?php echo $_order->getId() ?>">
-    <?php echo $_order->getIncrementId().",".$_order->getGrandTotal() ?>
+    <?php echo $_order->getIncrementId()?>
     </option>
     <?php endif;?>
     <?php endforeach; ?>
@@ -31,11 +31,12 @@
     <col width="1" />
     <thead>
         <tr>
+            <th class="view"><?php echo $this->__('ACTION'); ?></th>
             <th class="number"><?php echo $this->__('PRODUCT NAME') ?></th>
             <th class=""><?php echo $this->__('SKU') ?></th>
             <th class="number"><?php echo $this->__('QUANTITY') ?></th>
             <th class="total"><span class="nobr"><?php echo $this->__('PRICE') ?></span></th>
-            <th class="view"><?php echo $this->__('ACTION'); ?></th>
+            
         </tr>
     </thead>
      
@@ -99,9 +100,15 @@
             url: "<?php echo $this->getUrl('rma/index/productinfo')?>",
             data: {OrderId:selectedValue},
             success: function(response) {
-                   
-                $j('#results').empty();
-                $j('#results').append(response);
+                if(response)
+                {
+                    $j('#results').empty();
+                    $j('#results').append(response);
+                }
+                else
+                {
+                    $j('#results').append('Product cannot be return');
+                }
                    
             },
             error: function() {
