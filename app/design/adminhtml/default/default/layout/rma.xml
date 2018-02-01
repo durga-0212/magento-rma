@@ -25,6 +25,31 @@
         </block>
     </rma_adminhtml_rma_productgrid>
     
+    <rma_adminhtml_rma_addcomment>
+        <block type="rma/adminhtml_rma_edit_tab_general_history" template="rma/edit/general/history.phtml" name="comments_history" output="toHtml"/>
+    </rma_adminhtml_rma_addcomment>
+    
+    <rma_adminhtml_rma_edit>
+         <reference name="content">
+            <block type="rma/adminhtml_rma_edit" name="adminhtml_rma_edit" />
+          </reference>
+           <reference name="left">
+            <block type="rma/adminhtml_rma_edit_tabs" name="adminhtml_rma_edit_tabs">
+                <block type="rma/adminhtml_rma_edit_tab_general" template="rma/edit/general.phtml" name="rma_edit_tab_general">
+                    <block type="rma/adminhtml_rma_edit_tab_general_details" template="rma/edit/general/details.phtml" name="request_details" />                    
+                    <block type="rma/adminhtml_rma_edit_tab_general_shippingaddress" template="rma/edit/general/shippingaddress.phtml" name="shipping_address" />
+                    <block type="rma/adminhtml_rma_edit_tab_general_returnaddress" template="rma/edit/general/returnaddress.phtml" name="return_address" />
+                    <block type="rma/adminhtml_rma_edit_tab_general_history" template="rma/edit/general/history.phtml" name="comments_history" />
+                </block>
+                <block type="rma/adminhtml_rma_edit_tab_items" template="rma/edit/items.phtml" name="rma_edit_tab_items">
+                    <block type="rma/adminhtml_rma_edit_tab_items_grid" name="items_grid" />
+                </block>
+                <action method="addTab"><name>general_section</name><block>rma_edit_tab_general</block></action>
+                <action method="addTab"><name>items_section</name><block>rma_edit_tab_items</block></action>
+            </block>
+        </reference>
+    </rma_adminhtml_rma_edit>
+    
     <rma_adminhtml_rma_index>
         <reference name="content">
             <block type="rma/adminhtml_rma" name="rma" />

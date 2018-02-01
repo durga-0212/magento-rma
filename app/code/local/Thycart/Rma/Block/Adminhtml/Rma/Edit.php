@@ -26,8 +26,8 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit extends Mage_Adminhtml_Block_Widget_F
         $this->_formScripts[] = "
             function saveAndContinueEdit(){
                 editForm.submit($('edit_form').action+'back/edit/');
-            }
-                        ";
+            }";
+        
     }
     
      public function getHeaderText()

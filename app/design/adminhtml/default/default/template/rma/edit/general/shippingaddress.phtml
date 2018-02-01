@@ -1,0 +1,11 @@
+<?php if ($this->getOrderShippingAddress()) : ?>
+    <div class="entry-edit">
+        <div class="entry-edit-head">
+            <h4 class="icon-head head-shipping-method"><?php echo Mage::helper('rma')->__('Order Shipping Address') ?></h4>
+        </div>
+        <fieldset>
+            <br />
+            <address><?php echo $this->getOrderShippingAddress() ?></address>
+        </fieldset>
+    </div>
+<?php endif ?>

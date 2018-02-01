@@ -10,6 +10,18 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Form extends Mage_Adminhtml_Block_Wid
         "enctype" =>"multipart/form-data",
         )
         );
+         $model = Mage::registry('rma_data');
+
+        if ($model) {
+            if ($model->getId()) {
+                $form->addField('entity_id', 'hidden', array(
+                    'name' => 'entity_id',
+                ));
+                $form->setValues($model->getData());
+            }
+
+            $this->_order = ($model->getOrderId());
+        }
         $form->setUseContainer(true);
         $this->setForm($form);
         return parent::_prepareForm();

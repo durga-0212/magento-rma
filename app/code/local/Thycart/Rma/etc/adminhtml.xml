@@ -7,10 +7,17 @@
                     <sort_order>30</sort_order>
                     <children>
                         <rma_grid>
-                           <title>RMA</title>
+                           <title>Manage RMA</title>
                            <action>rma/adminhtml_rma/</action>
                            <sort_order>10</sort_order> 
                         </rma_grid>
+                    </children>
+                    <children>
+                        <rma_grid_attributes>
+                           <title>Manage RMA Attributes</title>
+                           <action>rma/adminhtml_rma/</action>
+                           <sort_order>10</sort_order> 
+                        </rma_grid_attributes>
                     </children>
                 </rma>
             </children>

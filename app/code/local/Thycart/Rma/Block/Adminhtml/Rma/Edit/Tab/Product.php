@@ -1,4 +1,5 @@
 <?php 
+echo 'test'; die;
 class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Product extends Mage_Adminhtml_Block_Widget_Form
 {
     protected function _prepareForm()
