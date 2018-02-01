@@ -14,21 +14,46 @@
             <tr>
             <td class="number"><?php echo $value['name']; ?></td>
             <td class=""><?php echo $value['sku']; ?></td>
-            <td class="number"> <input type="text" name="quantity" value="<?php echo $value['qty_ordered']; ?>"></td>
-            <td class="total"><?php echo $value['base_row_total'] ?></td>
+            <td class="number"> <input type="text" id="productQty" name="quantity" value="<?php echo $value['qty_ordered']; ?>"></td>
+            <td class="total" id="productPrice"><?php echo $value['base_row_total'] ?></td>
             <td><input type="radio" name="product_id" value="<?php echo $value['product_id'];?>" checked><br></td>
             </tr>
-    <input type="hidden" name="order_id" value="<?php echo $value['order_id'];?>">
-    <input type="hidden" name="increment_id" value="<?php echo $value['increment_id'];?>">
-    <input type="hidden" name="order_date" value="<?php echo $value['created_at'];?>">
-    <input type="hidden" name="store_id" value="<?php echo $value['store_id'];?>">
-    <input type="hidden" name="qty_ordered" value="<?php echo $value['qty_ordered'];?>">
-    <input type="hidden" name="item_id" value="<?php echo $value['item_id'];?>">
-    <input type="hidden" name="name" value="<?php echo $value['name'];?>">
-    <input type="hidden" name="sku" value="<?php echo $value['sku'];?>">
-    <input type="hidden" name="product_options" value="<?php echo $value['product_options'];?>">
+            <input type="hidden" name="order_id" value="<?php echo $value['order_id'];?>">
+            <input type="hidden" name="increment_id" value="<?php echo $value['increment_id'];?>">
+            <input type="hidden" name="order_date" value="<?php echo $value['created_at'];?>">
+            <input type="hidden" name="store_id" value="<?php echo $value['store_id'];?>">
+            <input type="hidden" name="qty_ordered" value="<?php echo $value['qty_ordered'];?>">
+            <input type="hidden" name="item_id" value="<?php echo $value['item_id'];?>">
+            <input type="hidden" name="name" value="<?php echo $value['name'];?>">
+            <input type="hidden" name="sku" value="<?php echo $value['sku'];?>">
+            <input type="hidden" name="product_options" value="<?php echo $value['product_options'];?>">
+    
         <?php
-    endif;
+            $product_price = $value['base_original_price'];
+        endif;
     endforeach; 
     
 ?>
+
+<script type="text/javascript">
+    //<![CDATA[
+    var $j = jQuery.noConflict();
+    $j("#productQty").change( function() {
+    var selectedQty = $j('#productQty').val();
+    var selectedPrice = '<?php echo $product_price; ?>';
+    $j.ajax({
+            type: "POST",
+            url: "<?php echo $this->getUrl('rma/index/calculatePrice')?>",
+            data: {product_Qty:selectedQty,product_price:selectedPrice},
+            success: function(response) {
+                   
+                    $j('#productPrice').empty();
+                    $j('#productPrice').append(response);               
+            },
+            error: function() {
+                alert("error");
+            }
+        });
+    });   
+//]]>
+</script>
