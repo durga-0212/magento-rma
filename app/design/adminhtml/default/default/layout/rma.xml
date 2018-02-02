@@ -55,4 +55,27 @@
             <block type="rma/adminhtml_rma" name="rma" />
         </reference>
     </rma_adminhtml_rma_index>
+    
+    <rma_adminhtml_attribute_index>
+        <reference name="content">
+            <block type="rma/adminhtml_rma_item_attribute" name="adminhtml_rma_item_attribute" />
+        </reference>
+    </rma_adminhtml_attribute_index>
+    
+    <rma_adminhtml_attribute_edit>
+        <reference name="content">
+            <block type="rma/adminhtml_rma_item_attribute_edit" name="rma_item_attribute_edit" />
+        </reference>
+        <reference name="left">
+            <block type="rma/adminhtml_rma_item_attribute_edit_tabs" name="rma_item_attribute_edit_tabs">
+<!--                <block type="rma/adminhtml_rma_item_attribute_edit_tab_main" name="rma_item_attribute_edit_tab_general" />-->
+                <action method="addTab"><name>general</name><block>enterprise_rma_item_attribute_edit_tab_general</block></action><!--
+                <block type="enterprise_rma/adminhtml_rma_item_attribute_edit_tab_options" name="enterprise_rma_item_attribute_edit_tab_options" />
+                <action method="addTab"><name>options</name><block>enterprise_rma_item_attribute_edit_tab_options</block></action>-->
+            </block>
+        </reference>
+<!--        <reference name="js">
+            <block type="enterprise_rma/adminhtml_rma_item_attribute_edit_js" template="enterprise/rma/attribute/js.phtml" />
+        </reference>-->
+    </rma_adminhtml_attribute_edit>
 </layout>

@@ -15,7 +15,7 @@
                     <children>
                         <rma_grid_attributes>
                            <title>Manage RMA Attributes</title>
-                           <action>rma/adminhtml_rma/</action>
+                           <action>rma/adminhtml_attribute/</action>
                            <sort_order>10</sort_order> 
                         </rma_grid_attributes>
                     </children>
