@@ -32,6 +32,7 @@
 <div style="background-color:wheat;font-size:20px;">
     <a href="<?php echo $this->getRequestUrl('addrequest');?>"><strong>Request For a Rma</strong></a>
 </div>
+<?php echo $this->getPagerHtml(); ?>
 <?php if($_returns->getSize()): ?>
 <table class="data-table orders" id="my-orders-table">
     <col width="1" />
@@ -67,6 +68,7 @@
         <?php endforeach; ?>
     </tbody>
 </table>
+<?php echo $this->getPagerHtml(); ?>
 <?php else: ?>
     <p><?php echo $this->__('Congratulation you have placed return orders.'); ?></p>
 <?php endif; ?>
