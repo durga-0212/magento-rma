@@ -74,27 +74,30 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
 
     public function newAction()
     {
-            $this->_forward('edit');
+        $this->_forward('edit');
     }
     
-    public function productGridAction() {       
-       $this->loadLayout();
-      $this->getLayout()->getBlock('adminhtml.rma.edit.tab.productgrid'); 
-     $this->renderLayout();        
+    public function productGridAction() 
+    {       
+        $this->loadLayout();
+        $this->getLayout()->getBlock('adminhtml.rma.edit.tab.productgrid'); 
+        $this->renderLayout();        
     }
     
-    public function editRmaAction() {
-        echo 'tesxddx';
-         $this->loadLayout();
+    public function editRmaAction() 
+    {
+        
+        $this->loadLayout();
         //$this->getLayout()->createBlock("rma/adminhtml_rma_edit_tab_form")->toHtml();  
         $this->renderLayout();
-        }
+    }
         
-        public function saveAction() {
-            //echo 'test'; die;
-        }
+    public function saveAction() 
+    {
+        //echo 'test'; die;
+    }
         
-      protected function _initModel($requestParam = 'id')
+    protected function _initModel($requestParam = 'id')
     {
         $model = Mage::getModel('rma/order');
         $model->setStoreId($this->getRequest()->getParam('store', 0));
