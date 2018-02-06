@@ -15,80 +15,89 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Grid extends Mage_Adminhtml
         $this->setSaveParametersInSession(true);
     }
     
-//    protected function _prepareCollection()
-//    {
-//        $collection = Mage::getModel('rma/order')->getCollection();       
-//        $this->setCollection($collection);
-//        return parent::_prepareCollection();
-//    }
-//    
-//    protected function _prepareColumns()
-//    {   
-//        $this->addColumn('id', array(
-//          'header'    => Mage::helper('rma')->__('ID'),
-//          'align'     =>'right',
-//          'width'     => '10px',
-//          'index'     => 'entity_id',
-//        ));
-//        
-//        $this->addColumn('order_date', array(
-//          'header'    => Mage::helper('rma')->__('Order Date'),
-//          'align'     =>'left',
-//          'index'     => 'order_date',
-//          'width'     => '50px',
-//        ));
-//        
-//        $this->addColumn('date_requested', array(
-//          'header'    => Mage::helper('rma')->__('Requested Date'),
-//          'align'     =>'left',
-//          'index'     => 'date_requested',
-//          'width'     => '50px',
-//        ));
-//          
-//        $this->addColumn('customer_name', array(
-//            'header'    => Mage::helper('rma')->__('Customer Name'),
+    protected function _prepareCollection()
+    {
+        $collection = Mage::getModel('rma/rma_eav_attribute')->getCollection();
+                      //->join(array('rma' => 'rma/rma_eav_attributeoption'), 'main_table.attribute_id = rma.attribute_id');       
+        $this->setCollection($collection);
+        return parent::_prepareCollection();
+    }
+    
+    protected function _prepareColumns()
+    {   
+        $this->addColumn('attribute_id', array(
+          'header'    => Mage::helper('rma')->__('Attribute ID'),
+          'align'     =>'right',
+          'width'     => '10px',
+          'index'     => 'attribute_id',
+        ));
+        
+        $this->addColumn('attribute_code', array(
+          'header'    => Mage::helper('rma')->__('Attribute Code'),
+          'align'     =>'left',          
+          'width'     => '50px',
+          'index'     => 'attribute_code',
+        ));
+        
+        $this->addColumn('is_required', array(
+          'header'    => Mage::helper('rma')->__('Is Required'),
+          'align'     =>'left',          
+          'width'     => '50px',
+          'index'     => 'is_required',
+        ));
+          
+        $this->addColumn('is_unique', array(
+            'header'    => Mage::helper('rma')->__('Is Unique'),
+            'width'     => '150px',
+            'align'     =>'content',
+            'index'     =>'is_unique',
+        ));
+        
+//        $this->addColumn('entity_id', array(
+//            'header'    => Mage::helper('rma')->__('Entity Id'),
 //            'width'     => '150px',
 //            'align'     =>'content',
-//            'index'     =>'customer_name',
+//            'index'     =>'entity_id',
 //        ));
 //        
-//        $this->addColumn('status', array(
-//            'header'    => Mage::helper('rma')->__('Status'),
+//        $this->addColumn('value', array(
+//            'header'    => Mage::helper('rma')->__('Value'),
 //            'width'     => '150px',
 //            'align'     =>'content',
-//            'index'     =>'status',
+//            'index'     =>'value',
 //        ));
-//        
-//         $this->addColumn('action',
-//            array(
-//                'header'    => Mage::helper('rma')->__('Action'),
-//                'width'     => '50px',
-//                'type'      => 'action',
-//                'getter'     => 'getId',
-//                'actions'   => array(
-//                    array(
-//                        'caption' => Mage::helper('rma')->__('View'),
-//                        'url'     => array(
-//                            'base'=>'*/*/edit'                           
-//                        ),
-//                        'field'   => 'id'
-//                    )
-//                ),
-//                'filter'    => false,
-//                'sortable'  => false,
-//                'index'     => 'stores',
-//        ));
-//        
-//        $this->addExportType('*/*/exportCsv', Mage::helper('rma')->__('CSV')); 
-//	$this->addExportType('*/*/exportExcel', Mage::helper('rma')->__('Excel'));
-//        return parent::_prepareColumns();
-//    }
-//    
-//    public function getRowUrl($row)
-//    {
-//        return $this->getUrl('*/*/edit', array('id' => $row->getId()));
-//    }
-//    
+        
+         $this->addColumn('action',
+            array(
+                'header'    => Mage::helper('rma')->__('Action'),
+                'width'     => '50px',
+                'type'      => 'action',
+                'getter'     => 'getId',
+                'actions'   => array(
+                    array(
+                        'caption' => Mage::helper('rma')->__('View'),
+                        'url'     => array(
+                            'base'=>'*/*/edit'                           
+                        ),
+                        'field'   => 'id'
+                    )
+                ),
+                'filter'    => false,
+                'sortable'  => false,
+                'index'     => 'stores',
+        ));
+        
+        $this->addExportType('*/*/exportCsv', Mage::helper('rma')->__('CSV')); 
+	$this->addExportType('*/*/exportExcel', Mage::helper('rma')->__('Excel'));
+        return parent::_prepareColumns();
+    }
+    
+    public function getRowUrl($row)
+    {
+        return $this->getUrl('*/*/edit', array('id' => $row->getId()));
+    }
+    
+    
     
 }
 
