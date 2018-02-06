@@ -10,11 +10,9 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
     public  function _initAction()
     {
         $this->loadLayout()
-             ->_setActiveMenu('sales/rma')
-             ->_addBreadcrumb(
-                Mage::helper('rma')->__('RMA'))
-             ->_addBreadcrumb(
-                Mage::helper('rma')->__('Manage RMA Item Attribute'));
+             ->_setActiveMenu('sales/rma');
+//             ->_addBreadcrumb(Mage::helper('rma')->__('RMA'))
+//             ->_addBreadcrumb(Mage::helper('rma')->__('Manage RMA Item Attribute'));
         return $this;
     }
     
@@ -89,9 +87,13 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
         }
         return $attribute;
     }
-    public function _isAllowed()
-    {
-        return true;
+    
+    
+    public function viewAction() {
+        $this->loadLayout();
+        echo $this->getLayout()->getBlock('rma_item_attribute_edit_tab_js')->setTemplate('rma/options.phtml')->toHtml();
+//        $this->renderLayout();
+        //Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
     }
     public function saveAction()
     {
