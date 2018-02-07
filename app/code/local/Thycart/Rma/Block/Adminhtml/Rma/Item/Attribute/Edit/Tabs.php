@@ -1,5 +1,4 @@
 <?php
-
 /* 
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -32,8 +31,9 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit_Tabs
         $this->addTab("attribute_options", array(
         "label" => Mage::helper('rma')->__('Attribute Options'),
         "title" => Mage::helper("rma")->__("Attribute Options"),
-        //'url'     => $this->getUrl('*/*/view', array('_current' => true)),
-        "content" => $this->getLayout()->createBlock("rma/adminhtml_rma_item_attribute_edit_tab_js")->toHtml(),
+        'url'     => $this->getUrl('*/*/view', array('_current' => true)),
+         'class' => 'ajax',
+        //"content" => $this->getLayout()->createBlock("rma/adminhtml_rma_item_attribute_edit_tab_js")->toHtml(),
         ));      
         return parent::_beforeToHtml();
     }

@@ -25,49 +25,55 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Grid extends Mage_Adminhtml
     
     protected function _prepareColumns()
     {   
-        $this->addColumn('attribute_id', array(
-          'header'    => Mage::helper('rma')->__('Attribute ID'),
-          'align'     =>'right',
-          'width'     => '10px',
-          'index'     => 'attribute_id',
+        $this->addColumn('attribute_code', array(
+            'header'    => Mage::helper('rma')->__('Attribute Code'),
+            'align'     =>'left',          
+            'width'     => '50px',
+            'sortable'  =>true,
+            'index'     => 'attribute_code',
         ));
         
-        $this->addColumn('attribute_code', array(
-          'header'    => Mage::helper('rma')->__('Attribute Code'),
-          'align'     =>'left',          
-          'width'     => '50px',
-          'index'     => 'attribute_code',
+        $this->addColumn('scope', array(
+            'header'    => Mage::helper('rma')->__('Scope'),
+            'align'     =>'left',          
+            'width'     => '50px',
+            'index'     => 'scope',
+            'type' => 'options',
+            'options' => array(
+                  '2' => Mage::helper('rma')->__('Global'),
+                  '1' => Mage::helper('rma')->__('Website'),
+                  '0' => Mage::helper('rma')->__('Store View'),
+              ),
+            'align' => 'center',
         ));
         
         $this->addColumn('is_required', array(
-          'header'    => Mage::helper('rma')->__('Is Required'),
-          'align'     =>'left',          
-          'width'     => '50px',
-          'index'     => 'is_required',
+            'header'    => Mage::helper('rma')->__('Is Required'),
+            'align'     =>'left',          
+            'width'     => '50px',
+            'index'     => 'is_required',
+            'type'      => 'options',
+            'options' => array(
+                  '1' => Mage::helper('rma')->__('Yes'),
+                  '0' => Mage::helper('rma')->__('No'),
+              ),
+            'align' => 'center',
         ));
           
         $this->addColumn('is_unique', array(
             'header'    => Mage::helper('rma')->__('Is Unique'),
-            'width'     => '150px',
+            'width'     => '50px',
             'align'     =>'content',
             'index'     =>'is_unique',
+            'type'      => 'options',
+            'options' => array(
+                  '1' => Mage::helper('rma')->__('Yes'),
+                  '0' => Mage::helper('rma')->__('No'),
+              ),
+            'align' => 'center',
         ));
         
-//        $this->addColumn('entity_id', array(
-//            'header'    => Mage::helper('rma')->__('Entity Id'),
-//            'width'     => '150px',
-//            'align'     =>'content',
-//            'index'     =>'entity_id',
-//        ));
-//        
-//        $this->addColumn('value', array(
-//            'header'    => Mage::helper('rma')->__('Value'),
-//            'width'     => '150px',
-//            'align'     =>'content',
-//            'index'     =>'value',
-//        ));
-        
-         $this->addColumn('action',
+        $this->addColumn('action',
             array(
                 'header'    => Mage::helper('rma')->__('Action'),
                 'width'     => '50px',
@@ -86,9 +92,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Grid extends Mage_Adminhtml
                 'sortable'  => false,
                 'index'     => 'stores',
         ));
-        
-        $this->addExportType('*/*/exportCsv', Mage::helper('rma')->__('CSV')); 
-	$this->addExportType('*/*/exportExcel', Mage::helper('rma')->__('Excel'));
+      
         return parent::_prepareColumns();
     }
     
@@ -97,7 +101,18 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Grid extends Mage_Adminhtml
         return $this->getUrl('*/*/edit', array('id' => $row->getId()));
     }
     
-    
+    protected function _prepareMassaction()
+    {
+        $this->setMassactionIdField('entity_id');
+        $this->getMassactionBlock()->setFormFieldName('id');
+        $this->getMassactionBlock()->setUseSelectAll(true);
+        $this->getMassactionBlock()->addItem('remove_message', array(
+                         'label'=> Mage::helper('rma')->__('Remove RMA(s)'),
+                         'url'  => $this->getUrl('*/adminhtml_attribute/massRemove'),
+                         'confirm' => Mage::helper('rma')->__('Are you sure?')
+                ));
+        return $this;
+    }
     
 }
 

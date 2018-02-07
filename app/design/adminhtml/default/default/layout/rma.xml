@@ -62,6 +62,19 @@
         </reference>
     </rma_adminhtml_attribute_index>
     
+    <rma_adminhtml_attribute_view>
+         <reference name="content">
+              <block type="rma/adminhtml_rma_item_attribute_edit_tab_js" name="rma_item_attribute_edit_tab_js" />
+<!--             <block type="core/template" name="sidesupport">
+            <action method="setTemplate">
+               <template>rma/options.phtml</template>
+            </action>
+        </block>-->
+        
+         </reference>
+    </rma_adminhtml_attribute_view>
+    
+    
 <!--    <rma_adminhtml_attribute_edit>
         <reference name="content">
             <block type="rma/adminhtml_rma_item_attribute_edit" name="rma_item_attribute_edit" />

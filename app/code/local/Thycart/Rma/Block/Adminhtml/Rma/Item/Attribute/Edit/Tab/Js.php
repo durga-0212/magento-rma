@@ -1,51 +1,144 @@
 <?php
-
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit_Tab_Js extends Mage_Adminhtml_Block_Widget_Form
+class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit_Tab_Js
+    extends Mage_Core_Block_Template    
 {
-    public function _construct()
+   protected function _prepareLayout()
     {
-        //parent::__construct();
-        //$this->setTemplate('rma/options.phtml');
-    }
-    protected function _prepareForm()
-    {
-        $form = new Varien_Data_Form();
-        $this->setForm($form);
-        $fieldset = $form->addFieldset("js_form", array("legend"=>Mage::helper("rma")->__("General information")));
-        
-//        $fieldset->addField('attribute_code', 'text', array(
-//        'label'     => Mage::helper('rma')->__('Attribute Code '),
-//        'name'      => 'attribute_code',
-//        'required'  => true,
-//        'class' => 'required-entry',
-//        ));
-        
-        $fieldset->addField('attribute_options', 'button', array(
-        'label'     => Mage::helper('rma')->__('Options '),
-        'name'      => 'options',
-        'required'  => true,
-        'class' => 'required-entry',
-        ));
-        
+        $this->setChild('delete_button',
+            $this->getLayout()->createBlock('adminhtml/widget_button')
+                ->setData(array(
+                    'label' => Mage::helper('eav')->__('Delete'),
+                    'class' => 'delete delete-option'
+                )));
 
-        if (Mage::getSingleton("adminhtml/session")->getAttributeData())
-        {
-            $form->setValues(Mage::getSingleton("adminhtml/session")->getAttributeData());
-            Mage::getSingleton("adminhtml/session")->setAttributeData(null);
-        } 
-        elseif(Mage::registry("attribute_data")) {
-            $form->setValues(Mage::registry("attribute_data")->getData());
+        $this->setChild('add_button',
+            $this->getLayout()->createBlock('adminhtml/widget_button')
+                ->setData(array(
+                    'label' => Mage::helper('eav')->__('Add Option'),
+                    'class' => 'add',
+                    'id'    => 'add_new_option_button'
+                )));
+        return parent::_prepareLayout();
+    }
+
+    /**
+     * Retrieve HTML of delete button
+     *
+     * @return string
+     */
+    public function getDeleteButtonHtml()
+    {
+        return $this->getChildHtml('delete_button');
+    }
+
+    /**
+     * Retrieve HTML of add button
+     *
+     * @return string
+     */
+    public function getAddNewButtonHtml()
+    {
+        return $this->getChildHtml('add_button');
+    }
+
+    /**
+     * Retrieve stores collection with default store
+     *
+     * @return Mage_Core_Model_Mysql4_Store_Collection
+     */
+    public function getStores()
+    {
+        $stores = $this->getData('stores');
+        if (is_null($stores)) {
+            $stores = Mage::getModel('core/store')
+                ->getResourceCollection()
+                ->setLoadDefault(true)
+                ->load();
+            $this->setData('stores', $stores);
+        }
+        return $stores;
+    }
+
+    /**
+     * Retrieve attribute option values if attribute input type select or multiselect
+     *
+     * @return array
+     */
+    public function getOptionValues()
+    {
+        $id = $this->getRequest()->getParam('id');        
+        $values = $this->getData('option_values');
+        if (is_null($values)) {
+            $values = array();
+            $optionCollection = Mage::getResourceModel('rma/rma_eav_attributeoption_collection')
+                ->addFieldToFilter('attribute_id',$id)
+                ->load();
+        
+            
+            foreach ($optionCollection as $option) {
+                $value = array();
+                $value['id'] = $option->getId();
+                $value['sort_order'] = $option->getValue();
+                $values[] = new Varien_Object($value);
+            }
+            $this->setData('option_values', $values);
         }
 
+        return $values;
+    }
 
-    return parent::_prepareForm();
+    /**
+     * Retrieve frontend labels of attribute for each store
+     *
+     * @return array
+     */
+    public function getLabelValues()
+    {
+        $values = array();
+        $frontendLabel = $this->getAttributeObject()->getFrontend()->getLabel();
+        if (is_array($frontendLabel)) {
+            return $frontendLabel;
+        }
+        $values[0] = $frontendLabel;
+        $storeLabels = $this->getAttributeObject()->getStoreLabels();
+        foreach ($this->getStores() as $store) {
+            if ($store->getId() != 0) {
+                $values[$store->getId()] = isset($storeLabels[$store->getId()]) ? $storeLabels[$store->getId()] : '';
+            }
+        }
+        return $values;
+    }
 
-    } 
-    
-    
+    /**
+     * Retrieve attribute option values for given store id
+     *
+     * @param integer $storeId
+     * @return array
+     */
+    public function getStoreOptionValues($storeId)
+    {
+        $values = $this->getData('store_option_values_'.$storeId);
+        if (is_null($values)) {
+            $values = array();
+            $valuesCollection = Mage::getResourceModel('eav/entity_attribute_option_collection')
+                ->setAttributeFilter($this->getAttributeObject()->getId())
+                ->setStoreFilter($storeId, false)
+                ->load();
+            foreach ($valuesCollection as $item) {
+                $values[$item->getId()] = $item->getValue();
+            }
+            $this->setData('store_option_values_'.$storeId, $values);
+        }
+        return $values;
+    }
+
+    /**
+     * Retrieve attribute object from registry
+     *
+     * @return Mage_Eav_Model_Entity_Attribute_Abstract
+     */
+    public function getAttributeObject()
+    {
+        return Mage::registry('entity_attribute');
+    }
 }
