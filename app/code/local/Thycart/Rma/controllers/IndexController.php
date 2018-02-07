@@ -80,46 +80,39 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     
     public function saveAction()
     {
-        $data = $this->getRequest()->getParams();
-        $productDetails = $this->getRequest()->getParam('product_id');
-        $count = count($productDetails);
-        //echo $count;die;
-       // print_r($productDetails);die;
-        $orderModel = Mage::getModel('rma/order');
-        //print_r($data);die;
+        $data = $this->getRequest()->getParams();       
+        $orderModel = Mage::getModel('rma/order');       
         $customerModel = Mage::getSingleton('customer/session')->getCustomer();
         $orderModel->setData(array('order_id'=>$data['order_id'],'increment_id'=>$data['increment_id'],'order_increment_id'=>$data['increment_id'],'order_date'=>$data['order_date'],'store_id'=> $data['store_id'],'customer_id'=>$customerModel->getEntityId(),'customer_name'=>$customerModel->getName(),'customer_email'=>$customerModel->getEmail(),'status'=>'pending'));
-        //echo "<pre>";print_r($orderModel->getData());die;
-        //if($orderModel->save())
-        //{
-            $rmaItemModel = Mage::getModel('rma/rma_item');
-                
-                for($i=0; $i < $count; $i++)
-                {
-                    //echo $productDetails[$i];
-                    
-                    $product_details = explode(',', $productDetails[$i]);
-                    //echo "in here";
-                    print_r($product_details);
-//                    for($i=0;$i < count;$i++)
-//                    {
-//                        echo $product_details[$i];                        
-//                    }
-                    //$rmaItemModel->setData(array('rma_entity_id'=> $orderModel->getId(),'qty_ordered'=>$data['qty_ordered'],'product_name'=>$key,'product_sku'=>$key,'order_item_id'=>$key,'qty_requested'=>$key,'product_options'=>$data['product_options'],'status'=>'pending'));
-                    //echo "<pre>";print_r($rmaItemModel->getData());
-                    //die;
-                }
-                die;
-            
-            $rmaItemModel->save();
+        if($orderModel->save())
+        {
+         foreach ($data['Product'] as $key => $value) 
+        {
+            if($value['checked'])
+            {
+                $item_data=array(
+                    'rma_entity_id' => $orderModel->getId(),
+                    'qty_ordered'  => $value['qty_ordered'],
+                    'product_name' => $value['name'],
+                    'product_sku' => $value['sku'],
+                    'order_item_id' => $value['item_id'],
+                    'qty_requested' => $value['qty_requested'],
+                    'product_options' => $value['product_options'],
+                    'status' => 'pending'
+                );
+              $rmaItemModel = Mage::getModel('rma/rma_item');  
+              $rmaItemModel->setData($item_data);
+              $rmaItemModel->save();
+            }           
+        }  
+          
             $rmaHistoryModel = Mage::getModel('rma/rma_history');
             $rmaHistoryModel->setData(array('rma_entity_id'=> $orderModel->getId(),'is_visible_on_front'=>1,'comment'=>'Your RMA request has been placed','status'=>'pending','is_admin'=>1));
             $rmaHistoryModel->save();
             $rmaAttributeModel = Mage::getModel('rma/rma_attributes');
             $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'condition'=>$data['condition'],'reason'=>$data['reason'],'status'=>$data['status']));
-            $rmaAttributeModel->save();
-        //}
-        
+            $rmaAttributeModel->save();      
+       }
     }
     
     public function calculatePriceAction()
