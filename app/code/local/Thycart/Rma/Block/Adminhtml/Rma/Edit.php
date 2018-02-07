@@ -13,7 +13,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit extends Mage_Adminhtml_Block_Widget_F
         $this->_objectId = "id";
         $this->_blockGroup = "rma";
         $this->_controller = "adminhtml_rma";
-        $this->_updateButton("save", "label", Mage::helper("rma")->__("Save Message"));
+        $this->_updateButton("save", "label", Mage::helper("rma")->__("Save"));
         $this->_updateButton("delete", "label", Mage::helper("rma")->__("Delete"));
 
 

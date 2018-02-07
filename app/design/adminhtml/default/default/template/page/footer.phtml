@@ -44,4 +44,12 @@
         }
     }
     Event.observe('interface_locale', 'change', setInterfaceLanguage)
+    $('#attribute_options').click(function() {
+        
+ 	$(this).before('<div class="block"><input type="text" /><span class="remove">Remove Option</span></div>');
+    });
+
+    $(document).on('click','.remove',function() {
+ 	$(this).parent('div').remove();
+    });
 </script>

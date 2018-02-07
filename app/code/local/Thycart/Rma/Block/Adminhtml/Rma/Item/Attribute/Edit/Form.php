@@ -1,5 +1,5 @@
 <?php
-class Thycart_Rma_Block_Adminhtml_Rma_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
+class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit_Form extends Mage_Adminhtml_Block_Widget_Form
 {
     protected function _prepareForm()
     {
@@ -7,9 +7,10 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Form extends Mage_Adminhtml_Block_Wid
         "id" => "edit_form",
         "action" => $this->getUrl("*/*/save", array("id" => $this->getRequest()->getParam("id"))),
         "method" => "post",
-        "enctype" =>"multipart/form-data",
         )
         );
+        // $model = Mage::registry('attribute_data');
+
         $form->setUseContainer(true);
         $this->setForm($form);
         return parent::_prepareForm();
