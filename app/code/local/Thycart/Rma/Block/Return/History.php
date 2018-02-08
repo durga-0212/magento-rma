@@ -40,7 +40,7 @@ class Thycart_Rma_Block_Return_History extends Mage_Core_Block_Template
     
     public function getViewUrl($order)
     {
-        return $this->getUrl('*/*/view', array('order_id' => $order->getId()));
+        return $this->getUrl('*/*/view', array('order_id' => $order->getOrderId()));
     }
     
      public function getRequestUrl($path)

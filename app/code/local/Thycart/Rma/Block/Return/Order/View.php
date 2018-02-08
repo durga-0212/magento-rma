@@ -1,5 +1,4 @@
 <?php
-
 /* 
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -10,8 +9,8 @@ class Thycart_Rma_Block_Return_Order_View extends Mage_Core_Block_Template
      public function __construct() {      
         parent::__construct();       
         $this->setTemplate('rma/return/view.phtml'); 
-        $order_id=$this->getRequest()->getParam('order_id');
-        $order = Mage::getModel('sales/order')->load($order_id);
+        $order_id=$this->getRequest()->getParam('order_id');        
+        $order = Mage::getModel('sales/order')->load($order_id);       
         if ($order->getId()) {
             $this->setOrdersinfo($order);           
          }       
