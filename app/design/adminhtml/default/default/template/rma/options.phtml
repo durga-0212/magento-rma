@@ -15,8 +15,7 @@
         <div class="hor-scroll">
             <table class="dynamic-grid" cellspacing="0"  cellpadding="0">
                 <tr id="attribute-options-table">         
-                        <th><?php echo Mage::helper('rma')->__('Position') ?></th>
-                        <th class="nobr a-center"><?php echo Mage::helper('rma')->__('Is Default') ?></th>
+                        <th><?php echo Mage::helper('rma')->__('Value') ?></th>
                         <th>                           
                                 <?php echo $this->getAddNewButtonHtml() ?>
                           
@@ -30,14 +29,12 @@
 </div>
 <script type="text/javascript">
     //<![CDATA[
-var optionDefaultInputType = 'radio';
 
 // IE removes quotes from element.innerHTML whenever it thinks they're not needed, which breaks html.
 var templateText =
         '<tr class="option-row">'+
 
-            '<td><input class="input-text" type="text" name="option[order][{{id}}]" value="{{sort_order}}" <?php if ($this->getReadOnly()):?> disabled="disabled"<?php endif;?>/><\/td>'+
-            '<td class="a-center"><input class="input-radio" type="{{intype}}" name="default[]" value="{{id}}" {{checked}} <?php if ($this->getReadOnly()):?> disabled="disabled"<?php endif;?>/><\/td>'+
+            '<td><input class="input-text" type="text" name="option[order][{{id}}]" value="{{sort_order}}" <?php if ($this->getReadOnly()):?> disabled="disabled"<?php endif;?>/><\/td>'+            
             '<td class="a-left" id="delete_button_container_{{id}}">'+
                 '<input type="hidden" class="delete-flag" name="option[delete][{{id}}]" value="" />'+
                 <?php if (!$this->getReadOnly()):?>
@@ -60,8 +57,7 @@ var templateText =
             data.id  = 'option_'+this.itemCount;
             isNewOption = true;
         }
-        if (!data.intype)
-            data.intype = optionDefaultInputType;
+        
         Element.insert(this.table, {after: this.template.evaluate(data)});
         if (isNewOption && !this.isReadOnly) {
             this.enableNewOptionDeleteButton(data.id);
@@ -129,7 +125,11 @@ attributeOption.bindRemoveButtons();
     if($('add_new_option_button')){    
     Event.observe('add_new_option_button', 'click', attributeOption.add.bind(attributeOption));
 }
-    </script>
+<?php //print_r($this->getOptionValues());die;
+foreach ($this->getOptionValues() as $_value): ?>
+    attributeOption.add(<?php echo $_value->toJson() ?>);
+<?php endforeach; ?>
+</script>
     
     
     
