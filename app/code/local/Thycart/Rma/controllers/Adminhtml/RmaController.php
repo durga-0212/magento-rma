@@ -82,49 +82,6 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         $this->renderLayout();        
     }
     
-//    public function editRmaAction() 
-//    {
-//        
-//        $this->loadLayout();
-//        //$this->getLayout()->createBlock("rma/adminhtml_rma_edit_tab_form")->toHtml();  
-//        $this->renderLayout();
-//    }
-        
-    public function saveAction() 
-    {
-        //echo 'test'; die;
-    }
-        
-//    protected function _initModel($requestParam = 'id')
-//    {
-//        $model = Mage::getModel('rma/order');
-//        $model->setStoreId($this->getRequest()->getParam('store', 0));
-//
-//        $rmaId = $this->getRequest()->getParam();
-//        echo $rmaId; die;
-//        if ($rmaId) {
-//            $model->load($rmaId);
-//            if (!$model->getId()) {
-//                Mage::throwException($this->__('Wrong RMA requested.'));
-//            }
-//            Mage::register('rma_data', $model);
-//            $orderId = $model->getOrderId();
-//        } else {
-//            $orderId = $this->getRequest()->getParam('order_id');
-//        }
-//
-//        if ($orderId) {
-//            $order = Mage::getModel('sales/order')->load($orderId);
-//            if (!$order->getId()) {
-//                Mage::throwException($this->__('Wrong RMA order id.'));
-//            }
-//            Mage::register('current_order', $order);
-//        }
-//
-//        return $model;
-//    }
-
-    
     public function addCommentAction()
     {
          try {
