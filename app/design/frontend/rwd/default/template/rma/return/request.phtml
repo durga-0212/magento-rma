@@ -8,11 +8,12 @@
 <div class="page-title">
     <h1><?php echo $this->__('Create New RMA') ?></h1>
 </div>
+<form id="requestForm" method="POST" action="<?php echo Mage::getUrl('rma/index/save'); ?>">
 <label><h4>Order Id : </h4></label>
 <?php $orderInfo = $this->getOrders();
     if(count($orderInfo)>0) : ?>
-    <select name="order" id="selectOrder">
-    <option value="0">-- Select Orders --</option>
+<select name="order" id="selectOrder" class="validate-select">
+    <option value="">-- Select Orders --</option>
     <?php foreach($orderInfo as $_order): 
     if($_order['status'] == 'complete'):?>
     <option value="<?php echo $_order->getId() ?>">
@@ -22,8 +23,7 @@
     <?php endforeach; ?>
     </select>
 <?php endif; ?>
-<form id="requestForm" method="POST" action="<?php echo Mage::getUrl('rma/index/save'); ?>">
-<table class="data-table orders" id="my-rma-table" >
+    <table class="data-table orders" id="my-rma-table" >
     <col width="1" />
     <col width="1" />
     <col width="1" />
@@ -43,39 +43,40 @@
     <tbody id="results">
             
     </tbody>
-    
-
-        <tr>
+    <tr>
             <td><label>Resolution</label></td>
             <td>
-                <select name="resolution_type">
-                    <option value="Refund">Refund</option>
-                    <option value="Store Credit">Store Credit</option>
+                <?php                 
+                $resolution=Mage::helper('rma')->getAttributeOptionValues('resolution');                
+                ?>               
+                <select name="resolution_type" class="validate-select">
+                    <option value="">Select Resolution</option>
+                    <?php foreach ($resolution as $key => $value) {?>        
+                    <option value="<?php echo $value;?>"><?php echo $value;?></option>
+                   <?php
+                    }?>
                 </select>
             </td>
         </tr>
         <tr>
             <td><label>Reason</label></td>
-            <td><input type="text" name="reason"></td>
+            <td><input type="text" name="reason" class="required-entry"></td>
         </tr>
         <tr>
             <td><label>Condition</label></td>
             <td>
-                <select name="condition">
-                    <option value="Packed">Packed</option>
-                    <option value="Unpacked">Unpacked</option>
-                </select>
+              <?php                 
+                $condition=Mage::helper('rma')->getAttributeOptionValues('condition');                
+                ?>               
+                <select name="condition"  class="validate-select">
+                    <option value="">Select condition</option>
+                    <?php foreach ($condition as $key => $value) {?>        
+                    <option value="<?php echo $value;?>"><?php echo $value;?></option>
+                   <?php
+                    }?>
+                </select>               
             </td>
-        </tr>
-        <tr>
-            <td><label>Status</label></td>
-            <td>
-                <select name="status">
-                    <option value="Pending">Pending</option>
-                    <option value="Closed">Closed</option>
-                </select>
-            </td>
-        </tr>
+        </tr>        
         <tr>
             <td>
                 <input type="submit">
@@ -87,10 +88,7 @@
 </form>
 
 <script type="text/javascript">
-    //<![CDATA[
- 
-    var customForm = new VarienForm('requestForm');
-   
+    //<![CDATA[  
     var $j = jQuery.noConflict();
     $j("#selectOrder").change( function() {
     var selectedOption = $j("#selectOrder option:selected");
@@ -118,6 +116,7 @@
             }
         });
     }
-    });   
+    }); 
+     var customForm = new VarienForm('requestForm');
 //]]>
 </script>

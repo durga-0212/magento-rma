@@ -104,6 +104,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
               $rmaItemModel = Mage::getModel('rma/rma_item');  
               $rmaItemModel->setData($item_data);
               $rmaItemModel->save();
+              $this->_redirect('*/*/index');
             }           
         }  
           
