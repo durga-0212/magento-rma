@@ -19,30 +19,35 @@
           //  print_r($value); 
 ?>
             <tr>
-            <td>
-                <!--<input type="checkbox" name="product_id[]" value="<?php //echo $value['product_id'].",".$value['sku'].",".$value['item_id'].",".$value['qty_ordered'];;?>">-->
-            <input type="checkbox" name="Product[[<?php echo $key;?>][checked]]" value="1">
+            <td>   
+            <input type="checkbox" name="Product[[<?php echo $key;?>][checked]]" value="1" class="input required-entry">
             </td>
             <td class="number"><?php echo $value['name']; ?></td>
             <td class=""><?php echo $value['sku']; ?></td>
             <td class="number"> <input type="text" class="productQty" id="productQty_<?php echo $key;?>" name="Product[[<?php echo $key;?>][qty_requested]]" value="<?php echo $value['qty_ordered']; ?>"></td>
             <td class="total" id="productPrice_<?php echo $key;?>"><?php echo $value['base_row_total'] ?></td>
             </tr>
+            
+            
+            
             <input type="hidden" name="order_id" value="<?php echo $value['order_id'];?>">
             <input type="hidden" name="increment_id" value="<?php echo $value['increment_id'];?>">
             <input type="hidden" name="order_date" value="<?php echo $value['created_at'];?>">
             <input type="hidden" name="store_id" value="<?php echo $value['store_id'];?>">
-            <input type="hidden" name="Product[[<?php echo $key;?>][qty_ordered]]" value="<?php echo $value['qty_ordered'];?>">
+            <input type="hidden" id="qty_ordered_<?php echo $key;?>" name="Product[[<?php echo $key;?>][qty_ordered]]" value="<?php echo $value['qty_ordered'];?>">
             <input type="hidden" name="Product[[<?php echo $key;?>][item_id]]" value="<?php echo $value['item_id'];?>">
             <input type="hidden" name="Product[[<?php echo $key;?>][name]]" value="<?php echo $value['name'];?>">
             <input type="hidden" name="Product[[<?php echo $key;?>][sku]]" value="<?php echo $value['sku'];?>">
             <input type="hidden" name="Product[[<?php echo $key;?>][product_options]]" value="<?php echo $value['product_options'];?>">
+            
             <?php $product_price = isset($value['base_original_price'])? $value['base_original_price']: '';
             ?>
             <input type="hidden" id="original_price_<?php echo $key;?>" name="original_price" value="<?php echo $product_price?>">
         <?php
          endif;        
-    endforeach;    
+    endforeach;?>
+            
+    <?php        
     else: ?> 
             <tr>
                 <td colspan="5" style=" text-align: center; font-size: 50px;">Product cannot be return</td>
@@ -50,30 +55,48 @@
     <?php
     endif;
      ?>
+        <tr id="notification-message" style="display:none">
+            <td></td>
+            <td></td>
+            <td colspan="5" style=" text-align: center; font-size: 20px; color: rosybrown;" id="notification"></td>
+            <td></td>
+        </tr>
 
 <script type="text/javascript">
     //<![CDATA[
     var $j = jQuery.noConflict();
+    //$j("#notification-message").hide();
     $j(".productQty").change( function() {
-        var str = this.id;        
+        var str = this.id; 
         var res = str.split("_");
-       // alert(res[1]);
     var selectedQty = $j('.productQty').val();
-    //alert(selectedQty);
+    var selectedQtyById=$j('#'+str).val();
     var selectedPrice = $j('#original_price_'+res[1]).val();
-    //var selectedPrice = '<?php echo isset($product_price)?$product_price:''; ?>';
-    $j.ajax({
-            type: "POST",
-            url: "<?php echo $this->getUrl('rma/index/calculatePrice')?>",
-            data: {product_Qty:selectedQty,product_price:selectedPrice},
-            success: function(response) {               
-                    $j('#productPrice_'+res[1]).empty();
-                    $j('#productPrice_'+res[1]).html(response);               
-            },
-            error: function() {
-                alert("error");
-            }
-        });
-    });   
+    
+    var orderedQty = $j('#qty_ordered_'+res[1]).val();
+    if(selectedQtyById > orderedQty)
+    {   //alert(selectedQtyById);
+        $j("#notification-message").show();
+        $j("#notification").empty();
+        $j("#notification").append("You can not return "+selectedQtyById+" product");
+    }
+    else
+    {
+        $j("#notification-message").hide();
+        $j.ajax({
+                type: "POST",
+                url: "<?php echo $this->getUrl('rma/index/calculatePrice')?>",
+                data: {product_Qty:selectedQty,product_price:selectedPrice},
+                success: function(response) {               
+                        $j('#productPrice_'+res[1]).empty();
+                        $j('#productPrice_'+res[1]).html(response);               
+                },
+                error: function() {
+                    alert("error");
+                }
+            });
+    }
+    }); 
+    
 //]]>
 </script>
