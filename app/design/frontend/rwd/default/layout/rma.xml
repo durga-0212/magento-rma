@@ -14,8 +14,7 @@
                 <block type="core/text_list" name="rma.return.history.info" as="info" translate="label">
                     <label>Returns History Info</label>
                 </block>
-            </block>
-            <block type="rma/return_history" name="customer.account.link.back" template="customer/account/link/back.phtml"/>
+            </block>          
         </reference>
     </rma_index_index>
     
@@ -42,10 +41,9 @@
         <label>Create New RMA Request</label>
         <update handle="customer_account"/>
             <reference name="my.account.wrapper">
-                <block type="rma/return_order_request" name="rma.return.order.request">
-                  
-                    
-                </block>
+                 <block type="rma/return_history" name="customer.account.link.back" template="customer/account/link/back.phtml"/> 
+                <block type="rma/return_order_request" name="rma.return.order.request">                
+                 </block>
             </reference>
     </rma_index_addrequest>
     

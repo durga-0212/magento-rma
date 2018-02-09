@@ -50,9 +50,9 @@
                 $resolution=Mage::helper('rma')->getAttributeOptionValues('resolution');                
                 ?>               
                 <select name="resolution_type" class="validate-select">
-                    <option value="">Select Resolution</option>
+                    <option value="">-- Select Resolution --</option>
                     <?php foreach ($resolution as $key => $value) {?>        
-                    <option value="<?php echo $value;?>"><?php echo $value;?></option>
+                    <option value="<?php echo $key;?>"><?php echo $value;?></option>
                    <?php
                     }?>
                 </select>
@@ -69,9 +69,9 @@
                 $condition=Mage::helper('rma')->getAttributeOptionValues('condition');                
                 ?>               
                 <select name="condition"  class="validate-select">
-                    <option value="">Select condition</option>
+                    <option value="">-- Select condition --</option>
                     <?php foreach ($condition as $key => $value) {?>        
-                    <option value="<?php echo $value;?>"><?php echo $value;?></option>
+                    <option value="<?php echo $key;?>"><?php echo $value;?></option>
                    <?php
                     }?>
                 </select>               
@@ -79,7 +79,7 @@
         </tr>        
         <tr>
             <td>
-                <input type="submit">
+                <input type="submit" id="submit">
             </td>
         </tr>
         
@@ -89,12 +89,15 @@
 
 <script type="text/javascript">
     //<![CDATA[  
+    
     var $j = jQuery.noConflict();
     $j("#selectOrder").change( function() {
     var selectedOption = $j("#selectOrder option:selected");
     var selectedValue = selectedOption.val();
-   if(selectedValue!=0)
-   {
+    if(selectedValue!=0)
+    {
+        
+    $j('#advice-validate-select-selectOrder').hide();
     $j.ajax({
             type: "POST",
             url: "<?php echo $this->getUrl('rma/index/productinfo')?>",
@@ -103,7 +106,7 @@
                 if(response)
                 {
                     $j('#results').empty();
-                    $j('#results').append(response);
+                    $j('#results').append(response);                    
                 }
                 else
                 {
@@ -116,7 +119,23 @@
             }
         });
     }
-    }); 
-     var customForm = new VarienForm('requestForm');
-//]]>
+    });       
+    $j('#submit').click(function(){        
+        cnt=$j('#cnt').val();  
+        ncnt=cnt-1;
+        for (i = 0; i < cnt; i++) {
+             var selectedQtyById=$j('#productQty_'+i).val();
+              var orderedQty = $j('#qty_ordered_'+i).val();            
+              var product_name=$j("#product_name_"+i).val();              
+               $j('#checkbox_product_'+ncnt).addClass('validate-one-required');
+             if(selectedQtyById > orderedQty)
+          {   
+            $j("#notification-message").show();
+            $j("#notification").empty();
+            $j("#notification").append("You can not return more than "+orderedQty+" "+product_name);
+          }
+           }
+    });
+    var customForm = new VarienForm('requestForm'); 
+    //]]>
 </script>
