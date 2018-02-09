@@ -9,8 +9,6 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit_Form extends Mage_Admi
         "method" => "post",
         )
         );
-        // $model = Mage::registry('attribute_data');
-
         $form->setUseContainer(true);
         $this->setForm($form);
         return parent::_prepareForm();

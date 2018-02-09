@@ -25,15 +25,13 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit_Tabs
         $this->addTab("form_section", array(
         "label" => Mage::helper("rma")->__("General Information"),
         "title" => Mage::helper("rma")->__("General Information"),
-        "content" => $this->getLayout()->createBlock("rma/adminhtml_rma_item_attribute_edit_tab_form")->toHtml(),
-        //"url"  =>  $this->getUrl('*/*/view', array('_current' => true)),      
+        "content" => $this->getLayout()->createBlock("rma/adminhtml_rma_item_attribute_edit_tab_form")->toHtml(),      
         ));
         $this->addTab("attribute_options", array(
         "label" => Mage::helper('rma')->__('Attribute Options'),
         "title" => Mage::helper("rma")->__("Attribute Options"),
         'url'     => $this->getUrl('*/*/view', array('_current' => true)),
-         'class' => 'ajax',
-        //"content" => $this->getLayout()->createBlock("rma/adminhtml_rma_item_attribute_edit_tab_js")->toHtml(),
+        'class' => 'ajax',
         ));      
         return parent::_beforeToHtml();
     }

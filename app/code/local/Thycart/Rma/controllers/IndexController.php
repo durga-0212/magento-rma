@@ -99,7 +99,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     'order_item_id' => $value['item_id'],
                     'qty_requested' => $value['qty_requested'],
                     'product_options' => $value['product_options'],
-                    'status' => 'pending'
+                    'item_status' => 'pending'
                 );
               $rmaItemModel = Mage::getModel('rma/rma_item');  
               $rmaItemModel->setData($item_data);

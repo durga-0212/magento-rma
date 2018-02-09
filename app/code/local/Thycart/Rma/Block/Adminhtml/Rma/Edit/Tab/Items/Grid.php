@@ -55,20 +55,11 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
     {
         $rmaData = Mage::registry('rma_data');
         
-        $collection = Mage::getModel('rma/rma_item')->getCollection()
-            ->addFieldToSelect('*')
-//            ->join(array('ra'=>'rma/rma_attributes'),'main_table.rma_entity_id=ra.rma_entity_id')
-//            ->addFieldToSelect('*')
-            ->addFieldToFilter('main_table.rma_entity_id',$rmaData->getEntityId());
-//        
-//        $collection = Mage::getModel('rma/rma_attributes')->getCollection()
-//                ->addFieldToSelect('*')
-//                 ->addFieldToFilter('main_table.rma_entity_id',$rmaData->getEntityId());
-////            
-       // $collection['reason']='text here';
-       //echo '=====================RMA';
-       // echo '<pre>';
-       // print_r($collection->getData()); die;
+        $collection = Mage::getModel('rma/order')->getCollection()                       
+            ->join(array('ra'=>'rma/rma_attributes'),'main_table.entity_id=ra.rma_entity_id')
+             ->addFieldToSelect('*')  
+                ->join(array('ri'=>'rma/rma_item'),'main_table.entity_id=ri.rma_entity_id')
+            ->addFieldToFilter('main_table.entity_id',$rmaData->getEntityId());
         $this->setCollection($collection);
         return parent::_prepareCollection();
     }
@@ -160,6 +151,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
         $this->addColumn('condition', array(
             'header'=> Mage::helper('rma')->__('Item Condition'),
             'width' => '80px',
+            'type' => 'options',
            // 'getter'   => array($this, 'getConditionOptionStringValue'),
             'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
             'options' => Mage::helper('rma')->getAttributeOptionValues('condition'),
@@ -169,7 +161,8 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
         $this->addColumn('resolution', array(
             'header'=> Mage::helper('rma')->__('Resolution'),
             'width' => '80px',
-            'index' => 'resolution',           
+            'index' => 'resolution', 
+            'type' => 'options',
 //            'getter'   => array($this, 'getResolutionOptionStringValue'),
             'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
              'options' => Mage::helper('rma')->getAttributeOptionValues('resolution'),
@@ -178,37 +171,12 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
         $this->addColumn('status', array(
             'header'=> Mage::helper('rma')->__('Status'),
             'width' => '80px',
-            'index' => 'status',
+            'index' => 'item_status',
             //'getter'=> array($this, 'getStatusOptionStringValue'),
             'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
-            'options' => Mage::helper('rma')->getAttributeOptionValues('status'),
+            'options' => Mage::helper('rma')->getAttributeOptionValues('item_status'),
         ));
-//
-//        $actionsArray = array(
-//            array(
-//                'caption'   => Mage::helper('rma')->__('Details'),
-//                'class'     => 'item_details',
-//            ),
-//        );
-//        if (!($rma
-//            && (($rma->getStatus() === Enterprise_Rma_Model_Rma_Source_Status::STATE_CLOSED)
-//                || ($rma->getStatus() === Enterprise_Rma_Model_Rma_Source_Status::STATE_PROCESSED_CLOSED))
-//        )) {
-//                $actionsArray[] = array(
-//                'caption'   => Mage::helper('rma')->__('Split'),
-//                'class'     => 'item_split_line',
-//                'status_depended' => '1'
-//            );
-//        }
 
-        $this->addColumn('action',
-            array(
-                'header'    =>  Mage::helper('rma')->__('Action'),
-                'width'     => '100',
-                //'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_action',
-                //'actions'   => $actionsArray,
-                'is_system' => true,
-        ));
 
         return parent::_prepareColumns();
     }
@@ -314,27 +282,23 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
         $this->getMassactionBlock()->setUseSelectAll(true);
         $this->getMassactionBlock()->addItem('pending', array(
                          'label'=> Mage::helper('rma')->__('Pending'),
-                         'url'  => $this->getUrl('*/adminhtml_rma/massChangeStatus'),
+                         'url'  => $this->getUrl('*/adminhtml_rma/save'),
                          'confirm' => Mage::helper('rma')->__('Are you sure?')
                 ));
-          $this->getMassactionBlock()->addItem('partial_pending', array(
-                         'label'=> Mage::helper('rma')->__('Partial Pending'),
-                         'url'  => $this->getUrl('*/adminhtml_rma/massChangeStatus'),
-                         'confirm' => Mage::helper('rma')->__('Are you sure?')
-                ));
-          $this->getMassactionBlock()->addItem('processed', array(
-                         'label'=> Mage::helper('rma')->__('Processed'),
-                         'url'  => $this->getUrl('*/adminhtml_rma/massChangeStatus'),
+         
+          $this->getMassactionBlock()->addItem('processing', array(
+                         'label'=> Mage::helper('rma')->__('Processing'),
+                         'url'  => $this->getUrl('*/adminhtml_rma/save'),
                          'confirm' => Mage::helper('rma')->__('Are you sure?')
                 ));
            $this->getMassactionBlock()->addItem('approved', array(
                          'label'=> Mage::helper('rma')->__('Approved'),
-                         'url'  => $this->getUrl('*/adminhtml_rma/massChangeStatus'),
+                         'url'  => $this->getUrl('*/adminhtml_rma/save'),
                          'confirm' => Mage::helper('rma')->__('Are you sure?')
                 ));
-            $this->getMassactionBlock()->addItem('cancel', array(
-                         'label'=> Mage::helper('rma')->__('Cancel'),
-                         'url'  => $this->getUrl('*/adminhtml_rma/massChangeStatus'),
+            $this->getMassactionBlock()->addItem('rejected', array(
+                         'label'=> Mage::helper('rma')->__('Rejected'),
+                         'url'  => $this->getUrl('*/adminhtml_rma/save'),
                          'confirm' => Mage::helper('rma')->__('Are you sure?')
                 ));
         return $this;
