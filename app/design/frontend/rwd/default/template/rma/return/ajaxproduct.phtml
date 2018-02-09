@@ -8,9 +8,10 @@
 <?php
     $productInfo = Mage::registry('productInfo');  
     $alltrue = 1;
-    foreach($productInfo as $item => $value ) {        
+    foreach($productInfo as $item => $value ) 
+    {        
         if($value['is_returnable']==1) { $alltrue = 0; }
-        }     
+    }     
 
     if($alltrue!=1):
     foreach($productInfo as $key => $value):       
@@ -45,7 +46,7 @@
     else: ?> 
             <tr>
                 <td colspan="5" style=" text-align: center; font-size: 50px;">Product cannot be return</td>
-           </tr>
+            </tr>
     <?php
     endif;
      ?>

@@ -81,9 +81,10 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     public function saveAction()
     {
         $data = $this->getRequest()->getParams();       
-        $orderModel = Mage::getModel('rma/order');       
+        $orderModel = Mage::getModel('rma/order'); 
+        $date = Mage::getModel('core/date')->date('Y-m-d H:i:s');
         $customerModel = Mage::getSingleton('customer/session')->getCustomer();
-        $orderModel->setData(array('order_id'=>$data['order_id'],'increment_id'=>$data['increment_id'],'order_increment_id'=>$data['increment_id'],'order_date'=>$data['order_date'],'store_id'=> $data['store_id'],'customer_id'=>$customerModel->getEntityId(),'customer_name'=>$customerModel->getName(),'customer_email'=>$customerModel->getEmail(),'status'=>'pending'));
+        $orderModel->setData(array('order_id'=>$data['order_id'],'increment_id'=>$data['increment_id'],'order_increment_id'=>$data['increment_id'],'order_date'=>$data['order_date'],'date_requested'=>$date,'store_id'=> $data['store_id'],'customer_id'=>$customerModel->getEntityId(),'customer_name'=>$customerModel->getName(),'customer_email'=>$customerModel->getEmail(),'status'=>'pending'));
         if($orderModel->save())
         {
          foreach ($data['Product'] as $key => $value) 
@@ -107,10 +108,10 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         }  
           
             $rmaHistoryModel = Mage::getModel('rma/rma_history');
-            $rmaHistoryModel->setData(array('rma_entity_id'=> $orderModel->getId(),'is_visible_on_front'=>1,'comment'=>'Your RMA request has been placed','status'=>'pending','is_admin'=>1));
+            $rmaHistoryModel->setData(array('rma_entity_id'=> $orderModel->getId(),'is_visible_on_front'=>1,'comment'=>'Your RMA request has been placed','status'=>'pending','created_at'=>$date,'is_admin'=>1));
             $rmaHistoryModel->save();
             $rmaAttributeModel = Mage::getModel('rma/rma_attributes');
-            $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'condition'=>$data['condition'],'reason'=>$data['reason'],'status'=>$data['status']));
+            $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'condition'=>$data['condition'],'reason'=>$data['reason'],'created_at'=>$date,'status'=>$data['status']));
             $rmaAttributeModel->save();      
        }
     }
