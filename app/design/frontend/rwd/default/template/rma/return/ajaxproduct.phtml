@@ -20,7 +20,7 @@
 ?>
             <tr>
             <td>   
-            <input type="checkbox" name="Product[[<?php echo $key;?>][checked]]" id="checkbox_product_<?php echo $key ?>" value="1">
+            <input type="checkbox" name="Product[[<?php echo $key;?>][checked]]" class="theproduct" id="checkbox_product_<?php echo $key ?>" value="1" class="validate-one-required-by-name">
             </td>
             <td class="number"><?php echo $value['name']; ?></td>
             <td class=""><?php echo $value['sku']; ?></td>
@@ -61,8 +61,8 @@
 
 <script type="text/javascript">
     //<![CDATA[
-    var $j = jQuery.noConflict();
-   // $j('#checkbox_product_'+<?php //echo $count?>).addClass('validate-one-required');
+    var $j = jQuery.noConflict();    ;
+    //$j('#checkbox_product_'+<?php //echo $cnt-1?>).addClass('validate-one-required');
     $j(".productQty").change( function() {
         var str = this.id; 
         var res = str.split("_");
@@ -84,7 +84,7 @@
         $j.ajax({
                 type: "POST",
                 url: "<?php echo $this->getUrl('rma/index/calculatePrice')?>",
-                data: {product_Qty:selectedQty,product_price:selectedPrice},
+                data: {product_Qty:selectedQtyById,product_price:selectedPrice},
                 success: function(response) {               
                         $j('#productPrice_'+res[1]).empty();
                         $j('#productPrice_'+res[1]).html(response);                        
