@@ -18,7 +18,7 @@ class Thycart_Rma_Model_Rma_Eav_Attribute extends Mage_Core_Model_Abstract
             ->join(array('reao'=>'rma/rma_eav_attributeoption'),'main_table.attribute_id=reao.attribute_id')
             ->addFieldToSelect('*')->getData();
        foreach ($collectionData as $key => $value) {           
-          $att_values[$value['attribute_code']][$key] =$value['value'];
+          $att_values[$value['attribute_code']][$value['value']] = ucfirst($value['value']);
         }        
     return $att_values;      
     }
