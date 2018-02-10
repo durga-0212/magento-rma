@@ -122,12 +122,13 @@
     });       
     $j('#submit').click(function(){        
         cnt=$j('#cnt').val();  
-        ncnt=cnt-1;
+        ncnt=cnt-1;     
         for (i = 0; i < cnt; i++) {
+            var checkedval=$j('#checkbox_product_'+i).val();            
              var selectedQtyById=$j('#productQty_'+i).val();
               var orderedQty = $j('#qty_ordered_'+i).val();            
               var product_name=$j("#product_name_"+i).val();              
-               $j('#checkbox_product_'+ncnt).addClass('validate-one-required');
+              
              if(selectedQtyById > orderedQty)
           {   
             $j("#notification-message").show();

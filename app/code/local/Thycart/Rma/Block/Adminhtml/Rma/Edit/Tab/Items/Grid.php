@@ -29,28 +29,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
         //$this->_gatherOrderItemsData();
     }
 
-    /**
-     * Gather items quantity data from Order item collection
-     *
-     * @return void
-     */
-//    protected function _gatherOrderItemsData()
-//    {
-//        $itemsData = array();
-//        foreach (Mage::registry('current_order')->getItemsCollection() as $item) {
-//            $itemsData[$item->getId()] = array(
-//                'qty_shipped' => $item->getQtyShipped(),
-//                'qty_returned' => $item->getQtyReturned()
-//            );
-//        }
-//        $this->setOrderItemsData($itemsData);
-//    }
-
-    /**
-     * Prepare grid collection object
-     *
-     * @return Enterprise_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid
-     */
+    
     protected function _prepareCollection()
     {
         $rmaData = Mage::registry('rma_data');
@@ -71,14 +50,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
      */
     protected function _prepareColumns()
     {
-        //$statusManager = Mage::getSingleton('rma/rma_item');
         $rma = Mage::registry('rma_data');
-//        if ($rma
-//            && (($rma->getStatus() === Enterprise_Rma_Model_Rma_Source_Status::STATE_CLOSED)
-//                || ($rma->getStatus() === Enterprise_Rma_Model_Rma_Source_Status::STATE_PROCESSED_CLOSED))
-//        ) {
-//            $statusManager->setOrderIsClosed();
-//        }
 
         $this->addColumn('product_admin_name', array(
             'header' => Mage::helper('rma')->__('Product Name'),
@@ -98,61 +70,42 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
 //        //Renderer puts available quantity instead of order_item_id
         $this->addColumn('qty_ordered', array(
             'header'=> Mage::helper('rma')->__('Remaining Qty'),
-            'width' => '80px',
-            //'getter'   => array($this, 'getQtyOrdered'),
-            //'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_quantity',
+            'width' => '80px',           
             'index' => 'qty_ordered',
-            'type'  => 'text',
-            //'order_data' => $this->getOrderItemsData(),
+            'type'  => 'text'           
         ));
 //
         $this->addColumn('qty_requested', array(
             'header'=> Mage::helper('rma')->__('Requested Qty'),
             'width' => '80px',
-            'index' => 'qty_requested',
-            //'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
+            'index' => 'qty_requested',            
             'validate_class' => 'validate-greater-than-zero'
         ));
-//
-        $this->addColumn('qty_authorized', array(
-            'header'=> Mage::helper('rma')->__('Authorized Qty'),
+        
+         $this->addColumn('qty_approved', array(
+            'header'=> Mage::helper('rma')->__('Approved Qty'),
             'width' => '80px',
-            'index' => 'qty_authorized',
-            //'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
+            'index' => 'qty_approved',           
             'validate_class' => 'validate-greater-than-zero'
         ));
 
         $this->addColumn('qty_returned', array(
             'header'=> Mage::helper('rma')->__('Returned Qty'),
             'width' => '80px',
-            'index' => 'qty_returned',
-            //'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
+            'index' => 'qty_returned',          
             'validate_class' => 'validate-greater-than-zero'
-        ));
-//
-        $this->addColumn('qty_approved', array(
-            'header'=> Mage::helper('rma')->__('Approved Qty'),
-            'width' => '80px',
-            'index' => 'qty_approved',
-            //'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
-            'validate_class' => 'validate-greater-than-zero'
-        ));
+        ));       
 
         $this->addColumn('reason', array(
             'header'=> Mage::helper('rma')->__('Reason to Return'),
             'width' => '80px',
-//            'index' =>
-            //'getter'   => array($this, 'getReasonOptionStringValue'),
-            //'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_reasonselect',
-//            'options' => Mage::helper('rma')->getAttributeOptionValues('reason'),
             'index' => 'reason',
         ));
-//
+
         $this->addColumn('condition', array(
             'header'=> Mage::helper('rma')->__('Item Condition'),
             'width' => '80px',
-            'type' => 'options',
-           // 'getter'   => array($this, 'getConditionOptionStringValue'),
+            'type' => 'options',          
             'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
             'options' => Mage::helper('rma')->getAttributeOptionValues('condition'),
             'index' => 'condition',
@@ -163,20 +116,17 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
             'width' => '80px',
             'index' => 'resolution', 
             'type' => 'options',
-//            'getter'   => array($this, 'getResolutionOptionStringValue'),
             'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
              'options' => Mage::helper('rma')->getAttributeOptionValues('resolution'),
         ));
-//
+
         $this->addColumn('status', array(
             'header'=> Mage::helper('rma')->__('Status'),
             'width' => '80px',
-            'index' => 'item_status',
-            //'getter'=> array($this, 'getStatusOptionStringValue'),
+            'index' => 'item_status',           
             'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
             'options' => Mage::helper('rma')->getAttributeOptionValues('item_status'),
         ));
-
 
         return parent::_prepareColumns();
     }
