@@ -12,7 +12,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit_Tab_Form extends Mage_
         'label'     => Mage::helper('rma')->__('Attribute Code '),
         'name'      => 'attribute_code',
         'required'  => true,
-        'class'     => 'required-entry',
+        'class'     => 'required-entry validate-no-html-tags validate-code',
         ));
 
         $fieldset->addField('scope', 'select', array(
@@ -24,14 +24,14 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit_Tab_Form extends Mage_
         $fieldset->addField('is_unique', 'select', array(
         'label'     => Mage::helper('rma')->__('Unique Value'),
         'name'      => 'is_unique',
-        'values'    => array('1' => 'No','2' => 'Yes'),
+        'values'    => array('0' => 'No','1' => 'Yes'),
         'after_element_html' => '<small>Not shared with other Products</small>',
         ));
         
         $fieldset->addField('is_required', 'select', array(
         'label'     => Mage::helper('rma')->__('Value Required'),
         'name'      => 'is_required',
-        'values'    => array('1' => 'No','2' => 'Yes'),
+        'values'    => array('0' => 'No','1' => 'Yes'),
         ));
         
         if($id)

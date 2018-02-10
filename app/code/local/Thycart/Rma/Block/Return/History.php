@@ -10,13 +10,7 @@ class Thycart_Rma_Block_Return_History extends Mage_Core_Block_Template
         parent::__construct(); 
         $this->setTemplate('rma/return/history.phtml'); 
         Mage::app()->getFrontController()->getAction()->getLayout()->getBlock('root')->setHeaderTitle(Mage::helper('rma')->__('My Returns'));
-        $returns=Mage::getModel('rma/order')->getAllRmas();
-//                    ->join(array('sfoi' => 'sales/order_item'), 'main_table.order_id = sfoi.order_id', array(
-//                    'product_id'))
-//                 ->join(array('sfo' => 'sales/order'), 'main_table.increment_id = sfo.increment_id', array(
-//                    'grand_total'))                    
-//                    ->addFieldToFilter('customer_id', Mage::getSingleton('customer/session')->getCustomer()->getId())                
-//                ->setOrder('date_requested','desc');        
+        $returns=Mage::getModel('rma/order')->getAllRmas();    
         $this->setReturns($returns);               
     }
     
@@ -48,5 +42,13 @@ class Thycart_Rma_Block_Return_History extends Mage_Core_Block_Template
         return $this->getUrl('*/*/'.$path);
     }
     
+    public function getBackUrl()
+    {
+        // the RefererUrl must be set in appropriate controller
+        if ($this->getRefererUrl()) {
+            return $this->getRefererUrl();
+        }
+        return $this->getUrl('rma/index/');
+    }
 
 }
