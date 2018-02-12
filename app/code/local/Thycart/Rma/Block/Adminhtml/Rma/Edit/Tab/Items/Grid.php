@@ -103,21 +103,21 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
         ));
 
         $this->addColumn('condition', array(
-            'header'=> Mage::helper('rma')->__('Item Condition'),
+            'header'=> Mage::helper('rma')->__('Delivery Status'),
             'width' => '80px',
-            'type' => 'options',          
-            'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
-            'options' => Mage::helper('rma')->getAttributeOptionValues('delivery_status'),
-            'index' => 'condition',
+          //  'type' => 'options',          
+           // 'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
+            //'options' => Mage::helper('rma')->getAttributeOptionValues('delivery_status'),
+            'index' => 'delivery_status',
         ));
 
         $this->addColumn('resolution', array(
             'header'=> Mage::helper('rma')->__('Resolution'),
             'width' => '80px',
             'index' => 'resolution', 
-            'type' => 'options',
-            'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
-             'options' => Mage::helper('rma')->getAttributeOptionValues('resolution'),
+           // 'type' => 'options',
+           // 'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
+            // 'options' => Mage::helper('rma')->getAttributeOptionValues('resolution'),
         ));
 
         $this->addColumn('status', array(
@@ -242,12 +242,12 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
                          'confirm' => Mage::helper('rma')->__('Are you sure?')
                 ));
            $this->getMassactionBlock()->addItem('approved', array(
-                         'label'=> Mage::helper('rma')->__('Approved'),
+                         'label'=> Mage::helper('rma')->__('Return Received'),
                          'url'  => $this->getUrl('*/adminhtml_rma/save'),
                          'confirm' => Mage::helper('rma')->__('Are you sure?')
                 ));
             $this->getMassactionBlock()->addItem('rejected', array(
-                         'label'=> Mage::helper('rma')->__('Rejected'),
+                         'label'=> Mage::helper('rma')->__('Complete'),
                          'url'  => $this->getUrl('*/adminhtml_rma/save'),
                          'confirm' => Mage::helper('rma')->__('Are you sure?')
                 ));
