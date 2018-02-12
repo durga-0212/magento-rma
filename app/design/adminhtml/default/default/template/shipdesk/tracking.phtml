@@ -1,0 +1,51 @@
+<div class="field-row grid" id="shipment_tracking_info">
+    <table cellspacing="0" class="data">
+        <thead>
+            <tr class="headings">
+                <th><?php echo Mage::helper('sales')->__('Title') ?></th>
+                <th><?php echo Mage::helper('sales')->__('Carrier') ?></th>
+                <th><?php echo Mage::helper('sales')->__('Number') ?></th>
+                <?php /*<th class="last"><?php echo Mage::helper('sales')->__('Track URL') ?></th> */ ?>
+                <th class="last"><?php echo Mage::helper('sales')->__('Delete') ?></th>
+            </tr>
+        </thead>
+<?php
+if($_tracks = $this->getShipment()->getAllTracks()):
+?>
+        <tbody>
+        <?php $i=0;foreach ($_tracks as $_track):$i++ ?>
+            <tr class="<?php echo ($i%2==0)?'even':'odd' ?>">
+                <td><?php echo $this->escapeHtml($_track->getTitle()) ?></td>
+                <td><?php echo $this->escapeHtml($_track->getCarrierCode()) ?></td>
+                <td><?php echo $this->escapeHtml($_track->getNumber()) ?></td>
+                <?php /*<td><?php echo !empty($_track->getTrackUrl()) ? '<a href="'.$_track->getTrackUrl().'" target="_blank" >'.$this->escapeHtml($_track->getNumber()).'</a>' : ''; ?>
+                </td> */ ?>
+                <td class="last">
+                    <a href="#" onclick="deleteTrackingNumber('<?php echo $this->getRemoveUrl($_track) ?>'); return false;"><?php echo Mage::helper('sales')->__('Delete') ?></a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+<?php
+endif;
+?>
+        <tfoot>
+            <tr>
+                <td><input class="input-text" type="text" id="tracking_title" name="title" value="" /></td>
+                <td><input class="input-text" type="text" id="tracking_carrier" name="carrier" value="" /></td>
+                <td><input class="input-text" type="text" id="tracking_number" name="number" value="" /></td>
+                <?php /*<td><input class="input-text" type="text" id="tracking_url" name="url" value="" /></td> */ ?>
+                <td class="last"><?php echo $this->getSaveButtonHtml() ?></td>
+            </tr>
+    </tfoot>
+    </table>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+function deleteTrackingNumber(url) {
+    if (confirm('<?php echo Mage::helper('core')->jsQuoteEscape(Mage::helper('sales')->__('Are you sure?')) ?>')) {
+        submitAndReloadArea($('shipment_tracking_info').parentNode, url)
+    }
+}
+//]]>
+</script>

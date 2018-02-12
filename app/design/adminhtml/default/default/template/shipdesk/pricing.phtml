@@ -1,0 +1,51 @@
+<?php
+$rates = $this->getRates();
+
+if( !empty($rates) ){ ?>
+    <div class="grid">
+        <table cellspacing="0" class="data" id="tracking_numbers_table">
+            <thead>
+                <tr class="headings">
+                    <th><?php echo Mage::helper('sales')->__('Carrier') ?></th>
+                    <th><?php echo Mage::helper('sales')->__('Delivery Time') ?></th>
+                    <th><?php echo Mage::helper('sales')->__('Price') ?></th>
+                </tr>
+            </thead>
+            <tbody id="track_row_container">
+                <?php
+                    if( !empty($rates['ship']) ){
+                        $rate = $rates['ship'];
+                        $i = 1;
+                        foreach ($rate as $shippingData) {
+                            if( !empty($shippingData['Service']) && !empty($shippingData['Service_Level']) && !empty($shippingData['Rate']) && $shippingData['Rate'] != 'Service Not Available!' ){
+                                echo '<tr id="track_row_template" class="template">';
+                                echo '<td><label for="shipping_service_'.$i.'"><input type="radio" id="shipping_service_'.$i.'" name="shipping_service" value="'.$shippingData['Service'].'" /> '.ucfirst($shippingData['Service']).'</label></td>';
+                                echo '<td><label>'.$shippingData['Service_Level'].'</label></td>';
+                                echo '<td><label>'.Mage::app()->getStore()->formatPrice($shippingData['Rate']).'</label></td>';
+                                echo '</tr>';
+                                $i++;
+                            }
+                        }
+                    }elseif( !empty($rates['meta']) ){
+                        if( !empty($rates['data']['inputs']) ){
+                            echo '<tr class="template"><td colspan="3" style="text-align:center;"><label>'.$rates['data']['inputs'].'</label></td></tr>';
+                        }
+
+                    }
+                ?>
+            </tbody>
+        </table>
+    </div>
+<?php
+}else{
+?>
+    <div class="grid">
+        <table cellspacing="0" class="data" id="tracking_numbers_table">
+            <tbody id="track_row_container">
+                <tr class="template"><td><strong>Something went wrong. Please contact site administrator.</strong></td></tr>
+            </tbody>
+        </table>
+    </div>
+<?php
+}
+?>

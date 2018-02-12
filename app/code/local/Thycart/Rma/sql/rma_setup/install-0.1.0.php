@@ -172,10 +172,10 @@ $table = $installer->getConnection()
     ->addColumn('resolution', Varien_Db_Ddl_Table::TYPE_SMALLINT, 5,array(
           'nullable'  => true,
           ), 'Resolution')
-    ->addColumn('condition', Varien_Db_Ddl_Table::TYPE_SMALLINT, 5, array(
+    ->addColumn('delivery_status', Varien_Db_Ddl_Table::TYPE_SMALLINT, 5, array(
            'unsigned' => true,
            'nullable'  => false,
-          ), 'Condition')
+          ), 'Delivery Status')
     ->addColumn('reason', Varien_Db_Ddl_Table::TYPE_TEXT,255, array(
               'nullable'=> false,
           ),'Reason')

@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<config>
+    <tabs>
+        <shipdesk translate="label">
+            <label>Shipdesk</label>
+            <sort_order>150</sort_order>
+        </shipdesk>
+    </tabs>
+    <sections>
+        <shipdesksettings translate="label" module="shipdesk">
+            <label>Settings</label>
+            <tab>shipdesk</tab>
+            <sort_order>10</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <basicsettings translate="label">
+                    <label>Basic Settings</label>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <merchant_id translate="label comment">
+                            <label>Shipdesk Merchant Id</label>
+                            <comment>Insert Shipdesk Merchant Id.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </merchant_id>
+                    </fields>
+                </basicsettings>
+                <address translate="label">
+                    <label>Address</label>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <ship_name translate="label comment">
+                            <label>Shipping Name</label>
+                            <comment>Insert Name for shipping.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ship_name>
+                        <ship_company translate="label comment">
+                            <label>Shipping Company</label>
+                            <comment>Insert Company for shipping.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ship_company>
+                        <ship_email translate="label comment">
+                            <label>Shipping Email</label>
+                            <comment>Insert Email address for shipping.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ship_email>
+                        <ship_phone translate="label comment">
+                            <label>Shipping Phone</label>
+                            <comment>Insert Phone number for shipping.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ship_phone>
+                        <ship_country translate="label comment">
+                            <label>Shipping Country</label>
+                            <comment>Insert Country name for shipping.</comment>
+                            <source_model>adminhtml/system_config_source_country</source_model>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ship_country>
+                        <ship_state translate="label comment">
+                            <label>Shipping State</label>
+                            <comment>Insert State name for shipping.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ship_state>
+                        <ship_zip translate="label comment">
+                            <label>Shipping Postal/Zip Code</label>
+                            <comment>Insert Postal / Zip for shipping.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ship_zip>
+                        <ship_city translate="label comment">
+                            <label>Shipping City</label>
+                            <comment>Insert City name for shipping.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ship_city>
+                        <ship_street_address_line1 translate="label comment">
+                            <label>Shipping Street Address Line 1</label>
+                            <comment>Insert Street Address line 1 for shipping.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ship_street_address_line1>
+                        <ship_street_address_line2 translate="label comment">
+                            <label>Shipping Street Address Line 2</label>
+                            <comment>Insert Street Address line 2 for shipping.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ship_street_address_line2>
+                    </fields>
+                </address>
+                <urloptions translate="label">
+                    <label>URL options</label>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <get_rate translate="label comment">
+                            <label>Get Rate</label>
+                            <comment>Insert url for get rate.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </get_rate>
+                        <create_shipment translate="label comment">
+                            <label>Create Shipment</label>
+                            <comment>Insert url for Create Shipment.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </create_shipment>
+                        <add_item translate="label comment">
+                            <label>Add Item in Shipment</label>
+                            <comment>Insert url for adding item in shipment.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </add_item>
+                        <place_shipment translate="label comment">
+                            <label>Place Shipment</label>
+                            <comment>Insert url to place shipment.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </place_shipment>
+                    </fields>
+                </urloptions>
+            </groups>
+        </shipdesksettings>
+    </sections>
+</config>

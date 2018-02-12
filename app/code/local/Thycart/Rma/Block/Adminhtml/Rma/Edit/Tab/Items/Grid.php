@@ -107,7 +107,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
             'width' => '80px',
             'type' => 'options',          
             'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
-            'options' => Mage::helper('rma')->getAttributeOptionValues('condition'),
+            'options' => Mage::helper('rma')->getAttributeOptionValues('delivery_status'),
             'index' => 'condition',
         ));
 

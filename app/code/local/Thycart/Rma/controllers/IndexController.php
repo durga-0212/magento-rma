@@ -112,7 +112,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             $rmaHistoryModel->setData(array('rma_entity_id'=> $orderModel->getId(),'is_visible_on_front'=>1,'comment'=>'Your RMA request has been placed','status'=>'pending','created_at'=>$date,'is_admin'=>1));
             $rmaHistoryModel->save();
             $rmaAttributeModel = Mage::getModel('rma/rma_attributes');
-            $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'condition'=>$data['condition'],'reason'=>$data['reason'],'created_at'=>$date,'status'=>$data['status']));
+            $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'condition'=>$data['delivery_status'],'reason'=>$data['reason'],'created_at'=>$date,'status'=>$data['status']));
             $rmaAttributeModel->save();      
        }
     }

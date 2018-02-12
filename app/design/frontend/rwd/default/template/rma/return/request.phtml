@@ -63,14 +63,14 @@
             <td><input type="text" name="reason" class="required-entry"></td>
         </tr>
         <tr>
-            <td><label>Condition</label></td>
+            <td><label>Delivery Status</label></td>
             <td>
               <?php                 
-                $condition=Mage::helper('rma')->getAttributeOptionValues('condition');                
+                $delivery_status=Mage::helper('rma')->getAttributeOptionValues('delivery_status');                
                 ?>               
-                <select name="condition"  class="validate-select">
+                <select name="delivery_status"  class="validate-select">
                     <option value="">-- Select condition --</option>
-                    <?php foreach ($condition as $key => $value) {?>        
+                    <?php foreach ($delivery_status as $key => $value) {?>        
                     <option value="<?php echo $key;?>"><?php echo $value;?></option>
                    <?php
                     }?>

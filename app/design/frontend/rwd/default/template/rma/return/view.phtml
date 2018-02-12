@@ -78,7 +78,7 @@
         <tr>
             <th><span class="nobr"><?php echo $this->__('Product Name') ?></span></th>
             <th><?php echo $this->__('SKU') ?></th>
-            <th><?php echo $this->__('Condition') ?></th>
+            <th><?php echo $this->__('Delivery Status') ?></th>
             <th><?php echo $this->__('Resolution') ?></th>
             <th><span class="nobr"><?php echo $this->__('Request Qty') ?></span></th>
             <th><?php echo $this->__('Qty') ?></th>
@@ -94,7 +94,7 @@
                 <?php echo $this->escapeHtml($item->getProductName()) ?>               
             </td>
             <td><?php echo $this->escapeHtml($item->getProductSku()) ?></span></td>
-            <td><?php echo $this->escapeHtml($item->getCondition()) ?></td>
+            <td><?php echo $this->escapeHtml($item->getDeliveryStatus()) ?></td>
             <td><?php echo $this->escapeHtml($item->getResolution()) ?></td>
             <td><?php echo $this->escapeHtml(round($item->getQtyRequested())); ?></td>
             <td><?php echo $this->escapeHtml(round($item->getQtyOrdered()));?></td>
