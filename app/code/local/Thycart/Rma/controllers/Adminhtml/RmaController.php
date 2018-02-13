@@ -122,8 +122,11 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         $this->getResponse()->setBody($response);
     }
 
-    public function saveAction() {
-        $post_data = $this->getRequest()->getPost('items');  
+    public function saveAction() {       
+        $post_data = $this->getRequest()->getPost();  
+         echo '<pre>';
+        print_r($post_data);
+        die;
         $id = $this->getRequest()->getParam('id');
         if($post_data)
         {

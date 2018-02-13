@@ -40,6 +40,10 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
                 ->join(array('ri'=>'rma/rma_item'),'main_table.entity_id=ri.rma_entity_id')
             ->addFieldToFilter('main_table.entity_id',$rmaData->getEntityId());
         $this->setCollection($collection);
+//        echo "=====================Rma===";
+//        echo '<pre>';
+//        print_r($collection->getData());
+//        die;
         return parent::_prepareCollection();
     }
 
@@ -85,8 +89,10 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
          $this->addColumn('qty_approved', array(
             'header'=> Mage::helper('rma')->__('Approved Qty'),
             'width' => '80px',
-            'index' => 'qty_approved',           
-            'validate_class' => 'validate-greater-than-zero'
+            'index' => 'qty_approved',
+            'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
+             //'type' => 'text',
+            'validate_class' => 'validate-alphanum'
         ));
 
         $this->addColumn('qty_returned', array(
@@ -123,6 +129,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
         $this->addColumn('status', array(
             'header'=> Mage::helper('rma')->__('Status'),
             'width' => '80px',
+            'type' => 'options',
             'index' => 'item_status',           
             'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
             'options' => Mage::helper('rma')->getAttributeOptionValues('item_status'),
