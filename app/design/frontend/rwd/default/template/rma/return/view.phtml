@@ -98,7 +98,7 @@
             <td><?php echo $this->escapeHtml($item->getResolution()) ?></td>
             <td><?php echo $this->escapeHtml(round($item->getQtyRequested())); ?></td>
             <td><?php echo $this->escapeHtml(round($item->getQtyOrdered()));?></td>
-            <td><span class="nobr"><?php echo $this->escapeHtml($item->getItemStatus()) ?></span></td>            
+            <td><span class="nobr"><?php echo $this->escapeHtml($item->getStatus()) ?></span></td>            
         </tr>       
         <?php endforeach; ?>
         <tr><td colspan="8"></td></tr>
@@ -130,7 +130,7 @@
                         $created_at = date("m-d-y h:i:A", Mage::getModel("core/date")->timestamp($order_history->getCreatedAt()));
                         if(!empty($order_history->getIsAdmin()))
                         {
-                            $username='customer Service';
+                            $username='Customer Service';
                         }
                         else{
                             $username=$order_history->getCustomerName();

@@ -21,6 +21,12 @@ class Thycart_Rma_Block_Return_Order_Request extends Mage_Core_Block_Template
     public function getPid($data)
     {
        return Mage::register('productInfo', $data);
-      }
+    }
+    
+    public function getRmaOrder()
+    {
+        $collection = Mage::getModel('rma/rma_item')->getCollection();
+        return $collection; 
+    }
 }
 

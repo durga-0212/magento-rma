@@ -12,7 +12,7 @@
 <label><h4>Order Id : </h4></label>
 <?php $orderInfo = $this->getOrders();
     if(count($orderInfo)>0) : ?>
-<select name="order" id="selectOrder" class="validate-select">
+    <select name="order" id="selectOrder" class="validate-select">
     <option value="">-- Select Orders --</option>
     <?php foreach($orderInfo as $_order): 
     if($_order['status'] == 'complete'):?>
@@ -87,7 +87,7 @@
     
 </form>
 
-<script type="text/javascript">
+<script type="text/javascript" >
     //<![CDATA[  
     
     var $j = jQuery.noConflict();
@@ -111,8 +111,7 @@
                 else
                 {
                     $j('#results').append('Product cannot be return');
-                }
-                   
+                }                   
             },
             error: function() {
                 alert("error");
@@ -122,20 +121,31 @@
     });       
     $j('#submit').click(function(){        
         cnt=$j('#cnt').val();  
-        ncnt=cnt-1;     
-        for (i = 0; i < cnt; i++) {
-            var checkedval=$j('#checkbox_product_'+i).val();            
-             var selectedQtyById=$j('#productQty_'+i).val();
-              var orderedQty = $j('#qty_ordered_'+i).val();            
-              var product_name=$j("#product_name_"+i).val();              
+        ncnt=cnt-1;
+        
+        for (i = 0; i < cnt; i++) 
+        {            
+            var selectedQtyById=$j('#productQty_'+i).val();
+            var orderedQty = $j('#qty_ordered_'+i).val();            
+            var product_name=$j("#product_name_"+i).val();              
               
-             if(selectedQtyById > orderedQty)
-          {   
+            if(selectedQtyById > orderedQty)
+            {   
+                $j("#notification-message").show();
+                $j("#notification").empty();
+                $j("#notification").append("You can not return more than "+orderedQty+" "+product_name);
+            }
+        }
+          
+        var checked = $j('#my-rma-table').find(':checked').length;
+        if(checked == '2')
+        {
             $j("#notification-message").show();
+            //alert('Please select items');
             $j("#notification").empty();
-            $j("#notification").append("You can not return more than "+orderedQty+" "+product_name);
-          }
-           }
+            $j("#notification").append('Please select atleast one item');
+            return false;
+        }
     });
     var customForm = new VarienForm('requestForm'); 
     //]]>
