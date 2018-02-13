@@ -138,13 +138,16 @@
         }
           
         var checked = $j('#my-rma-table').find(':checked').length;
-        if(checked == '2')
+        if(checked === 2)
         {
             $j("#notification-message").show();
-            //alert('Please select items');
             $j("#notification").empty();
             $j("#notification").append('Please select atleast one item');
-            return false;
+            
+        }
+        else
+        {
+            $j("#notification-message").hide();
         }
     });
     var customForm = new VarienForm('requestForm'); 
