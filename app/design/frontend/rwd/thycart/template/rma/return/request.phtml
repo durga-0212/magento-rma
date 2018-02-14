@@ -8,7 +8,6 @@
 <div class="page-title">
     <h1><?php echo $this->__('Create New RMA') ?></h1>
 </div>
-<a href="<?php echo Mage::getUrl('rma/index/bankForm'); ?>">Form for bank details</a>
 <form id="requestForm" method="POST" action="<?php echo Mage::getUrl('rma/index/save'); ?>">
 <label><h4>Order Id : </h4></label>
 <?php $orderInfo = $this->getOrders();

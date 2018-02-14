@@ -98,7 +98,7 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
     }
     public function saveAction()
     {
-        $post_data = $this->getRequest()->getPost();
+        $post_data = $this->getRequest()->getPost();       
         $option = $this->getRequest()->getParam('option');
         $id = $this->getRequest()->getParam('id');
         if(empty($post_data))
