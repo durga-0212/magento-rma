@@ -51,7 +51,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             // Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
     }
     
-    public function saveCommentAction() {
+    public function saveCommentAction() 
+    {
        $postData= $this->getRequest()->getParams();
        $postData['created_at']=Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s');      
        $modelObj=Mage::getModel('rma/rma_history')->setData($postData)->save();
@@ -64,17 +65,31 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     
     public function productinfoAction()
     {
-        $data = $this->getRequest()->getParam('OrderId');
-        $productInfo = Mage::getModel('rma/order')->getProductsById($data);
-        foreach($productInfo as $key => $value)
+        if(isXmlHttpRequest())
         {
-            $productModel = Mage::getModel('catalog/product')->load($value['product_id']);
-            $return = $productModel->getIsReturnable();
-            $productInfo[$key]['is_returnable'] =  $return;            
+            $data = $this->getRequest()->getParam('OrderId');
+            if(!empty($data) && $data > 0)
+            {
+                $productInfo = Mage::getModel('rma/order')->getProductsById($data);
+                foreach($productInfo as $key => $value)
+                {
+                    $productModel = Mage::getModel('catalog/product')->load($value['product_id']);
+                    $return = $productModel->getIsReturnable();
+                    $productInfo[$key]['is_returnable'] =  $return;            
+                }
+                Mage::register('productInfo', $productInfo);
+                $output = $this->getLayout()->createBlock('rma/return_order_request')->setTemplate('rma/return/ajaxproduct.phtml')->toHtml();
+                $this->getResponse()->setBody($output);
+            }
+            else 
+            {
+                Mage::getSingleton('core/session')->addError('Something went wrong');
+            }
         }
-        Mage::register('productInfo', $productInfo);
-        $output = $this->getLayout()->createBlock('rma/return_order_request')->setTemplate('rma/return/ajaxproduct.phtml')->toHtml();
-        $this->getResponse()->setBody($output);        
+        else 
+        {
+            Mage::getSingleton('core/session')->addError('Something went wrong');
+        }
 
     }
     
@@ -119,9 +134,55 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     
     public function calculatePriceAction()
     {
-        $product_Qty = $this->getRequest()->getParam('product_Qty');
-        $product_price = $this->getRequest()->getParam('product_price');
-        $result = $product_Qty*$product_price;
-        $this->getResponse()->setBody($result);   
+        if(isXmlHttpRequest())
+        {
+            $product_Qty = $this->getRequest()->getParam('product_Qty');
+            $product_price = $this->getRequest()->getParam('product_price');
+            $result = $product_Qty*$product_price;
+            $this->getResponse()->setBody($result);   
+        }
+        else 
+        {
+            Mage::getSingleton('core/session')->addError('Something went wrong');
+        }
+    }
+    
+    public function bankFormAction() 
+    {
+        if(!Mage::getSingleton('customer/session')->isLoggedIn())
+        {
+            $this->_redirect('customer/account/login');
+        }
+        else
+        {
+            $this->loadLayout();
+            $this->renderLayout();        
+            //Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
+        }
+        
+    }
+    
+    public function savebankdetailsAction()
+    {
+        $postData = $this->getRequest()->getParams();
+        if($postData)
+        {
+            if(!empty('bankname') && !empty('account_no') && !empty('ifsc_code'))
+            {
+                $id = Mage::getSingleton('customer/session')->getCustomer()->getEntityId();
+                $modelCustomer = Mage::getModel('customer/customer')->load($id);
+                $modelCustomer->addData($postData);                
+                $modelCustomer->save();
+               
+            }
+            else 
+            {
+                Mage::getSingleton('core/session')->addError('Please fill all the details');
+            }
+        }
+        else 
+        {
+            Mage::getSingleton('core/session')->addError('Data not posted');
+        }
     }
 }

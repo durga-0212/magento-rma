@@ -45,5 +45,33 @@
             </rma_group>
         </groups>       
         </rma_section>
+        <email>
+            <label>Email Settings</label>
+            <tab>rma</tab>
+            <sort_order>1000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <email_group>
+                    <label>RMA Email Setting Group</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <hello_message>
+                        <label>Message</label>
+                        <frontend_type>text</frontend_type>
+                        <sort_order>1</sort_order>
+                        <show_in_default>1</show_in_default>
+                        <show_in_website>1</show_in_website>
+                        <show_in_store>1</show_in_store>                    
+                        </hello_message>
+                    </fields>             
+                </email_group>
+            </groups>       
+        </email>
     </sections>
 </config>
