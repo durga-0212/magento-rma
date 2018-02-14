@@ -18,9 +18,9 @@ class Thycart_Rma_Block_Return_History extends Mage_Core_Block_Template
     {
         parent::_prepareLayout();
 
-        $pager = $this->getLayout()->createBlock('page/html_pager')
-                ->setCurPage(0)
-                ->setLimit(1)
+        $pager = $this->getLayout()->createBlock('page/html_pager', 'rma.return.history.pager')
+                //->setCurPage(0)
+                //->setLimit(1)
             ->setCollection($this->getReturns());
         $this->setChild('pager', $pager);
         $this->getReturns()->load();
