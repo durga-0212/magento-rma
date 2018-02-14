@@ -9,7 +9,13 @@ class Thycart_Rma_Block_Return_Order_Request extends Mage_Core_Block_Template
 {
     public function __construct() 
     {
-        $this->setTemplate('rma/return/request.phtml');    
+        $this->setRmaType(0);
+        if($this->getRequest()->getActionName() == 'cancelOrder')
+        {
+            $this->setOrderId($this->getRequest()->getParam('order_id'));
+            $this->setRmaType(1);
+        }
+        $this->setTemplate('rma/return/rma.phtml');    
     }
     
     public function getOrders()

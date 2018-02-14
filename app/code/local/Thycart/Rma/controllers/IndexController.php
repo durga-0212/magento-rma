@@ -30,7 +30,6 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     public function indexAction()
     {
         $this->loadLayout();
-        $this->_initLayoutMessages('catalog/session');
         $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
         $this->renderLayout();
        
@@ -39,6 +38,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     public function addrequestAction() 
     {
         $this->loadLayout();
+        $this->getLayout()->getBlock('head')->setTitle($this->__('Create RMA'));
         $this->renderLayout();
     }
     
@@ -184,5 +184,13 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         {
             Mage::getSingleton('core/session')->addError('Data not posted');
         }
+    }
+
+    public function cancelOrderAction()
+    {
+        $this->loadLayout();
+        $this->getLayout()->getBlock('head')->setTitle($this->__('Request Cancel Order'));
+        $this->renderLayout();
+       
     }
 }
