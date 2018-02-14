@@ -65,7 +65,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     
     public function productinfoAction()
     {
-        if(isXmlHttpRequest())
+        if($this->getRequest()->isXmlHttpRequest())
         {
             $data = $this->getRequest()->getParam('OrderId');
             if(!empty($data) && $data > 0)
@@ -114,7 +114,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     'order_item_id' => $value['item_id'],
                     'qty_requested' => $value['qty_requested'],
                     'product_options' => $value['product_options'],
-                    'status' => 'pending'
+                    'item_status' => 'pending'
                 );
               $rmaItemModel = Mage::getModel('rma/rma_item');  
               $rmaItemModel->setData($item_data);
@@ -127,14 +127,14 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             $rmaHistoryModel->setData(array('rma_entity_id'=> $orderModel->getId(),'is_visible_on_front'=>1,'comment'=>'Your RMA request has been placed','status'=>'pending','created_at'=>$date,'is_admin'=>1));
             $rmaHistoryModel->save();
             $rmaAttributeModel = Mage::getModel('rma/rma_attributes');
-            $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'condition'=>$data['delivery_status'],'reason'=>$data['reason'],'created_at'=>$date,'status'=>$data['status']));
+            $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'delivery_status'=>$data['delivery_status'],'reason'=>$data['reason'],'created_at'=>$date));
             $rmaAttributeModel->save();      
        }
     }
     
     public function calculatePriceAction()
     {
-        if(isXmlHttpRequest())
+        if($this->getRequest()->isXmlHttpRequest())
         {
             $product_Qty = $this->getRequest()->getParam('product_Qty');
             $product_price = $this->getRequest()->getParam('product_price');
