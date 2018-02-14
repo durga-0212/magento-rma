@@ -118,7 +118,14 @@ and open the template in the editor.
                     <module>Thycart_Rma</module>
                     <frontName>rma</frontName>                    
                 </args>
-            </rma> 
+            </rma>
+            <sales>
+                <args>
+                    <modules>
+                        <Thycart_Rma before='Mage_Sales'>Thycart_Rma</Thycart_Rma>
+                    </modules>
+                </args>
+            </sales> 
         </routers>
         <layout>
             <updates>
