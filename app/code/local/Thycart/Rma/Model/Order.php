@@ -32,10 +32,8 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
     
     public function getAllRmas() {
          $returns=Mage::getResourceModel('rma/order_collection')
-                    ->join(array('sfoi' => 'sales/order_item'), 'main_table.order_id = sfoi.order_id', array(
-                    'product_id'))
-                 ->join(array('sfo' => 'sales/order'), 'main_table.increment_id = sfo.increment_id', array(
-                    'grand_total'))                    
+                  ->join(array('sfo' => 'sales/order'), 'main_table.order_id = sfo.entity_id', array(
+                    'grand_total'))                                                   
                     ->addFieldToFilter('customer_id', Mage::getSingleton('customer/session')->getCustomer()->getId())                
                 ->setOrder('date_requested','desc'); 
          return $returns;         
