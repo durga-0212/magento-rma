@@ -18,7 +18,7 @@ class Thycart_Rma_OrderController extends Mage_Sales_OrderController
             foreach ($orders as $key => $order) 
             {
                 $order->setshowCancelBtn(0);
-                $invoiceIds = $this->OrderType($order['entity_id']);
+                $invoiceIds = Mage::helper('rma')->orderInvoices($order['entity_id']);
 
                 if(empty($invoiceIds))
                 {
@@ -34,16 +34,4 @@ class Thycart_Rma_OrderController extends Mage_Sales_OrderController
         $this->renderLayout();
     }
 
-    public function OrderType($orderId=0)
-    {
-        $invoiceIds = array();
-        if(empty($orderId))
-        {
-            return $invoiceIds;
-        }
-
-        $orderObject = Mage::getModel('sales/order')->load($orderId);
-        $invoiceIds = $orderObject->getInvoiceCollection()->getAllIds();
-        return $invoiceIds;
-    }
 }

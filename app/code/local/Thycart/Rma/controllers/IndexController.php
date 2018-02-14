@@ -67,16 +67,23 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     {
         if($this->getRequest()->isXmlHttpRequest())
         {
-            $data = $this->getRequest()->getParam('OrderId');
-            if(!empty($data) && $data > 0)
+            $orderId = $this->getRequest()->getParam('OrderId');
+            if($orderId > 0)
             {
-                $productInfo = Mage::getModel('rma/order')->getProductsById($data);
+                $cancelType = 0;
+                $orderInvoices = Mage::helper('rma')->orderInvoices($orderId);
+                if(empty($orderInvoices))
+                {
+                    $cancelType = 1;
+                }
+                $productInfo = Mage::getModel('rma/order')->getProductsById($orderId);
                 foreach($productInfo as $key => $value)
                 {
                     $productModel = Mage::getModel('catalog/product')->load($value['product_id']);
                     $return = $productModel->getIsReturnable();
                     $productInfo[$key]['is_returnable'] =  $return;            
                 }
+                $productInfo['is_cancel'] =  $cancelType;            
                 Mage::register('productInfo', $productInfo);
                 $output = $this->getLayout()->createBlock('rma/return_order_request')->setTemplate('rma/return/ajaxproduct.phtml')->toHtml();
                 $this->getResponse()->setBody($output);

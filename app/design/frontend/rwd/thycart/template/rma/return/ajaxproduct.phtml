@@ -1,121 +1,149 @@
-<?php   
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-?>
-
 <?php
     $productInfo = Mage::registry('productInfo');  
     $alltrue = 1;
-    foreach($productInfo as $item => $value ) 
-    {        
-        if($value['is_returnable']==1) { $alltrue = 0; }
-    }     
-    //$collection = $this->getRmaOrder();
-    //echo "<pre>";print_r($collection->getData());die;
-    if($alltrue!=1):
+    $cancelType = isset($productInfo['is_cancel']) ? $productInfo['is_cancel'] : 0;
+    if($cancelType)
+    {
+        $alltrue = 0;
+    }
+    else
+    {
+        foreach($productInfo as $item => $value ) 
+        { 
+            if($value['is_returnable']==1) { $alltrue = 0;break; }
+        }   
+    }
+
+    if($alltrue==0):
     foreach($productInfo as $key => $value):
         $cnt = count($productInfo);
-        if($value['is_returnable']):  
-            
+        if($productInfo['is_cancel'])
+        {
+            $value['is_returnable'] = 1;
+        }
+        if($value['is_returnable']):            
 ?>  
-            <tr>
+        <tr>
+            <?php if(empty($cancelType)): ?>
             <td>   
             <input type="checkbox" name="Product[[<?php echo $key;?>][checked]]" id="checkbox_product_<?php echo $key ?>" value="1">
             </td>
+            <?php endif; ?>
             <td class="number"><?php echo $value['name']; ?></td>
             <td class=""><?php echo $value['sku']; ?></td>
             <td class="number"> <input type="text" class="productQty" id="productQty_<?php echo $key;?>" name="Product[[<?php echo $key;?>][qty_requested]]" value="<?php echo round($value['qty_ordered']); ?>"></td>
             <td class="total" id="productPrice_<?php echo $key;?>"><?php echo $value['base_row_total'] ?></td>
-            </tr>            
-            <input type="hidden" name="order_id" value="<?php echo $value['order_id'];?>">
-            <input type="hidden" name="increment_id" value="<?php echo $value['increment_id'];?>">
-            <input type="hidden" name="order_date" value="<?php echo $value['created_at'];?>">
-            <input type="hidden" name="store_id" value="<?php echo $value['store_id'];?>">
-            <input type="hidden" id="qty_ordered_<?php echo $key;?>" name="Product[[<?php echo $key;?>][qty_ordered]]" value="<?php echo round($value['qty_ordered']);?>">
-            <input type="hidden" name="Product[[<?php echo $key;?>][item_id]]" value="<?php echo $value['item_id'];?>">
-            <input type="hidden" id="product_name_<?php echo $key;?>" name="Product[[<?php echo $key;?>][name]]" value="<?php echo $value['name'];?>">
-            <input type="hidden" name="Product[[<?php echo $key;?>][sku]]" value="<?php echo $value['sku'];?>">
-            <input type="hidden" name="Product[[<?php echo $key;?>][product_options]]" value="<?php echo $value['product_options'];?>">
-            <input type="hidden" name="count" id="cnt" value="<?php echo $cnt ?>">
-            <?php $product_price = isset($value['base_original_price'])? $value['base_original_price']: '';
-            ?>
-            <input type="hidden" id="original_price_<?php echo $key;?>" name="original_price" value="<?php echo $product_price?>">
+        </tr>            
+        <input type="hidden" name="order_id" value="<?php echo $value['order_id'];?>">
+        <input type="hidden" name="increment_id" value="<?php echo $value['increment_id'];?>">
+        <input type="hidden" name="order_date" value="<?php echo $value['created_at'];?>">
+        <input type="hidden" name="store_id" value="<?php echo $value['store_id'];?>">
+        <input type="hidden" id="qty_ordered_<?php echo $key;?>" name="Product[[<?php echo $key;?>][qty_ordered]]" value="<?php echo round($value['qty_ordered']);?>">
+        <input type="hidden" name="Product[[<?php echo $key;?>][item_id]]" value="<?php echo $value['item_id'];?>">
+        <input type="hidden" id="product_name_<?php echo $key;?>" name="Product[[<?php echo $key;?>][name]]" value="<?php echo $value['name'];?>">
+        <input type="hidden" name="Product[[<?php echo $key;?>][sku]]" value="<?php echo $value['sku'];?>">
+        <input type="hidden" name="Product[[<?php echo $key;?>][product_options]]" value="<?php echo $value['product_options'];?>">
+        <input type="hidden" name="count" id="cnt" value="<?php echo $cnt ?>">
+        <?php $product_price = isset($value['base_original_price'])? $value['base_original_price']: '';
+        ?>
+        <input type="hidden" id="original_price_<?php echo $key;?>" name="original_price" value="<?php echo $product_price?>">
         <?php
-         endif;        
+        endif;        
     endforeach;?>
             
     <?php        
     else: ?> 
-            <tr>
-                <td colspan="5" style=" text-align: center; font-size: 50px;">Product cannot be return</td>
-            </tr>
-    <?php
-    endif;
-     ?>
-        <tr id="notification-message" style="display:none">
-            <td></td>
-            <td></td>
-            <td colspan="5" style=" text-align: center; font-size: 20px; color: rosybrown;" id="notification"></td>
-            <td></td>
-        </tr>
+    <tr>
+        <td colspan="5" style=" text-align: center; font-size: 50px;">Product cannot be return</td>
+    </tr>
+    <?php endif; ?>
+    <tr id="notification-message" style="display:none">
+        <td></td>
+        <td></td>
+        <td colspan="5" style=" text-align: center; font-size: 20px; color: rosybrown;" id="notification"></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><label>Resolution</label></td>
+        <td>
+        <?php $resolution=Mage::helper('rma')->getAttributeOptionValues('resolution');?>
+            <select name="resolution_type" id="resolution_type" class="validate-select resolution_type">
+                <option value="">-- Select Resolution --</option>
+                <?php 
+                $selected ='';
+                foreach ($resolution as $key => $value) {
+                    if($cancelType && strtolower($key) === 'cancel' || $cancelType==0 && strtolower($key) !== 'cancel'): 
+                        $selected = 'selected';
+                ?>        
+                <option value="<?php echo $key;?>" <?php echo $selected;?>>
+                    <?php echo $value;?>
+                </option>
+                <?php
+                    endif;
+                }?>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td><label>Delivery Status</label></td>
+        <td>
+          <?php                 
+            $delivery_status=Mage::helper('rma')->getAttributeOptionValues('delivery_status');                
+            ?>               
+            <select name="delivery_status"  class="validate-select" id="delivery_status">
+                <option value="">-- Select condition --</option>
+                <?php 
+                foreach ($delivery_status as $key => $value) {
+                    if($cancelType && strtolower($key) === 'not delivered' || $cancelType==0 && strtolower($key) !== 'not delivered'): 
+                    $selected = 'selected';
+                ?>        
+                <option value="<?php echo $key;?>" <?php echo $selected;?>>
+                    <?php echo $value;?>
+                </option>
+                <?php
+                    endif;
+                }?>
+            </select>               
+        </td>
+    </tr>
 
 <script type="text/javascript">
     //<![CDATA[
-    var $j = jQuery.noConflict();    
+    var $j = jQuery.noConflict();  
+    var cancelType = "<?php echo $cancelType;?>";
     
     $j(".productQty").change( function() {
         var str = this.id; 
         var res = str.split("_");
     
-    var selectedQtyById=$j('#'+str).val();
-    var selectedPrice = $j('#original_price_'+res[1]).val();    
-    var orderedQty = $j('#qty_ordered_'+res[1]).val();
-    var product_name=$j("#product_name_"+res[1]).val(); 
+        var selectedQtyById=$j('#'+str).val();
+        var selectedPrice = $j('#original_price_'+res[1]).val();    
+        var orderedQty = $j('#qty_ordered_'+res[1]).val();
+        var product_name=$j("#product_name_"+res[1]).val(); 
         if(selectedQtyById > orderedQty)
         {  
             $j("#notification-message").show();
             $j("#notification").empty();
             $j("#notification").append("You can not return more than "+orderedQty+" "+product_name);
         }
-        
-    
-    
-    else
-    {
-        $j("#notification-message").hide();
-        $j.ajax({
-                type: "POST",
-                url: "<?php echo $this->getUrl('rma/index/calculatePrice')?>",
-                data: {product_Qty:selectedQtyById,product_price:selectedPrice},
-                success: function(response) { 
-                                 
-                                       
-                        $j('#productPrice_'+res[1]).empty();
-                        $j('#productPrice_'+res[1]).html(response);                        
-                },
-                error: function() {
-                    alert("error");
-                }
-            });
-    }
-    
-//    foreach($collection as $key => $value)
-//    {   
-//        foreach($productInfo as $key => $value)
-//        {
-//            if($value[order_item_id] ==  $productInfo[item_id])
-//            {
-//                $j(".chk").addAttr('disabled','disabled');
-//            }
-//        }
-//    }      
-                        
-                              
-    });  
-    
-   
+        else
+        {
+            $j("#notification-message").hide();
+            $j.ajax({
+                    type: "POST",
+                    url: "<?php echo $this->getUrl('rma/index/calculatePrice')?>",
+                    data: {product_Qty:selectedQtyById,product_price:selectedPrice},
+                    success: function(response) { 
+                                     
+                                           
+                            $j('#productPrice_'+res[1]).empty();
+                            $j('#productPrice_'+res[1]).html(response);                        
+                    },
+                    error: function() {
+                        alert("error");
+                    }
+                });
+        }                       
+    });   
 //]]>
 </script>
