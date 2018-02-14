@@ -12,43 +12,21 @@ class Thycart_Rma_OrderController extends Mage_Sales_OrderController
         $this->getLayout()->getBlock('head')->setTitle($this->__('My Orders'));
         $orderList = $this->getLayout()->getBlock('sales.order.history');
 
-//        $orders = $orderList->getOrders()->getData();
-          $orders = $orderList->getOrders();
-           if(!empty($orders))
-        {
-       
-          foreach ($orders as $key => $order) 
+        $orders = $orderList->getOrders();
+        if(!empty($orders->getData()))
+        {         
+            foreach ($orders as $key => $order) 
             {
-               $order->setshowCancelBtn(0);
-               $orderObject = Mage::getModel('sales/order')->load($order['entity_id']);
+                $order->setshowCancelBtn(0);
+                $orderObject = Mage::getModel('sales/order')->load($order['entity_id']);
                 $invoiceIds = $orderObject->getInvoiceCollection()->getAllIds();
-                if(!empty($invoiceIds))
+                if(empty($invoiceIds))
                 {
-                     $order->setshowCancelBtn(1);
+                    $order->setshowCancelBtn(1);
                 }
-             
             }
         }
-         $orderList->setOrders($orders);
-        
-//        if(!empty($orders))
-//        {
-//            foreach ($orders as $key => $order) 
-//            {
-//                $orders[$key]['showCancelBtn'] = 0;
-//                $orderObject = Mage::getModel('sales/order')->load($order['entity_id']);
-//                $invoiceIds = $orderObject->getInvoiceCollection()->getAllIds();
-//                if(!empty($invoiceIds))
-//                {
-//                    $orders[$key]['show'] = 1;
-//                }
-//            }
-//        }
-       // $orderList->setOrders($orders);
-        $_products = Mage::getResourceModel('catalog/product_collection')
-           ->addAttributeToSelect(array('name', 'product_url', 'small_image'))
-           ->addAttributeToFilter('sku', array('like' => 'UX%'))
-            ->load();
+        $orderList->setOrders($orders);
 
         if ($block = $this->getLayout()->getBlock('customer.account.link.back')) {
             $block->setRefererUrl($this->_getRefererUrl());
