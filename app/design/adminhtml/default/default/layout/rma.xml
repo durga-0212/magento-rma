@@ -1,12 +1,20 @@
 <?xml version="1.0" ?>
 <layout version="0.1.0">
+    <rma_adminhtml_rma_edit>    
+         <reference name="head">
+            <action method="addJs"><script>lib/jquery/jquery-1.10.2.min.js</script></action>
+	     <action method="addJs"><script>lib/jquery/noconflict.js</script></action>
+            <action method="addJs"><script>rma/test.js</script></action>
+        </reference>
+        </rma_adminhtml_rma_edit> 
     <customer_account translate="label">
         <reference name="customer_account_navigation">                    
             <action method="addLink"><name>rma</name><path>rma/index</path><label>Rma</label></action>           
          </reference>
     </customer_account>
-    
-     <rma_index_index translate="label">
+
+   
+        <rma_index_index translate="label">
         <label>Customer My Account Returns History</label>
         <update handle="customer_account"/>
         <reference name="my.account.wrapper">
@@ -29,7 +37,7 @@
         <block type="rma/adminhtml_rma_edit_tab_general_history" template="rma/edit/general/history.phtml" name="comments_history" output="toHtml"/>
     </rma_adminhtml_rma_addcomment>
     
-    <rma_adminhtml_rma_edit>
+    <rma_adminhtml_rma_edit>       
          <reference name="content">
             <block type="rma/adminhtml_rma_edit" name="adminhtml_rma_edit" />
           </reference>
@@ -43,7 +51,7 @@
                 </block>
                 <block type="rma/adminhtml_rma_edit_tab_items" template="rma/edit/items.phtml" name="rma_edit_tab_items">
                     <block type="rma/adminhtml_rma_edit_tab_items_grid" name="items_grid" />
-                </block>
+                </block>                
                 <action method="addTab"><name>general_section</name><block>rma_edit_tab_general</block></action>
                 <action method="addTab"><name>items_section</name><block>rma_edit_tab_items</block></action>
             </block>

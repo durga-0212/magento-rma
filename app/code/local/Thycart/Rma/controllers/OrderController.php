@@ -12,21 +12,39 @@ class Thycart_Rma_OrderController extends Mage_Sales_OrderController
         $this->getLayout()->getBlock('head')->setTitle($this->__('My Orders'));
         $orderList = $this->getLayout()->getBlock('sales.order.history');
 
-        $orders = $orderList->getOrders()->getData();
-        if(!empty($orders))
+//        $orders = $orderList->getOrders()->getData();
+          $orders = $orderList->getOrders();
+           if(!empty($orders))
         {
-            foreach ($orders as $key => $order) 
+       
+          foreach ($orders as $key => $order) 
             {
-                $orders[$key]['showCancelBtn'] = 0;
-                $orderObject = Mage::getModel('sales/order')->load($order['entity_id']);
+               $order->setshowCancelBtn(0);
+               $orderObject = Mage::getModel('sales/order')->load($order['entity_id']);
                 $invoiceIds = $orderObject->getInvoiceCollection()->getAllIds();
                 if(!empty($invoiceIds))
                 {
-                    $orders[$key]['show'] = 1;
+                     $order->setshowCancelBtn(1);
                 }
+             
             }
         }
-        $orderList->setOrders($orders);
+         $orderList->setOrders($orders);
+        
+//        if(!empty($orders))
+//        {
+//            foreach ($orders as $key => $order) 
+//            {
+//                $orders[$key]['showCancelBtn'] = 0;
+//                $orderObject = Mage::getModel('sales/order')->load($order['entity_id']);
+//                $invoiceIds = $orderObject->getInvoiceCollection()->getAllIds();
+//                if(!empty($invoiceIds))
+//                {
+//                    $orders[$key]['show'] = 1;
+//                }
+//            }
+//        }
+       // $orderList->setOrders($orders);
         $_products = Mage::getResourceModel('catalog/product_collection')
            ->addAttributeToSelect(array('name', 'product_url', 'small_image'))
            ->addAttributeToFilter('sku', array('like' => 'UX%'))
