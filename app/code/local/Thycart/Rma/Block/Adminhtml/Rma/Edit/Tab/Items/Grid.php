@@ -91,7 +91,6 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
             'width' => '80px',
             'index' => 'qty_approved',
             'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
-             //'type' => 'text',
             'validate_class' => 'validate-one-required'
         ));
 
@@ -133,6 +132,16 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
             'index' => 'item_status',           
             'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
             'options' => Mage::helper('rma')->getAttributeOptionValues('item_status'),
+        ));
+        
+        
+        $this->addColumn('order_item_id', array(
+            'header'=> Mage::helper('rma')->__('Order Item Id'),
+            'width' => '80px',
+            'index' => 'order_item_id',          
+            'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
+            'column_css_class'=>'no-display',
+            'header_css_class'=>'no-display'   
         ));
 
         return parent::_prepareColumns();

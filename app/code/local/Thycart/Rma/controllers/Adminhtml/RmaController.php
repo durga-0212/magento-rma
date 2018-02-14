@@ -123,38 +123,77 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
     }
 
     public function saveAction() {       
-        $post_data = $this->getRequest()->getPost();  
-         echo '<pre>';
-        print_r($post_data);
-        die;
+        $post_data = $this->getRequest()->getPost(); 
         $id = $this->getRequest()->getParam('id');
+//        echo '<pre>';
+//        print_r($post_data);
+//        die;
+        
         if($post_data)
         {
             $flag=0;
             try{
-            foreach ($post_data as $key => $value) {           
+            foreach ($post_data as $key => $value) 
+            {   
+                
+                if($value['status'] == 'processing')
+                {   
+                    
+                    $track_number= Mage::helper('rma')->getTrackingNumber();     
+                    echo $track_number; 
+                    
+                }
+                elseif($value['status'] == 'return received')
+                {
+                    $modelSalesItem = Mage::getModel('sales/order_item')->load($value['order_item_id']);
+                    $pid = $modelSalesItem->getProductId();
+                    $inventoryModel = Mage::getModel('cataloginventory/stock_item')->load($pid);
+                    $backOrders = $inventoryModel->getBackorders();
+                    $originalQty = $inventoryModel->getQty();
+                    $qty = $value['qty_approved'];
+                    $updatedQty = $originalQty+$qty;
+                    if($backOrders == 0)
+                    {
+                        $inventoryModel->addData(array('qty'=>$updatedQty));
+                        //echo "<pre>"; print_r($inventoryModel);die;
+                        //$inventoryModel->save();
+                        
+                        //echo $qty."===".$originalQty."==".$updatedQty;
+                    }
+                    else 
+                    {
+                        if($originalQty>0)
+                        {
+                            $inventoryModel->addData(array('qty'=>$updatedQty));
+                            //echo "<pre>"; print_r($inventoryModel);die;
+                            //$inventoryModel->save();
+                            //echo $qty."===".$originalQty."==".$updatedQty;
+                        }
+                    }
+                    //echo "<pre>"; print_r($inventoryModel);die;
+                }
+                elseif($value['status'] == 'complete')
+                {
+                    
+                }
+                
                 $model = Mage::getModel("rma/rma_item")->load($key);
-                $model->addData(array("item_status" => $value['status'], "resolution" => $value['resolution']));
-                $result = $model->save();
+                $model->addData(array("item_status" => $value['status']));
+                //$result = $model->save();
                  
-                $arr=array('approved','rejected');
-                $arr1=array('pending','processing');           
-    //           $arr3=array('approved','processing');
+                $arr=array('complete','canceled');
+             
                 if(in_array($value['status'], $arr))
                 {               
                     $flag=1;              
                 }
-                elseif(in_array($value['status'], $arr1))
+                else
                 {
-                     $flag=2; 
-    //                if(in_array($value['status'], $arr3))
-    //                {
-    //                    $flag=3;
-    //                }                
+                    $flag=2;             
                 }          
             } 
-
             $modelRma = Mage::getModel('rma/order')->load($id);
+            echo $flag;die;
             if($flag == 1)
             {                    
                 $modelRma->addData(array('status'=>'closed'));
@@ -163,7 +202,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
             {
                 $modelRma->addData(array('status'=>'pending'));
             }
-            $modelRma->save();
+            //$modelRma->save();
             }
             catch(Exception $e){
                 Mage::getSingleton("adminhtml/session")->addError($e->getMessage());

@@ -199,6 +199,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             Mage::getSingleton('core/session')->addError('Data not posted');
         }
     }
+<<<<<<< HEAD
 
     public function cancelOrderAction()
     {
@@ -206,5 +207,11 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $this->getLayout()->getBlock('head')->setTitle($this->__('Request Cancel Order'));
         $this->renderLayout();
        
+=======
+    
+    public function notifyCustomerByEmail()
+    {
+        //$this->_redirect();
+>>>>>>> anjali
     }
 }
