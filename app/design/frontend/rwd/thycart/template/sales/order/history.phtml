@@ -31,7 +31,7 @@
 </div>
 <?php echo $this->getChildHtml('info');?>
 <?php echo $this->getPagerHtml(); ?>
-<?php if(empty($_orders)): ?>
+<?php if(empty($_orders->getSize())): ?>
     <p><?php echo $this->__('You have placed no orders.');return; ?></p>
 <?php endif ?>
 <table class="data-table orders" id="my-orders-table">
@@ -59,13 +59,16 @@
             <td class="date"><span class="nobr"><?php echo $this->formatDate($_order->getCreatedAtStoreDate()) ?></span></td>
             <td class="ship"><?php echo $_order->getShippingAddress() ? $this->escapeHtml($_order->getShippingAddress()->getName()) : '&nbsp;' ?></td>
             <td class="total"><?php echo $_order->formatPrice($_order->getGrandTotal()) ?></td>
-            <td class="status"><em><?php echo $_order->getStatusLabel();echo '--'.$_order->getBtn(); ?></em></td>
+            <td class="status"><em><?php echo $_order->getStatusLabel(); ?></em></td>
             <td class="a-center view">
                 <span class="nobr"><a href="<?php echo $this->getViewUrl($_order) ?>"><?php echo $this->__('View Order') ?></a>
                     <?php /*<span class="separator">|</span><a href="<?php echo $this->getTrackUrl($_order) ?>"><?php echo $this->__('Track Order') ?></a>&nbsp;*/ ?>
                     <?php if ($this->helper('sales/reorder')->canReorder($_order)) : ?>
                     <span class="separator">|</span> <a href="<?php echo $this->getReorderUrl($_order) ?>" class="link-reorder"><?php echo $this->__('Reorder') ?></a>
                 <?php endif ?>
+                <?php if($_order->getshowCancelBtn()) :?>
+                    <a href="<?php echo $this->getUrl('rma/index/addrequest', array('order_number' => $_order->getEntityId(), 'type' => 'cancel', '_secure'=>true)) ?>"><?php echo $this->__('Cancel Order') ?></a>
+                <?php endif; ?>
                 </span>
             </td>
         </tr>
