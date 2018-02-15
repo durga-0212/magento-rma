@@ -7,6 +7,17 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
         return $attribute_data[$attribute_code];
     }
     
+    public function orderInvoices($orderId=0)
+    {
+        $invoiceIds = array();
+        if(empty($orderId))
+        {
+            return $invoiceIds;
+        }
 
+        $orderObject = Mage::getModel('sales/order')->load($orderId);
+        $invoiceIds = $orderObject->getInvoiceCollection()->getAllIds();
+        return $invoiceIds;
+    }
 }
 ?>

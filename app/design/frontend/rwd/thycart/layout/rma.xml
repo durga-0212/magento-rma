@@ -55,22 +55,14 @@
         </reference>
     </rma_index_bankform>
     
-<!--    <rma_index_bankform>
-    <label>Customer Account Registration Form</label>
-         Mage_Customer 
-        <remove name="right"/>
-        <remove name="left"/>
+    <rma_index_cancelorder translate="label">
+        <label>Cancel Order Request</label>
+        <update handle="customer_account"/>
+        <reference name="my.account.wrapper">
+        <block type="rma/return_history" name="customer.account.link.back" template="customer/account/link/back.phtml"/> 
+        <block type="rma/return_order_request" name="rma.return.order.request"/>
+        </reference>
+    </rma_index_cancelorder>
 
-        <reference name="root">
-            <action method="setTemplate"><template>page/1column.phtml</template></action>
-        </reference>
-        <reference name="content">
-            <block type="customer/form_register" name="customer_form_register" template="customer/form/register.phtml">
-                <block type="page/html_wrapper" name="customer.form.register.fields.before" as="form_fields_before" translate="label">
-                    <label>Form Fields Before</label>
-                </block>
-            </block>
-        </reference>
-    </rma_index_bankform>-->
 </layout>
 

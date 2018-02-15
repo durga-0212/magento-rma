@@ -9,7 +9,13 @@ class Thycart_Rma_Block_Return_Order_Request extends Mage_Core_Block_Template
 {
     public function __construct() 
     {
-        $this->setTemplate('rma/return/request.phtml');    
+        $this->setCancelType(0);
+        if($this->getRequest()->getActionName() == 'cancelOrder')
+        {
+            $this->setRmaOrderId($this->getRequest()->getParam('order_id'));
+            $this->setCancelType(1);
+        }
+        $this->setTemplate('rma/return/rma.phtml');    
     }
     
     public function getOrders()
@@ -23,7 +29,7 @@ class Thycart_Rma_Block_Return_Order_Request extends Mage_Core_Block_Template
        return Mage::register('productInfo', $data);
     }
     
-    public function getRmaOrder()
+    public function getOrderType()
     {
         $collection = Mage::getModel('rma/rma_item')->getCollection();
         return $collection; 
