@@ -128,10 +128,10 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                         'product_options' => $value['product_options'],
                         'item_status' => $status
                     );
-                  $rmaItemModel = Mage::getModel('rma/rma_item');  
-                  $rmaItemModel->setData($item_data);
-                  $rmaItemModel->save();
-                  $this->_redirect('*/*/index');
+                    $rmaItemModel = Mage::getModel('rma/rma_item');  
+                    $rmaItemModel->setData($item_data);
+                    $rmaItemModel->save();
+                    $this->_redirect('*/*/index');
                 }           
             }  
             if(!isset($data['cancelType']) || $data['cancelType'] ==0)
@@ -148,7 +148,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             $rmaAttributeModel = Mage::getModel('rma/rma_attributes');
             $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'delivery_status'=>$data['delivery_status'],'reason'=>$data['reason'],'created_at'=>$date));
             $rmaAttributeModel->save();      
-       }
+        }
     }
     
     public function calculatePriceAction()
