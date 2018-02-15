@@ -140,6 +140,19 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 $rmaHistoryModel->setData(array('rma_entity_id'=> $orderModel->getId(),'is_visible_on_front'=>1,'comment'=>'Your RMA request has been placed','status'=>'pending','created_at'=>$date,'is_admin'=>1));
                 $rmaHistoryModel->save();
             }
+            else
+            {
+                $orderId = YOUR_ORDER_ID;
+                $order = Mage::getModel('sales/order')->load($orderId);
+
+                $orderIncrementId = YOUR_ORDER_INCREMENT_ID;
+                $order = Mage::getModel('sales/order')->loadByIncrementId($orderIncrementId);
+
+                /**
+                 * change order status to 'Completed'
+                 */
+                $order->setState(Mage_Sales_Model_Order::STATE_COMPLETE, true)->save();
+            }
             $rmaAttributeModel = Mage::getModel('rma/rma_attributes');
             $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'delivery_status'=>$data['delivery_status'],'reason'=>$data['reason'],'created_at'=>$date));
             $rmaAttributeModel->save();      
@@ -199,19 +212,12 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             Mage::getSingleton('core/session')->addError('Data not posted');
         }
     }
-<<<<<<< HEAD
 
     public function cancelOrderAction()
     {
         $this->loadLayout();
         $this->getLayout()->getBlock('head')->setTitle($this->__('Request Cancel Order'));
         $this->renderLayout();
-       
-=======
-    
-    public function notifyCustomerByEmail()
-    {
-        //$this->_redirect();
->>>>>>> anjali
     }
+
 }
