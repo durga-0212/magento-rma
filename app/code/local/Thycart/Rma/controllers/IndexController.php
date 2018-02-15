@@ -80,8 +80,17 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 foreach($productInfo as $key => $value)
                 {
                     $productModel = Mage::getModel('catalog/product')->load($value['product_id']);
-                    $return = $productModel->getIsReturnable();
-                    $productInfo[$key]['is_returnable'] =  $return;            
+                    $isReturnable = $productModel->getIsReturnable();
+                    $productInfo[$key]['is_returnable'] =  $isReturnable;            
+                    if($isReturnable)
+                    {
+                        $rmaProductsStatus = Mage::getModel('rma/order')->getRmaProductsByOrderItemId($value['item_id']);
+                        $productInfo[$key]['is_returnable'] =  0;
+                        if(empty($rmaProductsStatus))
+                        {
+                            $productInfo[$key]['is_returnable'] =  1;
+                        }
+                    }
                 }
                 $productInfo['is_cancel'] =  $cancelType;            
                 Mage::register('productInfo', $productInfo);

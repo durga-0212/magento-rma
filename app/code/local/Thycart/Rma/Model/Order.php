@@ -29,6 +29,21 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
                        ->getData();
         return ($productInfo);
     }
+
+     public function getRmaProductsByOrderItemId($orderItemId)
+    {
+        $rmaProductStatus = array();
+        if(empty($orderItemId))
+        {
+            return $rmaProductStatus;
+        }
+        $rmaProductStatus = Mage::getModel('rma/order')->getCollection()
+                       ->addFieldToSelect('entity_id')
+                       ->join(array('roi' => 'rma/rma_item'), 'main_table.entity_id = roi.rma_entity_id',array('roi.item_status','roi.product_name'))
+                       ->addFieldToFilter('roi.order_item_id',$orderItemId)
+                       ->getData();
+        return $rmaProductStatus;
+    }
     
     public function getAllRmas() {
          $returns=Mage::getResourceModel('rma/order_collection')
