@@ -30,7 +30,7 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
         return ($productInfo);
     }
 
-     public function getRmaProductsByOrderItemId($orderItemId)
+    public function getRmaProductsByOrderItemId($orderItemId)
     {
         $rmaProductStatus = array();
         if(empty($orderItemId))
@@ -52,5 +52,19 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
                     ->addFieldToFilter('customer_id', Mage::getSingleton('customer/session')->getCustomer()->getId())                
                 ->setOrder('date_requested','desc'); 
          return $returns;         
+    }
+
+    public function getRmaOrders() 
+    {
+        $rmaOrders = array();
+        $rmaOrdersData = Mage::getResourceModel('rma/order_collection')
+        ->addFieldToSelect('order_id')
+        ->addFieldToFilter('customer_id', Mage::getSingleton('customer/session')->getCustomer()->getId());
+        if(empty($rmaOrdersData->getData()))
+        {
+            return $rmaOrders;
+        }
+        $rmaOrders = array_column($rmaOrdersData->getData(), 'order_id');
+        return $rmaOrders;
     }
 }
