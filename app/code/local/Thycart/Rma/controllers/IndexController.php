@@ -185,4 +185,9 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             Mage::getSingleton('core/session')->addError('Data not posted');
         }
     }
+    
+    public function notifyCustomerByEmail()
+    {
+        //$this->_redirect();
+    }
 }

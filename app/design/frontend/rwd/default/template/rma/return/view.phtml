@@ -115,7 +115,7 @@
                     <textarea id="rma_comment_text" style="height:6em;width:99%;" cols="5" rows="3" name="comment" class="required-entry"></textarea>
                 </p>
                 <input type="hidden" name="rma_entity_id" value="<?php echo $_rma->getId();?>">
-                <input type="hidden" name="status" value="<?php echo $this->escapeHtml($_rma->getStatus()) ?>">
+                <input type="hidden" name="status" value="<?php echo $this->escapeHtml($_rma->getItemStatus()) ?>">
                 <input type="hidden" name="is_visible_on_front" value="1">
                 <div class="box-content buttons-set">
                     <button type="submit" class="button" id="submit.save"><span><span>Submit Comment</span></span></button>

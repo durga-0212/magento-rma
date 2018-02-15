@@ -1,5 +1,6 @@
 <?php $rma_id=Mage::registry('rma_data')->getId();
       $status=Mage::registry('rma_data')->getStatus();
+      $oid=Mage::registry('rma_data')->getOrderId();
 ?>
 <div class="entry-edit" id="rma-history-block">
     <div class="entry-edit-head">
@@ -19,8 +20,8 @@
                      <input type="hidden" name="comment[rma_id]" id="rma_id" value="<?php echo $rma_id;?>">
                       <input type="hidden" name="comment[status]" id="status" value="<?php echo $status;?>">
                       <input name="comment[is_visible_on_front]" type="checkbox" id="history_visible" value="1" /><label class="normal" for="history_visible"> <?php echo Mage::helper('rma')->__('Visible on Frontend') ?></label>
-               
-            </div>
+                       <input name="comment[order_id]" type="hidden" value="<?php echo $oid; ?>">
+                    </div>
             <div class="f-right">
                 <?php echo $this->getChildHtml('submit_button') ?>
             </div>
