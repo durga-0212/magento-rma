@@ -142,16 +142,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             }
             else
             {
-                $orderId = YOUR_ORDER_ID;
-                $order = Mage::getModel('sales/order')->load($orderId);
-
-                $orderIncrementId = YOUR_ORDER_INCREMENT_ID;
-                $order = Mage::getModel('sales/order')->loadByIncrementId($orderIncrementId);
-
-                /**
-                 * change order status to 'Completed'
-                 */
-                $order->setState(Mage_Sales_Model_Order::STATE_COMPLETE, true)->save();
+                $order = Mage::getModel('sales/order')->load($data['order_id']);
+                $order->setState(Mage_Sales_Model_Order::STATE_CANCELED, true)->save();
             }
             $rmaAttributeModel = Mage::getModel('rma/rma_attributes');
             $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'delivery_status'=>$data['delivery_status'],'reason'=>$data['reason'],'created_at'=>$date));
