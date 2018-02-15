@@ -29,6 +29,21 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
                        ->getData();
         return ($productInfo);
     }
+
+    public function getRmaProductsByOrderItemId($orderItemId)
+    {
+        $rmaProductStatus = array();
+        if(empty($orderItemId))
+        {
+            return $rmaProductStatus;
+        }
+        $rmaProductStatus = Mage::getModel('rma/order')->getCollection()
+                       ->addFieldToSelect('entity_id')
+                       ->join(array('roi' => 'rma/rma_item'), 'main_table.entity_id = roi.rma_entity_id',array('roi.item_status','roi.product_name'))
+                       ->addFieldToFilter('roi.order_item_id',$orderItemId)
+                       ->getData();
+        return $rmaProductStatus;
+    }
     
     public function getAllRmas() {
          $returns=Mage::getResourceModel('rma/order_collection')
@@ -38,6 +53,7 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
                 ->setOrder('date_requested','desc'); 
          return $returns;         
     }
+
     
     public function getshipmentData($shipData=array()) {
           $ordershipcollection = Mage::getModel('sales/order')->getCollection()
@@ -61,8 +77,21 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
                        'sfo.order_item_id'))
                       ->addAttributeToFilter('main_table.order_id', $shipData['order_id'])
                        ->addAttributeToFilter('sfo.order_item_id', $shipData['item_id']);
-        return $shipmentCollection->getData();
-        
+        return $shipmentCollection->getData();        
+    }    
+
+    public function getRmaOrders() 
+    {
+        $rmaOrders = array();
+        $rmaOrdersData = Mage::getResourceModel('rma/order_collection')
+        ->addFieldToSelect('order_id')
+        ->addFieldToFilter('customer_id', Mage::getSingleton('customer/session')->getCustomer()->getId());
+        if(empty($rmaOrdersData->getData()))
+        {
+            return $rmaOrders;
+        }
+        $rmaOrders = array_column($rmaOrdersData->getData(), 'order_id');
+        return $rmaOrders;
     }
-    
+
 }

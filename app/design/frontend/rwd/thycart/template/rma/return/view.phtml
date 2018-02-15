@@ -28,8 +28,6 @@
 <?php
     $_rma = $this->getReturns();
     $_order = $this->getOrdersinfo();
-    $product_data=$this->getProducts();
-    $additionalData = $this->getAdditionalData();    
 ?>
 
 <div class="page-title">
@@ -63,6 +61,7 @@
         </div>
     </div>
 </div>
+
 <div class="wrapper"></div>
 <h3 class="box-title"><?php echo $this->__('Items Return Requested For') ?></h3>
 <table class="data-table" id="my-returns-items-table">
@@ -87,7 +86,7 @@
         </tr>
     </thead>
     <tbody>
-        <?php       
+        <?php
         foreach ($this->getItems() as $key=>$item): ?>
         <tr>
             <td>
@@ -98,13 +97,14 @@
             <td><?php echo $this->escapeHtml($item->getResolution()) ?></td>
             <td><?php echo $this->escapeHtml(round($item->getQtyRequested())); ?></td>
             <td><?php echo $this->escapeHtml(round($item->getQtyOrdered()));?></td>
-            <td><span class="nobr"><?php echo $this->escapeHtml($item->getStatus()) ?></span></td>            
+            <td><span class="nobr"><?php echo $this->escapeHtml($item->getItemStatus()) ?></span></td>            
         </tr>       
         <?php endforeach; ?>
         <tr><td colspan="8"></td></tr>
     </tbody>
 </table>
 <div class="wrapper"></div>
+
 <form method="post" id="rma_comment" action="<?php echo $this->getUrl('rma/index/saveComment');?>">
     <div class="box">
         <div class="box-content">
