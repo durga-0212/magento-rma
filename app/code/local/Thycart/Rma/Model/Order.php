@@ -38,4 +38,31 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
                 ->setOrder('date_requested','desc'); 
          return $returns;         
     }
+    
+    public function getshipmentData($shipData=array()) {
+          $ordershipcollection = Mage::getModel('sales/order')->getCollection()
+                       ->addAttributeToSelect('*')                      
+                       ->join(array('sfo' => 'sales/order_item'), 'main_table.entity_id = sfo.order_id', array(
+                    'sfo.*'))
+                       ->addAttributeToSelect('*')
+                       ->join(array('sfg' => 'sales/order_grid'), 'sfo.item_id = sfg.entity_id', array(
+                    'sfg.shipping_name'))                     
+                       ->addAttributeToFilter('sfo.order_id', $shipData['order_id'])
+                       ->addAttributeToFilter('sfo.item_id', $shipData['item_id']);
+          return $ordershipcollection;           
+    }
+    
+    public function getShipmentDetails($shipData=array())
+    {
+        $shipmentCollection = Mage::getResourceModel('sales/order_shipment_collection')
+                       ->addAttributeToSelect('entity_id')
+                       ->addAttributeToSelect('order_id')
+                       ->join(array('sfo' => 'sales/shipment_item'), 'main_table.entity_id = sfo.parent_id', array(
+                       'sfo.order_item_id'))
+                      ->addAttributeToFilter('main_table.order_id', $shipData['order_id'])
+                       ->addAttributeToFilter('sfo.order_item_id', $shipData['item_id']);
+        return $shipmentCollection->getData();
+        
+    }
+    
 }

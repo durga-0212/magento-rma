@@ -73,7 +73,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
 //
 //        //Renderer puts available quantity instead of order_item_id
         $this->addColumn('qty_ordered', array(
-            'header'=> Mage::helper('rma')->__('Remaining Qty'),
+            'header'=> Mage::helper('rma')->__('Ordered Qty'),
             'width' => '80px',           
             'index' => 'qty_ordered',
             'type'  => 'text'           
@@ -91,7 +91,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
             'width' => '80px',
             'index' => 'qty_approved',
             'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
-            'validate_class' => 'validate-one-required'
+            'validate_class' => 'validate-not-negative-number'
         ));
 
         $this->addColumn('qty_returned', array(

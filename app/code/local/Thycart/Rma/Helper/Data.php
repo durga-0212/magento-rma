@@ -38,19 +38,23 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
     
     public function getEnabledshippingmethods()
     {
-        $methods = Mage::getSingleton('shipping/config')->getAllCarriers();       
-        $shipMethodCollection = new Varien_Data_Collection();
+        $methods = Mage::getSingleton('shipping/config')->getAllCarriers();    
         foreach ($methods as $code => $carrier) {            
                 $carriers[$code] = $carrier->getConfigData('title');           
         }        
         $arr=array();
         foreach($carriers as $key=> $value)
         {
-            $arr[$key]=$key;           
+            $arr[$key]=$value.'_'.$key.'_';           
         }
          $k = array_rand($arr);        
          $v = $arr[$k];        
         return $v;
+    }
+    
+    public function getTrackingResponse($shipData=array()) {    
+        $ordershipdata=Mage::getModel('rma/order')->getshipmentData($shipData);
+        return $ordershipdata;    
     }
     
     
