@@ -21,6 +21,7 @@
             foreach($orderInfo as $_key=>$_order):
                 if(!empty($rmaOrders)):
                     if(in_array($_order->getId(), $rmaOrders)):
+                        $_order->getTotalItemCount();
                         unset($_order[$_key]);continue;
                     endif; 
                 endif;
