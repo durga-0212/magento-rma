@@ -1,7 +1,8 @@
 <div class="page-title">
     <h1>
-    <?php
+    <?php    
         $cancelType = $this->getCancelType();
+        $action_name=Mage::app()->getRequest()->getActionName();       
         $rmaOrderId = $this->getRmaOrderId();
         $rmaOrdersCollection = $this->getRmaOrders();
         $rmaOrders = array_column($rmaOrdersCollection, 'order_id');
@@ -51,7 +52,7 @@
     <col width="1" />
     <thead>
         <tr>
-            <?php if(empty($cancelType)): ?>
+            <?php if(empty($cancelType) && $action_name!='addrequest'): ?>
             <th class="view"><?php echo $this->__('ACTION'); ?></th>
             <?php endif; ?>
             <th class="number"><?php echo $this->__('PRODUCT NAME') ?></th>

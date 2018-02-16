@@ -54,7 +54,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
      */
     protected function _prepareColumns()
     {
-        $rma = Mage::registry('rma_data');
+        $rma = Mage::registry('rma_data');        
 
         $this->addColumn('product_admin_name', array(
             'header' => Mage::helper('rma')->__('Product Name'),
@@ -85,21 +85,32 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
             'index' => 'qty_requested',            
             'validate_class' => 'validate-greater-than-zero'
         ));
-        
-         $this->addColumn('qty_approved', array(
+        if($rma['status']=='canceled')
+        {
+          $this->addColumn('qty_requested', array(
+            'header'=> Mage::helper('rma')->__('Canceled Qty'),
+            'width' => '80px',
+            'index' => 'qty_requested',            
+            'validate_class' => 'validate-greater-than-zero'
+        ));
+        }
+        else{
+           $this->addColumn('qty_approved', array(
             'header'=> Mage::helper('rma')->__('Approved Qty'),
             'width' => '80px',
             'index' => 'qty_approved',
             'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
             'validate_class' => 'validate-not-negative-number'
         ));
-
-        $this->addColumn('qty_returned', array(
-            'header'=> Mage::helper('rma')->__('Returned Qty'),
-            'width' => '80px',
-            'index' => 'qty_returned',          
-            'validate_class' => 'validate-greater-than-zero'
-        ));       
+           
+//        $this->addColumn('qty_returned', array(
+//            'header'=> Mage::helper('rma')->__('Returned Qty'),
+//            'width' => '80px',
+//            'index' => 'qty_returned',          
+//            'validate_class' => 'validate-greater-than-zero'
+//        ));   
+        }
+    
 
         $this->addColumn('reason', array(
             'header'=> Mage::helper('rma')->__('Reason to Return'),
@@ -257,13 +268,23 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
                          'url'  => $this->getUrl('*/adminhtml_rma/save'),
                          'confirm' => Mage::helper('rma')->__('Are you sure?')
                 ));
-           $this->getMassactionBlock()->addItem('approved', array(
+           $this->getMassactionBlock()->addItem('return received', array(
                          'label'=> Mage::helper('rma')->__('Return Received'),
                          'url'  => $this->getUrl('*/adminhtml_rma/save'),
                          'confirm' => Mage::helper('rma')->__('Are you sure?')
                 ));
-            $this->getMassactionBlock()->addItem('rejected', array(
+            $this->getMassactionBlock()->addItem('payment request', array(
+                         'label'=> Mage::helper('rma')->__('Payment Request'),
+                         'url'  => $this->getUrl('*/adminhtml_rma/save'),
+                         'confirm' => Mage::helper('rma')->__('Are you sure?')
+                ));
+            $this->getMassactionBlock()->addItem('complete', array(
                          'label'=> Mage::helper('rma')->__('Complete'),
+                         'url'  => $this->getUrl('*/adminhtml_rma/save'),
+                         'confirm' => Mage::helper('rma')->__('Are you sure?')
+                ));
+            $this->getMassactionBlock()->addItem('canceled', array(
+                         'label'=> Mage::helper('rma')->__('Canceled'),
                          'url'  => $this->getUrl('*/adminhtml_rma/save'),
                          'confirm' => Mage::helper('rma')->__('Are you sure?')
                 ));

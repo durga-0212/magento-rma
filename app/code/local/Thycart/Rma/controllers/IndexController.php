@@ -140,7 +140,13 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     $rmaItemModel = Mage::getModel('rma/rma_item');  
                     $rmaItemModel->setData($item_data);
                     $rmaItemModel->save();
+                   if(!isset($data['cancelType']) || $data['cancelType'] ==0)
+                   {
                     $this->_redirect('*/*/index');
+                   }
+                   else{
+                     $this->_redirect('*/*/bankform');   
+                   }
                 }           
             }  
             if(!isset($data['cancelType']) || $data['cancelType'] ==0)
@@ -201,6 +207,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 $modelCustomer = Mage::getModel('customer/customer')->load($id);
                 $modelCustomer->addData($postData);                
                 $modelCustomer->save();
+                $this->_redirect('*/*/index');
                
             }
             else 
