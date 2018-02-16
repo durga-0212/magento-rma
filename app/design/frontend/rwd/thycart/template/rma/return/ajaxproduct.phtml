@@ -31,7 +31,14 @@
             <?php endif; ?>
             <td class="number"><?php echo $value['name']; ?></td>
             <td class=""><?php echo $value['sku']; ?></td>
-            <td class="number"> <input type="text" class="productQty" id="productQty_<?php echo $key;?>" name="Product[[<?php echo $key;?>][qty_requested]]" value="<?php echo round($value['qty_ordered']); ?>"></td>
+            <td class="number"> 
+                <?php
+                    $readonly='readonly';
+                    if(empty($cancelType)): 
+                        $readonly='';
+                    endif; ?>
+                <input type="text" class="productQty" id="productQty_<?php echo $key;?>" name="Product[[<?php echo $key;?>][qty_requested]]" value="<?php echo round($value['qty_ordered']); ?>" <?php echo $readonly;?>>
+            </td>
             <td class="total" id="productPrice_<?php echo $key;?>"><?php echo $value['base_row_total'] ?></td>
         </tr>            
         <input type="hidden" name="order_id" value="<?php echo $value['order_id'];?>">
