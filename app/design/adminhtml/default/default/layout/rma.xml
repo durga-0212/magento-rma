@@ -80,9 +80,17 @@
         </block>-->
         
          </reference>
-    </rma_adminhtml_attribute_view>
+    </rma_adminhtml_attribute_view>   
     
-    
+     <adminhtml_customer_edit>
+        <reference name="customer_edit_tabs">
+            <action method="addTab">
+                <name>Bank Details</name>
+                <block>rma/adminhtml_customer_tab</block>
+            </action>
+        </reference>
+    </adminhtml_customer_edit> 
+
 <!--    <rma_adminhtml_attribute_edit>
         <reference name="content">
             <block type="rma/adminhtml_rma_item_attribute_edit" name="rma_item_attribute_edit" />
