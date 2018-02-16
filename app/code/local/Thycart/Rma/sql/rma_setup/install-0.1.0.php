@@ -53,7 +53,7 @@ CREATE TABLE `rma_order_item` (
 //
 //
 //
-$installer->run("Drop table if exists `rma_order`;
+$installer->run("Drop table if exists `rma_order_history`;
 CREATE TABLE `rma_order_history` (
  `entity_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Entity Id',
  `rma_entity_id` int(10) unsigned NOT NULL COMMENT 'Rma Entity Id',
