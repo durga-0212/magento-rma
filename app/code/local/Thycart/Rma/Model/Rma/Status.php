@@ -1,6 +1,6 @@
 <?php
 
-class Thycart_Rma_Model_Rma_Eav_Status extends Mage_Eav_Model_Entity_Attribute_Source_Table
+class Thycart_Rma_Model_Rma_Status extends Mage_Eav_Model_Entity_Attribute_Source_Table
 {
     /**
      * Status constants

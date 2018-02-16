@@ -40,35 +40,17 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
         Mage::register('attribute_data', $attributeObject);
         if ($attributeId) {
             $attributeObject->load($attributeId);
-//            if (!$attributeObject->getId()) {
-//                $this->_getSession()
-//                    ->addError(Mage::helper('rma')->__('Attribute is no longer exists.'));
-//                $this->_redirect('*/*/');
-//                return;
-//            }
-//            if ($attributeObject->getEntityTypeId() != $this->_getEntityType()->getId()) {
-//                $this->_getSession()->addError(Mage::helper('rma')->__('You cannot edit this attribute.'));
-//                $this->_redirect('*/*/');
-//                return;
-//            }
-
-            //$this->_title($attributeObject->getFrontendLabel());
         } else {
             $this->_title($this->__('New Attribute'));
             $label = Mage::helper('rma')->__('Add RMA Item Attribute');
         }
         
-        //$attributeData = $this->_getSession()->getAttributeData(true);
+       
         
         if (!empty($attributeData)) { 
             $attributeObject->setData($attributeData);
         }
-//        Mage::register('entity_attribute', $attributeObject);
-
-//        $label = $attributeObject->getId()
-//            ? Mage::helper('rma')->__('Edit RMA Item Attribute')
-//            : Mage::helper('rma')->__('New RMA Item Attribute');
-
+       
         $this->_initAction()
             ->_addBreadcrumb($label, $label)
             ->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_item_attribute_edit"))

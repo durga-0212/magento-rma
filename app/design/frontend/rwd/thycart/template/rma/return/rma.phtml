@@ -39,7 +39,7 @@
                 <option value="<?php echo $_order->getId() ?>" <?php echo $selected;?>>
                     <?php echo $_order->getIncrementId()?>
                 </option>
-        <?php  endforeach;?>
+        <?php $selected = ''; endforeach;?>
     </select>
 <?php endif; ?>
     <table class="data-table orders" id="my-rma-table" >
@@ -52,7 +52,7 @@
     <col width="1" />
     <thead>
         <tr>
-            <?php if(empty($cancelType) && $action_name!='addrequest'): ?>
+            <?php if(empty($cancelType)): ?>
             <th class="view"><?php echo $this->__('ACTION'); ?></th>
             <?php endif; ?>
             <th class="number"><?php echo $this->__('PRODUCT NAME') ?></th>
@@ -115,14 +115,35 @@
         }
     }).trigger('change'); 
 
-    $j('#submit').click(function(){        
+    $j('#submit').click(function(e){   
         cnt=$j('#cnt').val();  
         ncnt=cnt-1;
+        if(cancelType ==0)
+        {
+            var checked = $j('#my-rma-table').find(':checked').length;
+            if(checked === 2)
+            {
+                $j("#notification-message1").show();
+                $j("#notification1").empty();
+                $j("#notification1").append('Please select atleast one item');
+                e.stopImmediatePropagation();  
+                e.preventDefault();return;
+            }
+            else
+            {
+            $j("#notification-message1").hide();
+            }
+        }
+        else
+        {
+            $j("#notification-message1").hide();
+        }
+        
         
         for (i = 0; i < cnt; i++) 
         {            
-            var selectedQtyById=$j('#productQty_'+i).val();
-            var orderedQty = $j('#qty_ordered_'+i).val();            
+            var selectedQtyById=$j('#productQty_'+i).val();            
+            var orderedQty = $j('#qty_ordered_'+i).val();       
             var product_name=$j("#product_name_"+i).val();              
               
             if(selectedQtyById > orderedQty)
@@ -130,24 +151,16 @@
                 $j("#notification-message").show();
                 $j("#notification").empty();
                 $j("#notification").append("You can not return more than "+orderedQty+" "+product_name);
+                e.stopImmediatePropagation();
+                e.preventDefault();return;
             }
+            else
+           {
+            $j("#notification-message").hide();
+           }
         }
         
-        if(cancelType ==0)
-        {
-            var checked = $j('#my-rma-table').find(':checked').length;
-            if(checked === 2)
-            {
-                $j("#notification-message").show();
-                $j("#notification").empty();
-                $j("#notification").append('Please select atleast one item');
-                
-            }
-        }
-        else
-        {
-            $j("#notification-message").hide();
-        }
+
     });
     var customForm = new VarienForm('requestForm'); 
     //]]>

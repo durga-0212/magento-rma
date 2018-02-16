@@ -13,7 +13,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid_Column_Renderer_Textin
         $html = '<input type="text" ';
         $html .= 'name="items[' . $row->getId() . '][' . $this->getColumn()->getId() . ']" ';
         $html .= 'value="' . $value . '" ';
-        if ($row['item_status']=='canceled') {
+        if ($row['item_status']==Thycart_Rma_Model_Rma_Status::STATE_CANCELED) {
             $html .= ' disabled="disabled" ';          
         }
 //        $html .= 'class="' . $class . '" />';

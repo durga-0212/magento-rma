@@ -16,14 +16,23 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         //Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
     }
 
-    public function massRemoveAction() {
-        try {
-            $postData = $this->getRequest()->getPost();
-            $ids = $this->getRequest()->getPost('id', array());
+    public function massRemoveAction() {      
+        try {           
+            $ids = $this->getRequest()->getPost('id', array());           
             foreach ($ids as $id) {
                 $model = Mage::getModel("rma/order")->load($id);
-                $model->addData(array("status"=>"closed"));                
-                $model->save();                
+                $model->addData(array("status"=>Thycart_Rma_Model_Rma_Status::STATE_CLOSED));                
+                $model->save();
+                $modelitem = Mage::getModel("rma/rma_item")->getCollection()
+                        ->addFieldToFilter('rma_entity_id',$id);
+                       
+                foreach($modelitem->getData() as $key=> $value)
+                {
+                    $modelStatus = Mage::getModel("rma/rma_item")->load($value['entity_id']);
+                    //echo $value['entity_id']; 
+                    $modelStatus->addData(array("item_status"=>Thycart_Rma_Model_Rma_Status::STATE_COMPLETE));                
+                    $modelStatus->save();  
+                }                              
             }
             Mage::getSingleton("adminhtml/session")->addSuccess(Mage::helper("adminhtml")->__("RMA(s) was successfully removed"));
         } catch (Exception $e) {
@@ -31,7 +40,30 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         }
         $this->_redirect('*/*/');
     }
-
+    
+    public function massRemoveItemAction() {      
+        try {           
+            $ids = $this->getRequest()->getPost('id', array());           
+            foreach ($ids as $id) {
+                $model = Mage::getModel("rma/rma_item")->load($id);
+                $model->addData(array("item_status"=>Thycart_Rma_Model_Rma_Status::STATE_COMPLETE));               
+                $model->save();   
+                foreach($model->getData() as $key=> $value)
+                {
+                    $modelStatus = Mage::getModel("rma/order")->load($value['rma_entity_id']);
+                    $modelStatus->addData(array("status"=>Thycart_Rma_Model_Rma_Status::STATE_CLOSED));                
+                    $modelStatus->save();  
+                    break;
+                }                
+            }
+            Mage::getSingleton("adminhtml/session")->addSuccess(Mage::helper("adminhtml")->__("RMA(s) was successfully removed"));
+        } catch (Exception $e) {
+            Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
+        }
+        $this->_redirect('*/*/');
+    } 
+     
+   
     public function exportCsvAction() {
         $fileName = 'thycart_rma.csv';
         $grid = $this->getLayout()->createBlock('rma/adminhtml_rma_grid');
@@ -123,7 +155,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         $this->getResponse()->setBody($response);
     }
 
-    public function saveAction() {       
+    public function saveAction() { 
         $post_data = $this->getRequest()->getPost(); 
         $id = $this->getRequest()->getParam('id');
         
@@ -139,14 +171,16 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 $model = Mage::getModel("rma/rma_item")->load($key);
                 $model->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
                 $result = $model->save();
-               
-                if($value['status'] == 'processing' && $status!='processing')
-                { 
+                $processing_status=Thycart_Rma_Model_Rma_Status::STATE_PROCESSING;
+                $return_received_status=Thycart_Rma_Model_Rma_Status::STATE_RETURN_RECEIVED;               
+                if($value['status'] == $processing_status && $status!=$processing_status)
+                {
                     $shipData=array(
                         'order_id'=> $post_data['order_id'],
                         'item_id' => $value['order_item_id']
                     );
                     $shipDetails = Mage::getModel('rma/order')->getShipmentDetails($shipData);
+                    //print_r($shipDetails); die;
                     $track_data= Mage::helper('rma')->getTrackingNumber();                   
                     $track_details= explode('_', $track_data); 
                     foreach ($shipDetails as $key => $value) {                    
@@ -169,7 +203,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                         Mage::getSingleton('core/session')->addSuccess('Tracking Number has been generated');
                     }
                 }
-                elseif($value['status'] == 'return received' && $status!='return received')
+                elseif($value['status'] == $return_received_status && $status!=$return_received_status)
                 {
                     $modelSalesItem = Mage::getModel('sales/order_item')->load($value['order_item_id']);
                     $pid = $modelSalesItem->getProductId();
@@ -197,13 +231,14 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                     }
                         
                 }
-                elseif($value['status'] == 'complete')
+                elseif($value['status'] == Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST)
                 {
-//                  $url = Mage::getUrl();die;
-//                  $this->_redirect($url.'rma/index/bankform/');
+                  $url = Mage::getUrl();
+                  header('Location: '.$url.'rma/index/bankform/');
+                  //$this->_redirect($url.'rma/index/bankform/');
                 }
                                  
-                $arr=array('complete','canceled');
+                $arr=array(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE,Thycart_Rma_Model_Rma_Status::STATE_CANCELED);
              
                 if(in_array($value['status'], $arr))
                 {               
@@ -220,11 +255,11 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
            
             if($flag == 1)
             {                    
-                $modelRma->addData(array('status'=>'closed'));
+                $modelRma->addData(array('status'=>Thycart_Rma_Model_Rma_Status::STATE_CLOSED));
             }
             else 
             {
-                $modelRma->addData(array('status'=>'pending'));
+                $modelRma->addData(array('status'=>Thycart_Rma_Model_Rma_Status::STATE_PENDING));
             }
             $modelRma->save();
             }
