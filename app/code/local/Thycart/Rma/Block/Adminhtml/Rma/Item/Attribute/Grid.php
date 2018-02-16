@@ -33,19 +33,19 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Grid extends Mage_Adminhtml
             'index'     => 'attribute_code',
         ));
         
-        $this->addColumn('scope', array(
-            'header'    => Mage::helper('rma')->__('Scope'),
-            'align'     =>'left',          
-            'width'     => '50px',
-            'index'     => 'scope',
-            'type' => 'options',
-            'options' => array(
-                  '2' => Mage::helper('rma')->__('Global'),
-                  '1' => Mage::helper('rma')->__('Website'),
-                  '0' => Mage::helper('rma')->__('Store View'),
-              ),
-            'align' => 'center',
-        ));
+//        $this->addColumn('scope', array(
+//            'header'    => Mage::helper('rma')->__('Scope'),
+//            'align'     =>'left',          
+//            'width'     => '50px',
+//            'index'     => 'scope',
+//            'type' => 'options',
+//            'options' => array(
+//                  '2' => Mage::helper('rma')->__('Global'),
+//                  '1' => Mage::helper('rma')->__('Website'),
+//                  '0' => Mage::helper('rma')->__('Store View'),
+//              ),
+//            'align' => 'center',
+//        ));
         
         $this->addColumn('is_required', array(
             'header'    => Mage::helper('rma')->__('Is Required'),
@@ -69,6 +69,20 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Grid extends Mage_Adminhtml
             'options' => array(
                   '1' => Mage::helper('rma')->__('Yes'),
                   '0' => Mage::helper('rma')->__('No'),
+              ),
+            'align' => 'center',
+        ));
+        
+        $this->addColumn('scope', array(
+            'header'    => Mage::helper('rma')->__('Scope'),
+            'align'     =>'left',          
+            'width'     => '50px',
+            'index'     => 'scope',
+            'type' => 'options',
+            'options' => array(
+                  '2' => Mage::helper('rma')->__('Global'),
+                  '1' => Mage::helper('rma')->__('Website'),
+                  '0' => Mage::helper('rma')->__('Store View'),
               ),
             'align' => 'center',
         ));

@@ -115,9 +115,8 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
                 {
                     $model->load($this->getRequest()->getParam('id'));
                 }        
-                $model->addData(array("attribute_code"=>$post_data['attribute_code'],"scope"=>$post_data['scope'],"is_required"=>$post_data['is_required'],"is_unique"=>$post_data['is_unique']));
+                $model->addData(array("attribute_code"=>$post_data['attribute_code'],"is_required"=>$post_data['is_required'],"is_unique"=>$post_data['is_unique'],"scope"=>$post_data['scope']));
                 $result = $model->save();
-            
                 if($result)
                 { 
                     $optionModel = Mage::getModel("rma/rma_eav_attributeoption");

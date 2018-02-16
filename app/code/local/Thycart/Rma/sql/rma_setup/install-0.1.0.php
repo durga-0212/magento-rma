@@ -50,9 +50,8 @@ CREATE TABLE `rma_order_item` (
  CONSTRAINT `rma_order_item_ibfk_1` FOREIGN KEY (`rma_entity_id`) REFERENCES `rma_order` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='rma_order_item'
 ");
-//
-//
-//
+
+
 $installer->run("Drop table if exists `rma_order_history`;
 CREATE TABLE `rma_order_history` (
  `entity_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Entity Id',
@@ -68,7 +67,8 @@ CREATE TABLE `rma_order_history` (
  CONSTRAINT `FK_RMA_ORDER_HISTORY_RMA_ENTITY_ID_RMA_ORDER_ENTITY_ID` FOREIGN KEY (`rma_entity_id`) REFERENCES `rma_order` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COMMENT='rma_order_history'
 ");
-//
+
+
 $installer->run("Drop table if exists `rma_attributes`;       
 CREATE TABLE `rma_attributes` (
  `entity_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Entity Id',
@@ -83,8 +83,8 @@ CREATE TABLE `rma_attributes` (
  CONSTRAINT `FK_RMA_ATTRIBUTES_RMA_ENTITY_ID_RMA_ORDER_ENTITY_ID` FOREIGN KEY (`rma_entity_id`) REFERENCES `rma_order` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='rma_attributes'
 ");
-//
-//
+
+
 $installer->run("Drop table if exists `rma_eav_attribute`; 	
 CREATE TABLE `rma_eav_attribute` (
  `attribute_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Attribute Id',
@@ -95,8 +95,8 @@ CREATE TABLE `rma_eav_attribute` (
  PRIMARY KEY (`attribute_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='rma_eav_attribute'
 ");    
-//
-//
+
+
 $installer->run("Drop table if exists `rma_eav_attribute_option`; 
 CREATE TABLE `rma_eav_attribute_option` (
  `entity_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Entity Id',
