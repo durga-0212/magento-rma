@@ -85,14 +85,15 @@ CREATE TABLE `rma_attributes` (
 ");
 //
 //
-$installer->run("Drop table if exists `rma_eav_attribute`; 
+$installer->run("Drop table if exists `rma_eav_attribute`; 	
 CREATE TABLE `rma_eav_attribute` (
  `attribute_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Attribute Id',
  `attribute_code` varchar(255) NOT NULL COMMENT 'Attribute Code',
  `is_required` smallint(5) unsigned NOT NULL COMMENT 'Is Required',
  `is_unique` smallint(5) unsigned NOT NULL COMMENT 'Is Unique',
+ `scope` varchar(50) NOT NULL COMMENT 'Scope',
  PRIMARY KEY (`attribute_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='rma_eav_attribute'
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='rma_eav_attribute'
 ");    
 //
 //
