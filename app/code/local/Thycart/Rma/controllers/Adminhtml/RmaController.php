@@ -125,25 +125,47 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
     public function saveAction() {       
         $post_data = $this->getRequest()->getPost(); 
         $id = $this->getRequest()->getParam('id');
-//        echo '<pre>';
-//        print_r($post_data);
-//        die;
         
         if($post_data)
         {
             $flag=0;
-            try{
-            foreach ($post_data as $key => $value) 
-            {   
-                
-                if($value['status'] == 'processing')
-                {   
+            try {
+            foreach ($post_data['items'] as $key => $value) 
+            {  
+                $statusModel = Mage::getModel('rma/rma_item')->load($key);
+                $status = $statusModel->getItemStatus();
+               
+                if($value['status'] == 'processing' && $status!='processing')
+                { 
+                    $shipData=array(
+                        'order_id'=> $post_data['order_id'],
+                        'item_id' => $value['order_item_id']
+                    );
+                    $shipDetails = Mage::getModel('rma/order')->getShipmentDetails($shipData);
+                    //print_r($shipDetails);
+                    $track_data= Mage::helper('rma')->getTrackingNumber();                   
+                    $track_details= explode('_', $track_data); 
+                    foreach ($shipDetails as $key => $value) {                    
+                         $shipmenttrackModel = Mage::getModel('sales/order_shipment_track'); 
+                         
+                    $shipmenttrackModel->addData(array(
+                        'parent_id'  => $value['entity_id'],
+                        'order_id' => $value['order_id'],
+                        'track_number'  => $track_details[2],                        
+                        'title' => $track_details[0],
+                        'carrier_code' =>  $track_details[1],
+                        'created_at' =>Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s')                                         
+                    ));
                     
-                    $track_number= Mage::helper('rma')->getTrackingNumber();     
-                    echo $track_number; 
-                    
+                   
+                    $successShipment = $shipmenttrackModel->save(); 
+                    } 
+                    if($successShipment)
+                    {
+                        Mage::getSingleton('core/session')->addSuccess('Tracking Number has been generated');
+                    }
                 }
-                elseif($value['status'] == 'return received')
+                elseif($value['status'] == 'return received' && $status!='return received')
                 {
                     $modelSalesItem = Mage::getModel('sales/order_item')->load($value['order_item_id']);
                     $pid = $modelSalesItem->getProductId();
@@ -155,31 +177,31 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                     if($backOrders == 0)
                     {
                         $inventoryModel->addData(array('qty'=>$updatedQty));
-                        //echo "<pre>"; print_r($inventoryModel);die;
-                        //$inventoryModel->save();
-                        
-                        //echo $qty."===".$originalQty."==".$updatedQty;
+                        $successInventory = $inventoryModel->save();
                     }
                     else 
                     {
                         if($originalQty>0)
                         {
-                            $inventoryModel->addData(array('qty'=>$updatedQty));
-                            //echo "<pre>"; print_r($inventoryModel);die;
-                            //$inventoryModel->save();
-                            //echo $qty."===".$originalQty."==".$updatedQty;
+                            $inventoryModel->addData(array('qty'=>$updatedQty));                          
+                            $successInventory = $inventoryModel->save();                       
                         }
                     }
-                    //echo "<pre>"; print_r($inventoryModel);die;
+                    if($successInventory)
+                    {
+                        Mage::getSingleton('core/session')->addSuccess('Inventory Updated');
+                    }
+                        
                 }
                 elseif($value['status'] == 'complete')
                 {
-                    
+//                  $url = Mage::getUrl();die;
+//                    $this->_redirect($url.'rma/index/bankform/');
                 }
                 
                 $model = Mage::getModel("rma/rma_item")->load($key);
-                $model->addData(array("item_status" => $value['status']));
-                //$result = $model->save();
+                $model->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
+                $result = $model->save();
                  
                 $arr=array('complete','canceled');
              
@@ -191,9 +213,11 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 {
                     $flag=2;             
                 }          
-            } 
+            }
+            
+           
             $modelRma = Mage::getModel('rma/order')->load($id);
-            echo $flag;die;
+           
             if($flag == 1)
             {                    
                 $modelRma->addData(array('status'=>'closed'));
@@ -202,7 +226,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
             {
                 $modelRma->addData(array('status'=>'pending'));
             }
-            //$modelRma->save();
+            $modelRma->save();
             }
             catch(Exception $e){
                 Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
@@ -210,6 +234,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
                 return;
             }
+           
             
         }
         else 

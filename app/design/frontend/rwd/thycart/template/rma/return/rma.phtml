@@ -3,6 +3,7 @@
     <?php
         $cancelType = $this->getCancelType();
         $rmaOrderId = $this->getRmaOrderId();
+        $rmaOrders = $this->getRmaOrders();
         $title = ($cancelType) ? $this->__('Cancel Order') : $this->__('Create RMA');
         echo $title;
     ?>
@@ -14,18 +15,24 @@
     $orderInfo = $this->getOrders();
     if(count($orderInfo)>0) : ?>
     <select name="order" id="selectOrder" class="validate-select">
-    <option value="">-- Select Orders --</option>
-    <?php
-    $selected = '';
-    foreach($orderInfo as $_order):
-    if($rmaOrderId == $_order->getId()):
-        $selected = 'selected';
-    endif; 
-    ?>
-    <option value="<?php echo $_order->getId() ?>" <?php echo $selected;?>>
-        <?php echo $_order->getIncrementId()?>
-    </option>
-    <?php endforeach;?>
+        <option value="">-- Select Orders --</option>
+        <?php
+            $selected = '';
+            foreach($orderInfo as $_key=>$_order):
+                if(!empty($rmaOrders)):
+                    if(in_array($_order->getId(), $rmaOrders)):
+                        unset($_order[$_key]);continue;
+                    endif; 
+                endif;
+                if($rmaOrderId == $_order->getId()):
+                    $selected = 'selected';
+                endif;
+                
+        ?>
+                <option value="<?php echo $_order->getId() ?>" <?php echo $selected;?>>
+                    <?php echo $_order->getIncrementId()?>
+                </option>
+        <?php  endforeach;?>
     </select>
 <?php endif; ?>
     <table class="data-table orders" id="my-rma-table" >
@@ -56,10 +63,7 @@
         <td><label>Reason</label></td>
         <td><input type="text" name="reason" class="required-entry"></td>
     </tr>
-    <tr style="display:none;">
-        <td>&nbsp;</td>
-        <td><input type="text" name="consign_number" readonly="readonly" value=""></td>
-    </tr>
+    
     <tr>
         <td>
             <input type="submit" id="submit">

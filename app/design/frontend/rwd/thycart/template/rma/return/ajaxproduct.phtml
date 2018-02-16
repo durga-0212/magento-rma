@@ -107,6 +107,12 @@
             <input type="hidden" value="<?php echo $cancelType;?>" name="cancelType">             
         </td>
     </tr>
+    <?php if(empty($cancelType)): ?>
+    <tr>
+        <td><label>Consignment No.</label></td>
+        <td><input type="text" name="consign_number" class="required-entry"></td>
+    </tr>
+    <?php endif;?>
 
 <script type="text/javascript">
     //<![CDATA[
@@ -131,19 +137,17 @@
         {
             $j("#notification-message").hide();
             $j.ajax({
-                    type: "POST",
-                    url: "<?php echo $this->getUrl('rma/index/calculatePrice')?>",
-                    data: {product_Qty:selectedQtyById,product_price:selectedPrice},
-                    success: function(response) { 
-                                     
-                                           
-                            $j('#productPrice_'+res[1]).empty();
-                            $j('#productPrice_'+res[1]).html(response);                        
-                    },
-                    error: function() {
-                        alert("error");
-                    }
-                });
+                type: "POST",
+                url: "<?php echo $this->getUrl('rma/index/calculatePrice')?>",
+                data: {product_Qty:selectedQtyById,product_price:selectedPrice},
+                success: function(response) { 
+                    $j('#productPrice_'+res[1]).empty();
+                    $j('#productPrice_'+res[1]).html(response);                        
+                },
+                error: function() {
+                    alert("error");
+                }
+            });
         }                       
     });   
 //]]>
