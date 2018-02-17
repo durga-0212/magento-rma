@@ -83,15 +83,24 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
     public function getRmaOrders() 
     {
         $rmaOrders = array();
-        $rmaOrdersData = Mage::getResourceModel('rma/order_collection')
+        $rmaOrdersCollection = Mage::getModel('rma/order')->getCollection()
+        ->join(array('roi' => 'rma/rma_item'), 'main_table.entity_id = roi.rma_entity_id',array('count(roi.rma_entity_id) as itemcount'))
         ->addFieldToSelect('order_id')
         ->addFieldToFilter('customer_id', Mage::getSingleton('customer/session')->getCustomer()->getId());
-        if(empty($rmaOrdersData->getData()))
+        $rmaOrdersCollection->getSelect()
+        ->group('order_id');
+        $rmaOrdersData = $rmaOrdersCollection->getData();
+        if(empty($rmaOrdersData))
         {
             return $rmaOrders;
         }
-        $rmaOrders = array_column($rmaOrdersData->getData(), 'order_id');
-        return $rmaOrders;
+        $finalData = array();
+        foreach($rmaOrdersData as $key=>$order)
+        {
+            $finalData[$key]['order_id'] = $order['order_id'];
+            $finalData[$key]['itemcount'] = $order['itemcount'];
+        }
+        return $finalData;
     }
 
 }

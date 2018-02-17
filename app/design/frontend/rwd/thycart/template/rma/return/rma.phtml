@@ -3,7 +3,11 @@
     <?php
         $cancelType = $this->getCancelType();
         $rmaOrderId = $this->getRmaOrderId();
-        $rmaOrders = $this->getRmaOrders();
+        $rmaOrdersCollection = $this->getRmaOrders();
+        $rmaOrders = array_column($rmaOrdersCollection, 'order_id');
+        $rmaOrdersItem = array_column($rmaOrdersCollection, 'itemcount', 'order_id');
+        
+
         $title = ($cancelType) ? $this->__('Cancel Order') : $this->__('Create RMA');
         echo $title;
     ?>
@@ -21,7 +25,9 @@
             foreach($orderInfo as $_key=>$_order):
                 if(!empty($rmaOrders)):
                     if(in_array($_order->getId(), $rmaOrders)):
+                        if($_order->getTotalItemCount() == $rmaOrdersItem[$_order->getId()]):
                         unset($_order[$_key]);continue;
+                        endif;
                     endif; 
                 endif;
                 if($rmaOrderId == $_order->getId()):
@@ -37,7 +43,7 @@
 <?php endif; ?>
     <table class="data-table orders" id="my-rma-table" >
     <?php if(empty($cancelType)): ?>
-    <col width="1" />
+    <col width="1"/>
     <?php endif; ?>
     <col width="1" />
     <col width="1" />
