@@ -9,20 +9,20 @@ class Thycart_Rma_Block_Return_Order_View extends Mage_Core_Block_Template
      public function __construct() {      
         parent::__construct();       
         $this->setTemplate('rma/return/view.phtml'); 
-        $order_id = $this->getRequest()->getParam('order_id');        
-        $order = Mage::getModel('sales/order')->load($order_id);       
+       // $order_id = $this->getRequest()->getParam('order_id');  
+        $rma_id = $this->getRequest()->getParam('rma_id'); 
+        $returns=Mage::getModel('rma/order')->load($rma_id);
+                 $this->setReturns($returns);
+        $order = Mage::getModel('sales/order')->load($returns->order_id);       
         if ($order->getId()) {
             $this->setOrdersinfo($order);           
-        }       
-        $returns=Mage::getModel('rma/order')->load($order_id, 'order_id');
-                 $this->setReturns($returns);  
-        
+        }  
         
         $modelAttribute = Mage::getModel('rma/rma_attributes');
-        $products = $modelAttribute->getAttributesCollection($returns->getId());
+        $products = $modelAttribute->getAttributesCollection($rma_id);
         
         $modelHistory = Mage::getModel('rma/rma_history');  
-        $history = $modelHistory->getHistoryCollection($returns->getId());
+        $history = $modelHistory->getHistoryCollection($rma_id);
         $this->setItems($products);
         $this->setRmaHistory($history);
     }

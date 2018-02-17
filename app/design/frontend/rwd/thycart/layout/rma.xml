@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <layout version="0.1.0">
     <customer_account translate="label">
-       <block type="rma/account_navigation" name="rma_account_navigation">                        
+       <block type="rma/account_navigation" name="rma_account_navigation">                   
             <action method="addDashboardLink"><name>rma</name><path>rma/index</path><label>Rma</label></action>                       
         </block>
     </customer_account>

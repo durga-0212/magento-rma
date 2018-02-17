@@ -32,9 +32,9 @@ class Thycart_Rma_Block_Return_History extends Mage_Core_Block_Template
         return $this->getChildHtml('pager');
     }
     
-    public function getViewUrl($order)
+    public function getViewUrl($rmaId)
     {
-        return $this->getUrl('*/*/view', array('order_id' => $order->getOrderId()));
+        return $this->getUrl('*/*/view', array('rma_id' => $rmaId));
     }
     
      public function getRequestUrl($path)

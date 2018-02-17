@@ -28,7 +28,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
       Customer order history
      */
     public function indexAction()
-    {
+    {      
         $this->loadLayout();
         $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
         $this->renderLayout();
@@ -112,10 +112,10 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     public function saveAction()
     {
         $data = $this->getRequest()->getParams();
-        $status = 'pending';
+        $status = Thycart_Rma_Model_Rma_Status::STATE_PENDING;
         if(isset($data['cancelType']) && $data['cancelType'] ==1)
         {
-            $status = 'canceled';
+            $status = Thycart_Rma_Model_Rma_Status::STATE_CANCELED;
         }
         $orderModel = Mage::getModel('rma/order'); 
         $date = Mage::getModel('core/date')->date('Y-m-d H:i:s');
@@ -140,13 +140,19 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     $rmaItemModel = Mage::getModel('rma/rma_item');  
                     $rmaItemModel->setData($item_data);
                     $rmaItemModel->save();
+                   if(!isset($data['cancelType']) || $data['cancelType'] ==0)
+                   {
                     $this->_redirect('*/*/index');
+                   }
+                   else{
+                     $this->_redirect('*/*/bankform');   
+                   }
                 }           
             }  
             if(!isset($data['cancelType']) || $data['cancelType'] ==0)
             {
                 $rmaHistoryModel = Mage::getModel('rma/rma_history');
-                $rmaHistoryModel->setData(array('rma_entity_id'=> $orderModel->getId(),'is_visible_on_front'=>1,'comment'=>'Your RMA request has been placed','status'=>'pending','created_at'=>$date,'is_admin'=>1));
+                $rmaHistoryModel->setData(array('rma_entity_id'=> $orderModel->getId(),'is_visible_on_front'=>1,'comment'=>'Your RMA request has been placed','status'=>Thycart_Rma_Model_Rma_Status::STATE_PENDING,'created_at'=>$date,'is_admin'=>1));
                 $rmaHistoryModel->save();
             }
             else
@@ -199,8 +205,9 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             {
                 $id = Mage::getSingleton('customer/session')->getCustomer()->getEntityId();
                 $modelCustomer = Mage::getModel('customer/customer')->load($id);
-                $modelCustomer->addData($postData);                
-                $modelCustomer->save();               
+                $modelCustomer->addData($postData);
+                $modelCustomer->save();
+                $this->_redirect('*/*/index');
             }
             else 
             {

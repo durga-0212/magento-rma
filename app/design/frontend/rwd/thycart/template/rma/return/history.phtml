@@ -62,7 +62,7 @@
             <td class="total"><?php echo Mage::helper('core')->currency($_return->getGrandTotal(), true, true); ?></td>
             <td class="status"><em><?php echo $_return->getStatus() ?></em></td>
             <td class="date"><span class="nobr"><?php echo Mage::helper('core')->formatDate($_return->getDateRequested());?></span></td>
-            <td class="view"><a href="<?php echo $this->getViewUrl($_return);?>"><span>View RMA</span></a></td>           
+            <td class="view"><a href="<?php echo $this->getViewUrl($_return->getId());?>"><span>View RMA</span></a></td>           
         </tr>
         <?php endforeach; ?>
     </tbody>

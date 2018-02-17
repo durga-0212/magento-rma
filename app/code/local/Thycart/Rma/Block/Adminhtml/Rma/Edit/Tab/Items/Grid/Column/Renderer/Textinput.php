@@ -4,7 +4,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid_Column_Renderer_Textin
     extends Mage_Adminhtml_Block_Widget_Grid_Column_Renderer_Abstract
 {
    
-    public function render(Varien_Object $row) {       
+    public function render(Varien_Object $row) {      
        $value = $row->getData($this->getColumn()->getIndex());
         if (!$row->getIsQtyDecimal() && !is_null($value)) {
             $value = intval($value);
@@ -13,11 +13,10 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid_Column_Renderer_Textin
         $html = '<input type="text" ';
         $html .= 'name="items[' . $row->getId() . '][' . $this->getColumn()->getId() . ']" ';
         $html .= 'value="' . $value . '" ';
-//        if ($this->getStatusManager()->getAttributeIsDisabled($this->getColumn()->getId())) {
-//            $html .= ' disabled="disabled" ';
-//            $class .= ' disabled ';
-//        }
-        $html .= 'class="' . $class . '" />';
+        if ($row['item_status']==Thycart_Rma_Model_Rma_Status::STATE_CANCELED) {
+            $html .= ' disabled="disabled" ';          
+        }
+//        $html .= 'class="' . $class . '" />';
         return $html;  
     }
     
