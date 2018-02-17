@@ -9,7 +9,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
     public function _construct()
     {
         parent::_construct();
-       $this->setTemplate('rma/customer/tab.phtml');
+       $this->setTemplate('rma/customer/tab.phtml');       
     }
    /**
      * Retrieve the label used for the tab relating to this block
@@ -48,4 +48,33 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
     {
         return false;
     }
+    
+    public function getCustomerModel()
+    {
+        $id = $this->getRequest()->getParam("id");
+        $model = Mage::getModel('customer/customer')->load($id);
+        return $model;
+    }
+    
+    public function getBankName()
+    {
+        $customerModel = $this->getCustomerModel();
+        $name = $customerModel->getBankname();
+        return $name;
+    }
+    
+    public function getAccountNumber() 
+    {
+        $customerModel = $this->getCustomerModel();
+        $accountNumber = $customerModel->getAccountNo();
+        return $accountNumber;
+    }
+    
+    public function getIfscCode() 
+    {
+        $customerModel = $this->getCustomerModel();
+        $ifscCode = $customerModel->getIfscCode();
+        return $ifscCode;
+    }
+    
 }

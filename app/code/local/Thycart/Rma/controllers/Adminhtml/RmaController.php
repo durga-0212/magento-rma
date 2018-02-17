@@ -18,12 +18,13 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
 
     public function massRemoveAction() {
         try {
+            $postData = $this->getRequest()->getPost();
             $ids = $this->getRequest()->getPost('id', array());
             foreach ($ids as $id) {
-                $model = Mage::getModel("rma/order");
-                $model->setId($id)->delete();
+                $model = Mage::getModel("rma/order")->load($id);
+                $model->addData(array("status"=>"closed"));                
+                $model->save();                
             }
-
             Mage::getSingleton("adminhtml/session")->addSuccess(Mage::helper("adminhtml")->__("RMA(s) was successfully removed"));
         } catch (Exception $e) {
             Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
@@ -134,6 +135,10 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
             {  
                 $statusModel = Mage::getModel('rma/rma_item')->load($key);
                 $status = $statusModel->getItemStatus();
+                
+                $model = Mage::getModel("rma/rma_item")->load($key);
+                $model->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
+                $result = $model->save();
                
                 if($value['status'] == 'processing' && $status!='processing')
                 { 
@@ -142,13 +147,12 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                         'item_id' => $value['order_item_id']
                     );
                     $shipDetails = Mage::getModel('rma/order')->getShipmentDetails($shipData);
-                    //print_r($shipDetails);
                     $track_data= Mage::helper('rma')->getTrackingNumber();                   
                     $track_details= explode('_', $track_data); 
                     foreach ($shipDetails as $key => $value) {                    
                          $shipmenttrackModel = Mage::getModel('sales/order_shipment_track'); 
                          
-                    $shipmenttrackModel->addData(array(
+                        $shipmenttrackModel->addData(array(
                         'parent_id'  => $value['entity_id'],
                         'order_id' => $value['order_id'],
                         'track_number'  => $track_details[2],                        
@@ -196,13 +200,9 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 elseif($value['status'] == 'complete')
                 {
 //                  $url = Mage::getUrl();die;
-//                    $this->_redirect($url.'rma/index/bankform/');
+//                  $this->_redirect($url.'rma/index/bankform/');
                 }
-                
-                $model = Mage::getModel("rma/rma_item")->load($key);
-                $model->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
-                $result = $model->save();
-                 
+                                 
                 $arr=array('complete','canceled');
              
                 if(in_array($value['status'], $arr))

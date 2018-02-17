@@ -94,8 +94,8 @@ class Thycart_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_G
         $this->setMassactionIdField('entity_id');
         $this->getMassactionBlock()->setFormFieldName('id');
         $this->getMassactionBlock()->setUseSelectAll(true);
-        $this->getMassactionBlock()->addItem('remove_message', array(
-                         'label'=> Mage::helper('rma')->__('Remove RMA(s)'),
+        $this->getMassactionBlock()->addItem('closed', array(
+                         'label'=> Mage::helper('rma')->__('Closed'),
                          'url'  => $this->getUrl('*/adminhtml_rma/massRemove'),
                          'confirm' => Mage::helper('rma')->__('Are you sure?')
                 ));

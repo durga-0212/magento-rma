@@ -200,8 +200,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 $id = Mage::getSingleton('customer/session')->getCustomer()->getEntityId();
                 $modelCustomer = Mage::getModel('customer/customer')->load($id);
                 $modelCustomer->addData($postData);                
-                $modelCustomer->save();
-               
+                $modelCustomer->save();               
             }
             else 
             {
@@ -213,7 +212,6 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             Mage::getSingleton('core/session')->addError('Data not posted');
         }
     }
-
 
     public function cancelOrderAction()
     {
