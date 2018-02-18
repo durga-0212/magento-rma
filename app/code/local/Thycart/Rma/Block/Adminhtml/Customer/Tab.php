@@ -51,7 +51,14 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
     
     public function getCustomerModel()
     {
-        $id = $this->getRequest()->getParam("id");
+        if($this->getRequest()->getParam("id"))
+        {
+            $id = $this->getRequest()->getParam("id");
+        }
+        else 
+        {
+            $id = Mage::getModel('customer/session')->getCustomer()->getId();
+        }
         $model = Mage::getModel('customer/customer')->load($id);
         return $model;
     }

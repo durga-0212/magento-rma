@@ -32,7 +32,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $this->loadLayout();
         $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
         $this->renderLayout();
-       
+         Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
     }
     
     public function addrequestAction() 
@@ -225,6 +225,20 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $this->loadLayout();
         $this->getLayout()->getBlock('head')->setTitle($this->__('Request Cancel Order'));
         $this->renderLayout();      
+    }
+    
+    public function bankAction()
+    {   
+        if( !Mage::getSingleton('customer/session')->isLoggedIn() ) 
+        {
+            Mage::getSingleton('customer/session')->authenticate($this);
+            return;
+        }
+        else 
+        {
+            $this->loadLayout();
+            $this->renderLayout();
+        }
     }
     
     public function notifyCustomerByEmail()
