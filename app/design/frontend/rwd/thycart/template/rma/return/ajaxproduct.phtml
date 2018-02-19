@@ -14,8 +14,9 @@
         }   
     }
      $cnt = 0;
-    if($alltrue==0):
-    foreach($productInfo as $key => $value):       
+    if($alltrue==0 && $this->getDays()):
+    foreach($productInfo as $key => $value): 
+        
         if($productInfo['is_cancel'])
         {
             $value['is_returnable'] = 1;
@@ -55,9 +56,9 @@
         ?>
         <input type="hidden" id="original_price_<?php echo $key;?>" name="original_price" value="<?php echo $product_price?>">
         <?php
-        endif;        
+        endif;
     endforeach;?>
-            
+           
     <?php        
     else: ?> 
     <tr>

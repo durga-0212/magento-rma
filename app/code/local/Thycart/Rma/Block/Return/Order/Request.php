@@ -40,5 +40,29 @@ class Thycart_Rma_Block_Return_Order_Request extends Mage_Core_Block_Template
         $collection = Mage::getModel('rma/rma_item')->getCollection();
         return $collection; 
     }
+    
+    public function getDays() 
+    {   
+        $configDays = Mage::getStoreConfig('rma_section/rma_group/rma_days'); 
+        $currentDate = Mage::getModel('core/date')->date('Y-m-d H:i:s');
+        $rmaOrders = Mage::getResourceModel('sales/order_collection');
+        foreach ($rmaOrders as $key => $value)
+        {
+            $diff = abs(strtotime($currentDate) - strtotime($value['created_at']));
+            $years = floor($diff / (365*60*60*24));
+            $months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24));
+            $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24) / (60*60*24));
+            
+            if($days > $configDays)
+            {
+                return 0;
+            }
+            else 
+            {
+                return 1;
+            }
+        }
+        
+    }
 }
 
