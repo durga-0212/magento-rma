@@ -13,8 +13,8 @@
             if($value['is_returnable']==1) { $alltrue = 0;break; }
         }   
     }
-     $cnt = 0;
-    if($alltrue==0 && $this->getDays()):
+    $cnt = 0;
+    if($alltrue==0):
     foreach($productInfo as $key => $value): 
         
         if($productInfo['is_cancel'])
