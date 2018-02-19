@@ -11,11 +11,19 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
         $this->_init('rma/order');
     }
     
-    public function getOrdersById()
+    public function getOrdersById($dateRange=0)
     {
         $customerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
         $orderInfo = Mage::getResourceModel("sales/order_collection")
-                     ->addFieldToFilter('customer_id',Mage::getSingleton('customer/session')->getCustomer()->getId());
+                    ->addFieldToFilter('customer_id',Mage::getSingleton('customer/session')->getCustomer()->getId());
+        if($dateRange)
+        {
+            $configDays = Mage::getStoreConfig('rma_section/rma_group/rma_days');
+            $currentDate = Mage::getModel('core/date')->date('Y-m-d H:i:s');
+
+            $date = date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s", strtotime($currentDate)) . -$configDays."  day"));
+            $orderInfo->addAttributeToFilter('created_at', array('from'=>$date, 'to'=>$currentDate));
+        }
         return $orderInfo;
     }
     

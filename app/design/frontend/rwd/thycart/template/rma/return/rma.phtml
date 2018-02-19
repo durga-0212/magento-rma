@@ -17,7 +17,7 @@
 <form id="requestForm" method="POST" action="<?php echo Mage::getUrl('rma/index/save'); ?>">
     <label><h4>Order Id : </h4></label>
     <?php 
-    $orderInfo = $this->getOrders();
+    $orderInfo = $this->getOrders(1);
     if(count($orderInfo)>0) : ?>
     <select name="order" id="selectOrder" class="validate-select">
         <option value="">-- Select Orders --</option>
