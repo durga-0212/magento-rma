@@ -21,7 +21,7 @@ class Thycart_Rma_OrderController extends Mage_Sales_OrderController
                 $invoiceIds = Mage::helper('rma')->orderInvoices($order['entity_id']);
                 $status = $order->getStatus();
 
-                if(empty($invoiceIds) &&  $status!= Thycart_Rma_Model_Rma_Status::STATE_CANCELED)
+                if(empty($invoiceIds) &&  strtolower($status)!= Mage_Sales_Model_Order::STATE_CANCELED)
                 {
                     $order->setshowCancelBtn(1);
                 }

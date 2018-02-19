@@ -32,7 +32,6 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $this->loadLayout();
         $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
         $this->renderLayout();
-         Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
     }
     
     public function addrequestAction() 
