@@ -197,26 +197,20 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     
     public function savebankdetailsAction()
     {
+        if(empty($this->getRequest()->getParam('bankname')) || empty($this->getRequest()->getParam('account_no')) || empty($this->getRequest()->getParam('ifsc_code')))
+        {
+            Mage::getSingleton('core/session')->addError('Please fill all the details');
+            $this->_redirect('*/*/bankForm');
+            return;
+        }
         $postData = $this->getRequest()->getParams();
-        if($postData)
-        {
-            if(!empty('bankname') && !empty('account_no') && !empty('ifsc_code'))
-            {
-                $id = Mage::getSingleton('customer/session')->getCustomer()->getEntityId();
-                $modelCustomer = Mage::getModel('customer/customer')->load($id);
-                $modelCustomer->addData($postData);
-                $modelCustomer->save();
-                $this->_redirect('*/*/index');
-            }
-            else 
-            {
-                Mage::getSingleton('core/session')->addError('Please fill all the details');
-            }
-        }
-        else 
-        {
-            Mage::getSingleton('core/session')->addError('Data not posted');
-        }
+
+        $id = Mage::getSingleton('customer/session')->getCustomer()->getEntityId();
+        $modelCustomer = Mage::getModel('customer/customer')->load($id);
+        $modelCustomer->addData($postData);
+        $modelCustomer->save();
+        $this->_redirect('*/*/index');
+        return;
     }
 
     public function cancelOrderAction()
