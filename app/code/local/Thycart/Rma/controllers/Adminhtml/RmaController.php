@@ -172,6 +172,10 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
     public function saveAction() { 
         $post_data = $this->getRequest()->getPost(); 
         $id = $this->getRequest()->getParam('id');
+        $rmaItemArray = array();
+        $sendLink = 0;
+        $modelRma = Mage::getModel('rma/order')->load($id);
+        $customerId = $modelRma->getCustomerId();
         if($post_data)
         {
             $counter=0; 
@@ -179,24 +183,24 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
             {
                 foreach ($post_data['items'] as $key => $value) 
                 {
-                    $modelRma = Mage::getModel('rma/order')->load($id);
-                    $customerId = $modelRma->getCustomerId();
                     $statusModel = Mage::getModel('rma/rma_item')->load($key);
                     $status = $statusModel->getItemStatus();
 
                     $model = Mage::getModel("rma/rma_item")->load($key);
                     $model->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
                     $result = $model->save();
+
                     $processing_status=Thycart_Rma_Model_Rma_Status::STATE_PROCESSING;
                     $return_received_status=Thycart_Rma_Model_Rma_Status::STATE_RETURN_RECEIVED;               
                     if($value['status'] == $processing_status && $status!=$processing_status)
                     {
-                        $this->saveShipmentNumber($post_data['order_id'],$value);                    
+                        $this->saveShipmentNumber($post_data['order_id'],$value);
                     }
                     elseif($value['status'] == $return_received_status && $status!= $return_received_status)
                     {
-                        $this->updateInventory($value);
-                        $this->saveBankDataLink($id,$key,$customerId);                       
+                        $updateInventory =$this->updateInventory($value);
+                        $rmaItemArray[] = $key;
+                        $sendLink = 1;                      
                     }
 
                     $arr=array(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE,Thycart_Rma_Model_Rma_Status::STATE_CANCELED);
@@ -204,9 +208,16 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                     if(in_array($value['status'], $arr))
                     {               
                         $counter++;              
-                    }         
+                    }  
                 }
-                
+                if($updateInventory)
+                {
+                    Mage::getSingleton('core/session')->addSuccess('Inventory Updated');
+                }
+                if($sendLink)
+                {
+                    $this->saveBankDataLink($id,$rmaItemArray,$customerId);
+                }
                 $modelRma->addData(array('status'=>Thycart_Rma_Model_Rma_Status::STATE_PENDING));
 
                 if(count($post_data['items']) === $counter)
@@ -269,21 +280,29 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         {
             $inventoryModel->addData(array('qty'=>$updatedQty));
             $successInventory = $inventoryModel->save();
-            Mage::getSingleton('core/session')->addSuccess('Inventory Updated');
+            return $successInventory;
         }
     }
     
-    public function saveBankDataLink($rmaOrderId,$rmaItemId,$customerId)
+    public function saveBankDataLink($rmaOrderId,$rmaItemIdArray,$customerId)
     {
-        if(!empty($rmaOrderId) || !empty($rmaItemId) || !empty($customerId))
+        if(empty($rmaOrderId) || empty($rmaItemIdArray) || empty($customerId))
         {
-            $modelLink = Mage::getModel('rma/link');
-            $modelLink->addData(array('rma_order_id'=>$rmaOrderId,'rma_order_item_id'=>$rmaItemId,'customer_id'=>$customerId,'status'=>0));
-            $modelLink->save();    
+            Mage::getSingleton('core/session')->addError('Invalid data while saving Rma Link details');
         }
         else 
         {
-            Mage::getSingleton('core/session')->addError('Bank Link Information Not Available');
+            foreach($rmaItemIdArray as $key=>$rmaItemId)
+            {
+                $modelLink = Mage::getModel('rma/link');
+                $modelLink->addData(array(
+                    'rma_order_id'=>$rmaOrderId,
+                    'rma_order_item_id'=>$rmaItemId,
+                    'customer_id'=>$customerId,
+                    'status'=>0
+                ));
+                $modelLink->save();
+            }
         }
     }
 
