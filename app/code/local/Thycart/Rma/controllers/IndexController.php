@@ -18,7 +18,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $action = $this->getRequest()->getActionName();
         $loginUrl = Mage::helper('customer')->getLoginUrl();
 
-        if (!Mage::getSingleton('customer/session')->authenticate($this, $loginUrl)) {
+        if (!Mage::getSingleton('customer/session')->authenticate($this, $loginUrl)) 
+        {
             $this->setFlag('', self::FLAG_NO_DISPATCH, true);
         }
     }
@@ -182,17 +183,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     
     public function bankFormAction() 
     {
-        if(!Mage::getSingleton('customer/session')->isLoggedIn())
-        {
-            $this->_redirect('customer/account/login');
-        }
-        else
-        {
-            $this->loadLayout();
-            $this->renderLayout();        
-            //Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
-        }
-        
+        $this->loadLayout();
+        $this->renderLayout();
     }
     
     public function savebankdetailsAction()
@@ -222,16 +214,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     
     public function bankAction()
     {   
-        if( !Mage::getSingleton('customer/session')->isLoggedIn() ) 
-        {
-            Mage::getSingleton('customer/session')->authenticate($this);
-            return;
-        }
-        else 
-        {
-            $this->loadLayout();
-            $this->renderLayout();
-        }
+        $this->loadLayout();
+        $this->renderLayout();
     }
     
     public function notifyCustomerByEmail()
