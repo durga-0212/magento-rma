@@ -222,14 +222,11 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
 
     }
     
-    public function verifyRmaLinkDetails($id)
+    public function verifyRmaLinkDetails($idArray)
     {
-        $rmaItemId = explode("-",$id);
-        foreach($rmaItemId as $id)
-        {
-            $modelLink = Mage::getModel('rma/link')->load($id);
-        }
-        
+        $modelCollection = Mage::getResourceModel('rma/link_collection')
+            ->addFieldToSelect('status')
+            ->addFieldToFilter('rma_order_item_id', array('in' => $idArray));        
     }
 
 }
