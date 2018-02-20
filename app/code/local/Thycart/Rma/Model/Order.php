@@ -19,11 +19,12 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
         if($dateRange)
         {
             $configDays = Mage::getStoreConfig('rma_section/rma_group/rma_days');
-            $currentDate = Mage::getModel('core/date')->date('Y-m-d H:i:s');
+            $currentDate = date('Y-m-d H:i:s');
 
             $date = date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s", strtotime($currentDate)) . -$configDays."  day"));
             $orderInfo->addAttributeToFilter('created_at', array('from'=>$date, 'to'=>$currentDate));
         }
+        
         return $orderInfo;
     }
     

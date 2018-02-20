@@ -158,119 +158,54 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
     public function saveAction() { 
         $post_data = $this->getRequest()->getPost(); 
         $id = $this->getRequest()->getParam('id');
-        
         if($post_data)
         {
-            $flag=0;
-            try {
-            foreach ($post_data['items'] as $key => $value) 
-            {  
-                $statusModel = Mage::getModel('rma/rma_item')->load($key);
-                $status = $statusModel->getItemStatus();
-                
-                $model = Mage::getModel("rma/rma_item")->load($key);
-                $model->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
-                $result = $model->save();
-                $processing_status=Thycart_Rma_Model_Rma_Status::STATE_PROCESSING;
-                $return_received_status=Thycart_Rma_Model_Rma_Status::STATE_RETURN_RECEIVED;               
-                if($value['status'] == $processing_status && $status!=$processing_status)
-                {
-                    $shipData=array(
-                        'order_id'=> $post_data['order_id'],
-                        'item_id' => $value['order_item_id']
-                    );
-                    $shipDetails = Mage::getModel('rma/order')->getShipmentDetails($shipData);
-                    //print_r($shipDetails); die;
-                    $track_data= Mage::helper('rma')->getTrackingNumber();                   
-                    $track_details= explode('_', $track_data); 
-                    foreach ($shipDetails as $key => $value) {                    
-                         $shipmenttrackModel = Mage::getModel('sales/order_shipment_track'); 
-                         
-                        $shipmenttrackModel->addData(array(
-                        'parent_id'  => $value['entity_id'],
-                        'order_id' => $value['order_id'],
-                        'track_number'  => $track_details[2],                        
-                        'title' => $track_details[0],
-                        'carrier_code' =>  $track_details[1],
-                        'created_at' =>Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s')                                         
-                    ));
-                    
-                   
-                    $successShipment = $shipmenttrackModel->save(); 
-                    } 
-                    if($successShipment)
-                    {
-                        Mage::getSingleton('core/session')->addSuccess('Tracking Number has been generated');
-                    }
-                }
-                elseif($value['status'] == $return_received_status && $status!=$return_received_status)
-                {
-                    $modelSalesItem = Mage::getModel('sales/order_item')->load($value['order_item_id']);
-                    $pid = $modelSalesItem->getProductId();
-                    $inventoryModel = Mage::getModel('cataloginventory/stock_item')->load($pid);
-                    $backOrders = $inventoryModel->getBackorders();
-                    $originalQty = $inventoryModel->getQty();
-                    $qty = $value['qty_approved'];
-                    $updatedQty = $originalQty+$qty;
-                    if($backOrders == 0)
-                    {
-                        $inventoryModel->addData(array('qty'=>$updatedQty));
-                        $successInventory = $inventoryModel->save();
-                    }
-                    else 
-                    {
-                        if($originalQty>0)
-                        {
-                            $inventoryModel->addData(array('qty'=>$updatedQty));                          
-                            $successInventory = $inventoryModel->save();                       
-                        }
-                    }
-                    if($successInventory)
-                    {
-                        Mage::getSingleton('core/session')->addSuccess('Inventory Updated');
-                    }
-                        
-                }
-                elseif($value['status'] == Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST)
-                {
-                  $url = Mage::getUrl();
-                  header('Location: '.$url.'rma/index/bankform/');
-                  //$this->_redirect($url.'rma/index/bankform/');
-                }
-                                 
-                $arr=array(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE,Thycart_Rma_Model_Rma_Status::STATE_CANCELED);
-             
-                if(in_array($value['status'], $arr))
-                {               
-                    $flag=1;              
-                }
-                else
-                {
-                    $flag=2;             
-                }          
-            }
-            
-           
-            $modelRma = Mage::getModel('rma/order')->load($id);
-           
-            if($flag == 1)
-            {                    
-                $modelRma->addData(array('status'=>Thycart_Rma_Model_Rma_Status::STATE_CLOSED));
-            }
-            else 
+            $counter=0; 
+            try 
             {
+                foreach ($post_data['items'] as $key => $value) 
+                {
+                    $statusModel = Mage::getModel('rma/rma_item')->load($key);
+                    $status = $statusModel->getItemStatus();
+
+                    $model = Mage::getModel("rma/rma_item")->load($key);
+                    $model->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
+                    $result = $model->save();
+                    $processing_status=Thycart_Rma_Model_Rma_Status::STATE_PROCESSING;
+                    $return_received_status=Thycart_Rma_Model_Rma_Status::STATE_RETURN_RECEIVED;               
+                    if($value['status'] == $processing_status && $status!=$processing_status)
+                    {
+                        $this->saveShipmentNumber($post_data['order_id'],$value);                    
+                    }
+                    elseif($value['status'] == $return_received_status && $status!= $return_received_status)
+                    {
+                        $this->updateInventory($value);
+                    }
+
+                    $arr=array(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE,Thycart_Rma_Model_Rma_Status::STATE_CANCELED);
+
+                    if(in_array($value['status'], $arr))
+                    {               
+                        $counter++;              
+                    }         
+                }
+
+                $modelRma = Mage::getModel('rma/order')->load($id);
                 $modelRma->addData(array('status'=>Thycart_Rma_Model_Rma_Status::STATE_PENDING));
+
+                if(count($post_data['items']) === $counter)
+                {                    
+                    $modelRma->addData(array('status'=>Thycart_Rma_Model_Rma_Status::STATE_CLOSED));
+                }
+                $modelRma->save();
             }
-            $modelRma->save();
-            }
-            catch(Exception $e){
+            catch(Exception $e)
+            {
                 Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
                 Mage::getSingleton("adminhtml/session")->setMessageData($this->getRequest()->getPost());
                 $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
                 return;
             }
-           
-            
         }
         else 
         {
@@ -278,6 +213,55 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         }
 
         $this->_redirect("*/*/");
+    }
+    
+    public function saveShipmentNumber($order_id,$value)
+    {
+        $shipData=array(
+            'order_id'=> $order_id,
+            'item_id' => $value['order_item_id']
+        );
+        $shipDetails = Mage::getModel('rma/order')->getShipmentDetails($shipData);
+        $track_data= Mage::helper('rma')->getTrackingNumber();                   
+        $track_details= explode('_', $track_data); 
+        foreach ($shipDetails as $key => $value)               
+        {                    
+            $shipmenttrackModel = Mage::getModel('sales/order_shipment_track');
+            $shipmenttrackModel->addData(array(
+                'parent_id'  => $value['entity_id'],
+                'order_id' => $value['order_id'],
+                'track_number'  => $track_details[2],                        
+                'title' => $track_details[0],
+                'carrier_code' =>  $track_details[1],
+                'created_at' =>Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s')                                         
+            ));
+
+        $successShipment = $shipmenttrackModel->save(); 
+        } 
+        if($successShipment)
+        {
+            Mage::getSingleton('core/session')->addSuccess('Tracking Number has been generated');
+        } 
+    }
+    
+    public function updateInventory($value)
+    {
+        $modelSalesItem = Mage::getModel('sales/order_item')->load($value['order_item_id']);
+        $pid = $modelSalesItem->getProductId();
+        $inventoryModel = Mage::getModel('cataloginventory/stock_item')->load($pid);
+        $backOrders = $inventoryModel->getBackorders();
+        $originalQty = $inventoryModel->getQty();
+        $qty = $value['qty_approved'];
+        $updatedQty = $originalQty+$qty;
+        if($backOrders == 0 || $originalQty>0)
+        {
+            $inventoryModel->addData(array('qty'=>$updatedQty));
+            $successInventory = $inventoryModel->save();
+        }
+        if($successInventory)
+        {
+            Mage::getSingleton('core/session')->addSuccess('Inventory Updated');
+        }
     }
 
 }

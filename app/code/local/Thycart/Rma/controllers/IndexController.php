@@ -207,6 +207,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 $modelCustomer->addData($postData);
                 $modelCustomer->save();
                 $this->_redirect('*/*/index');
+                
             }
             else 
             {
