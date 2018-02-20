@@ -8,7 +8,6 @@
         $rmaOrders = array_column($rmaOrdersCollection, 'order_id');
         $rmaOrdersItem = array_column($rmaOrdersCollection, 'itemcount', 'order_id');
         
-
         $title = ($cancelType) ? $this->__('Cancel Order') : $this->__('Create RMA');
         echo $title;
     ?>
@@ -41,44 +40,10 @@
                 </option>
         <?php $selected = ''; endforeach;?>
     </select>
-<?php endif; ?>
-    <table class="data-table orders" id="my-rma-table" >
-    <?php if(empty($cancelType)): ?>
-    <col width="1"/>
     <?php endif; ?>
-    <col width="1" />
-    <col width="1" />
-    <col width="1" />
-    <col width="1" />
-    <thead>
-        <tr>
-            <?php if(empty($cancelType)): ?>
-            <th class="view"><?php echo $this->__('ACTION'); ?></th>
-            <?php endif; ?>
-            <th class="number"><?php echo $this->__('PRODUCT NAME') ?></th>
-            <th class=""><?php echo $this->__('SKU') ?></th>
-            <th class="number"><?php echo $this->__('QUANTITY') ?></th>
-            <th class="total"><span class="nobr"><?php echo $this->__('PRICE') ?></span></th>            
-        </tr>
-    </thead>
-     
-    <tbody id="results">
-            
-    </tbody>
-     
-    <tr>
-        <td><label>Reason</label></td>
-        <td><input type="text" name="reason" class="required-entry"></td>
-    </tr>
-    
-    <tr>
-        <td>
-            <input type="submit" id="submit">
-        </td>
-    </tr>
-        
-    </table>
-    
+
+    <div id="results"></div>
+
 </form>
 
 <script type="text/javascript" >
@@ -86,82 +51,84 @@
     
     var $j = jQuery.noConflict();
     var cancelType = 0;
-    
-    $j("#selectOrder").change( function() {
-        var selectedOption = $j("#selectOrder option:selected");
-        var selectedValue = selectedOption.val();
-        if(selectedValue!=0)
-        {        
-            $j('#advice-validate-select-selectOrder').hide();
-            $j.ajax({
-                type: "POST",
-                url: "<?php echo $this->getUrl('rma/index/productinfo')?>",
-                data: {OrderId:selectedValue},
-                success: function(response) {
-                    if(response)
-                    {
-                        $j('#results').empty();
-                        $j('#results').append(response);                    
+    $j(window).ready(function(){
+
+        $j("#selectOrder").change( function() {
+            var selectedOption = $j("#selectOrder option:selected");
+            var selectedValue = selectedOption.val();
+            if(selectedValue!=0)
+            {        
+                $j('#advice-validate-select-selectOrder').hide();
+                $j.ajax({
+                    type: "POST",
+                    url: "<?php echo $this->getUrl('rma/index/productinfo')?>",
+                    data: {OrderId:selectedValue},
+                    success: function(response) {
+                        if(response)
+                        {
+                            $j('#results').empty();
+                            $j('#results').append(response);                    
+                        }
+                        else
+                        {
+                            $j('#results').append('Product cannot be return');
+                        }                   
+                    },
+                    error: function() {
+                        alert("error");
                     }
-                    else
-                    {
-                        $j('#results').append('Product cannot be return');
-                    }                   
-                },
-                error: function() {
-                    alert("error");
+                });
+            }
+        }).trigger('change'); 
+
+        $j("#requestForm").on('click', '#submit', function (e)
+        {
+            cnt=$j('#cnt').val();
+            if(cancelType ==0)
+            {
+                var checked = $j('#my-rma-table').find(':checked').length;
+                if(checked === 2)
+                {
+                    $j("#notification-message1").show();
+                    $j("#notification1").empty();
+                    $j("#notification1").append('Please select atleast one item');
+                    e.stopImmediatePropagation();  
+                    e.preventDefault();return;
                 }
-            });
-        }
-    }).trigger('change'); 
-
-    $j('#submit').click(function(e){   
-        cnt=$j('#cnt').val();  
-        ncnt=cnt-1;
-        if(cancelType ==0)
-        {
-            var checked = $j('#my-rma-table').find(':checked').length;
-            if(checked === 2)
-            {
-                $j("#notification-message1").show();
-                $j("#notification1").empty();
-                $j("#notification1").append('Please select atleast one item');
-                e.stopImmediatePropagation();  
-                e.preventDefault();return;
+                else
+                {
+                $j("#notification-message1").hide();
+                }
             }
             else
             {
-            $j("#notification-message1").hide();
+                $j("#notification-message1").hide();
             }
-        }
-        else
-        {
-            $j("#notification-message1").hide();
-        }
-        
-        
-        for (i = 0; i < cnt; i++) 
-        {            
-            var selectedQtyById=$j('#productQty_'+i).val();            
-            var orderedQty = $j('#qty_ordered_'+i).val();       
-            var product_name=$j("#product_name_"+i).val();              
-              
-            if(selectedQtyById > orderedQty)
-            {   
-                $j("#notification-message").show();
-                $j("#notification").empty();
-                $j("#notification").append("You can not return more than "+orderedQty+" "+product_name);
-                e.stopImmediatePropagation();
-                e.preventDefault();return;
+            
+            
+            for (i = 0; i < cnt; i++) 
+            {            
+                var selectedQtyById=$j('#productQty_'+i).val();            
+                var orderedQty = $j('#qty_ordered_'+i).val();       
+                var product_name=$j("#product_name_"+i).val();              
+                  
+                if(selectedQtyById > orderedQty)
+                {   
+                    $j("#notification-message").show();
+                    $j("#notification").empty();
+                    $j("#notification").append("You can not return more than "+orderedQty+" "+product_name);
+                    e.stopImmediatePropagation();
+                    e.preventDefault();return;
+                }
+                else
+               {
+                $j("#notification-message").hide();
+               }
             }
-            else
-           {
-            $j("#notification-message").hide();
-           }
-        }
-        
+            
 
-    });
+        });
     var customForm = new VarienForm('requestForm'); 
+    });
     //]]>
 </script>

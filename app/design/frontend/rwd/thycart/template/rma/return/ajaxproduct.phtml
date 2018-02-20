@@ -2,17 +2,36 @@
     $productInfo = Mage::registry('productInfo');  
     $alltrue = 1;
     $cancelType = isset($productInfo['is_cancel']) ? $productInfo['is_cancel'] : 0;
-    if($cancelType)
-    {
+    if($cancelType):
         $alltrue = 0;
-    }
-    else
-    {
-        foreach($productInfo as $item => $value ) 
-        { 
+    else:
+        foreach($productInfo as $item => $value ): 
             if($value['is_returnable']==1) { $alltrue = 0;break; }
-        }   
-    }
+        endforeach;
+    endif;
+?>
+<table class="data-table orders" id="my-rma-table" >
+    <?php if(empty($cancelType)): ?>
+    <col width="1"/>
+    <?php endif;?>
+    <col width="1" />
+    <col width="1" />
+    <col width="1" />
+    <col width="1" />
+    <thead>
+        <tr>
+            <?php if(empty($cancelType)): ?>
+            <th class="view"><?php echo $this->__('ACTION'); ?></th>
+            <?php endif;?>
+            <th class="number"><?php echo $this->__('PRODUCT NAME') ?></th>
+            <th class=""><?php echo $this->__('SKU') ?></th>
+            <th class="number"><?php echo $this->__('QUANTITY') ?></th>
+            <th class="total"><span class="nobr"><?php echo $this->__('PRICE') ?></span></th>            
+        </tr>
+    </thead>
+    
+    <tbody id="ramTable">
+    <?php
     $cnt = 0;
     if($alltrue==0):
     foreach($productInfo as $key => $value): 
@@ -23,7 +42,7 @@
         }
         if($value['is_returnable']): 
             $cnt++;
-?>  
+    ?> 
         <tr>
             <?php if(empty($cancelType)): ?>
             <td>   
@@ -51,7 +70,6 @@
         <input type="hidden" id="product_name_<?php echo $key;?>" name="Product[[<?php echo $key;?>][name]]" value="<?php echo $value['name'];?>">
         <input type="hidden" name="Product[[<?php echo $key;?>][sku]]" value="<?php echo $value['sku'];?>">
         <input type="hidden" name="Product[[<?php echo $key;?>][product_options]]" value="<?php echo $value['product_options'];?>">
-        <input type="hidden" name="count" id="cnt" value="<?php echo $cnt ?>">
         <?php $product_price = isset($value['base_original_price'])? $value['base_original_price']: '';
         ?>
         <input type="hidden" id="original_price_<?php echo $key;?>" name="original_price" value="<?php echo $product_price?>">
@@ -61,73 +79,85 @@
            
     <?php        
     else: ?> 
-    <tr>
-        <td colspan="5" style=" text-align: center; font-size: 50px;">Product cannot be return</td>
-    </tr>
-    <?php endif; ?>
-    <tr id="notification-message" style="display:none">
-        <td></td>
-        <td></td>
-        <td colspan="5" style=" text-align: center; font-size: 20px; color: rosybrown;" id="notification"></td>
-        <td></td>
-    </tr>
-    <tr id="notification-message1" style="display:none">
-        <td></td>
-        <td></td>
-        <td colspan="5" style=" text-align: center; font-size: 20px; color: rosybrown;" id="notification1"></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><label>Resolution</label></td>
-        <td>
-        <?php $resolution=Mage::helper('rma')->getAttributeOptionValues('resolution');?>
-            <select name="resolution_type" id="resolution_type" class="validate-select resolution_type">
-                <option value="">-- Select Resolution --</option>
-                <?php 
-                $selected ='';
-                foreach ($resolution as $key => $value) {
-                    if($cancelType && strtolower($key) === 'cancel' || $cancelType==0 && strtolower($key) !== 'cancel'): 
+        <tr>
+            <td colspan="5" style=" text-align: center; font-size: 12px;">Product cannot be return</td>
+        </tr>
+        <?php endif; ?>
+        <tr id="notification-message" style="display:none">
+            <td></td>
+            <td></td>
+            <td colspan="5" style=" text-align: center; font-size: 12px; color: red;" id="notification"></td>
+            <td></td>
+        </tr>
+        <tr id="notification-message1" style="display:none">
+            <td></td>
+            <td></td>
+            <td colspan="5" style=" text-align: center; font-size: 20px; color: red;" id="notification1"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><label>Resolution</label></td>
+            <td>
+            <?php $resolution=Mage::helper('rma')->getAttributeOptionValues('resolution');?>
+                <select name="resolution_type" id="resolution_type" class="validate-select resolution_type">
+                    <option value="">-- Select Resolution --</option>
+                    <?php 
+                    $selected ='';
+                    foreach ($resolution as $key => $value) {
+                        if($cancelType && strtolower($key) === 'cancel' || $cancelType==0 && strtolower($key) !== 'cancel'): 
+                            $selected = 'selected';
+                    ?>        
+                    <option value="<?php echo $key;?>" <?php echo $selected;?>>
+                        <?php echo $value;?>
+                    </option>
+                    <?php
+                        endif;
+                    }?>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Delivery Status</label></td>
+            <td>
+              <?php                 
+                $delivery_status=Mage::helper('rma')->getAttributeOptionValues('delivery_status');                
+                ?>               
+                <select name="delivery_status"  class="validate-select" id="delivery_status">
+                    <option value="">-- Select condition --</option>
+                    <?php 
+                    foreach ($delivery_status as $key => $value) {
+                        if($cancelType && strtolower($key) === 'not delivered' || $cancelType==0 && strtolower($key) !== 'not delivered'): 
                         $selected = 'selected';
-                ?>        
-                <option value="<?php echo $key;?>" <?php echo $selected;?>>
-                    <?php echo $value;?>
-                </option>
-                <?php
-                    endif;
-                }?>
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td><label>Delivery Status</label></td>
-        <td>
-          <?php                 
-            $delivery_status=Mage::helper('rma')->getAttributeOptionValues('delivery_status');                
-            ?>               
-            <select name="delivery_status"  class="validate-select" id="delivery_status">
-                <option value="">-- Select condition --</option>
-                <?php 
-                foreach ($delivery_status as $key => $value) {
-                    if($cancelType && strtolower($key) === 'not delivered' || $cancelType==0 && strtolower($key) !== 'not delivered'): 
-                    $selected = 'selected';
-                ?>        
-                <option value="<?php echo $key;?>" <?php echo $selected;?>>
-                    <?php echo $value;?>
-                </option>
-                <?php
-                    endif;
-                }?>
-            </select>  
-            <input type="hidden" value="<?php echo $cancelType;?>" name="cancelType">             
-        </td>
-    </tr>
-    <?php if(empty($cancelType)): ?>
-    <tr>
-        <td><label>Consignment No.</label></td>
-        <td><input type="text" name="consign_number" class="required-entry"></td>
-    </tr>
-    <?php endif;?>
-
+                    ?>        
+                    <option value="<?php echo $key;?>" <?php echo $selected;?>>
+                        <?php echo $value;?>
+                    </option>
+                    <?php
+                        endif;
+                    }?>
+                </select>  
+                <input type="hidden" value="<?php echo $cancelType;?>" name="cancelType">             
+            </td>
+        </tr>
+        <?php if(empty($cancelType)): ?>
+        <tr>
+            <td><label>Consignment No.</label></td>
+            <td><input type="text" name="consign_number" class="required-entry"></td>
+        </tr>
+        <?php endif;?>
+        <tr>
+            <td><label>Reason</label></td>
+            <td><input type="text" name="reason" class="required-entry"></td>
+        </tr>
+        
+        <tr>
+            <td>
+                <input type="submit" id="submit">
+            </td>
+        </tr>
+    </tbody>
+</table>
+<input type="hidden" name="count" id="cnt" value="<?php echo $cnt ?>">
 <script type="text/javascript">
     //<![CDATA[
     var $j = jQuery.noConflict();  
