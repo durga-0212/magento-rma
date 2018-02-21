@@ -61,7 +61,7 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
     
     public function sendMail($from,$to,$subject,$body,$link='')
     {
-        require_once('PHPMailer/class.phpmailer.php');
+        require_once('phpmailer/class.phpmailer.php');
         $mail = new PHPMailer(); // create a new object
         $mail->IsSMTP(); // enable SMTP
         $mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
