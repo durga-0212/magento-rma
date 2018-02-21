@@ -24,10 +24,6 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         }
     }
     
-    
-     /*
-      Customer order history
-     */
     public function indexAction()
     {      
         $this->loadLayout();
@@ -183,6 +179,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     
     public function bankFormAction() 
     {
+        $id = $this->getRequest()->getParam('rmaItemId');
+        $this->verifyRmaLinkDetails($id);
         $this->loadLayout();
         $this->renderLayout();
     }
@@ -222,6 +220,16 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     {
         //$this->_redirect();
 
+    }
+    
+    public function verifyRmaLinkDetails($id)
+    {
+        $rmaItemId = explode("-",$id);
+        foreach($rmaItemId as $id)
+        {
+            $modelLink = Mage::getModel('rma/link')->load($id);
+        }
+        
     }
 
 }

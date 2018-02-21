@@ -194,7 +194,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                     $return_received_status=Thycart_Rma_Model_Rma_Status::STATE_RETURN_RECEIVED;               
                     if($value['status'] == $processing_status && $status!=$processing_status)
                     {
-                        $this->saveShipmentNumber($post_data['order_id'],$value);
+                        $saveShipmentNumber = $this->saveShipmentNumber($post_data['order_id'],$value);
                     }
                     elseif($value['status'] == $return_received_status && $status!= $return_received_status)
                     {
@@ -214,9 +214,13 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 {
                     Mage::getSingleton('core/session')->addSuccess('Inventory Updated');
                 }
+                if($saveShipmentNumber)
+                {
+                    Mage::getSingleton('core/session')->addSuccess('Tracking Number is generated');
+                }
                 if($sendLink)
                 {
-                    $this->saveBankDataLink($id,$rmaItemArray,$customerId);
+                    $this->saveRmaLink($id,$rmaItemArray,$customerId);
                 }
                 $modelRma->addData(array('status'=>Thycart_Rma_Model_Rma_Status::STATE_PENDING));
 
@@ -264,7 +268,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
 
         $successShipment = $shipmenttrackModel->save(); 
         }
-        Mage::getSingleton('core/session')->addSuccess('Tracking Number has been generated');         
+        return $successShipment;                 
     }
     
     public function updateInventory($value)
@@ -284,8 +288,8 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         }
     }
     
-    public function saveBankDataLink($rmaOrderId,$rmaItemIdArray,$customerId)
-    {
+    public function saveRmaLink($rmaOrderId,$rmaItemIdArray,$customerId)
+    {   
         if(empty($rmaOrderId) || empty($rmaItemIdArray) || empty($customerId))
         {
             Mage::getSingleton('core/session')->addError('Invalid data while saving Rma Link details');
@@ -303,7 +307,18 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 ));
                 $modelLink->save();
             }
+            $link = "http://127.0.0.1/magento-rma/index.php/rma/index/bankform/rmaItemId".implode("-",$rmaItemIdArray);
+            $from = 'anjalee.singh@adapty.com';
+            $to = 'anjalee.singh@adapty.com';
+            $subject = 'Return Received';
+            $body = 'Your product has been received';
+            $this->sendMail($from,$to,$subject,$body,$link);
         }
     }
 
+    public function sendMail($from,$to,$subject,$body,$link='')
+    {
+        Mage::helper('rma')->sendMail($from,$to,$subject,$body,$link);
+    }
+    
 }

@@ -1,8 +1,8 @@
 <?php 
 class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
-{
-     
-    public function getAttributeOptionValues($attribute_code) {
+{     
+    public function getAttributeOptionValues($attribute_code) 
+    {
         $attribute_data=Mage::getModel('rma/rma_eav_attribute')->getAttributeCollection();
         return $attribute_data[$attribute_code];
     }
@@ -20,44 +20,72 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
         return $invoiceIds;
     }
     
-     public function getTrackingNumber()
+    public function getTrackingNumber()
     {
         $digits_needed = 8;
         $random_number = ''; // set up a blank string
         $count = 0;  
-        $carriers=$this->getEnabledshippingmethods(); 
-        
-         $random_number .= $carriers;        
-          while ($count < $digits_needed) {
+        $carriers=$this->getEnabledshippingmethods();         
+        $random_number .= $carriers;        
+        while ($count < $digits_needed) 
+        {
             $random_digit = mt_rand(0, 9);                     
             $random_number .= $random_digit;
             $count++;
-           }          
+        }          
         return $random_number;
     }
     
     public function getEnabledshippingmethods()
     {
         $methods = Mage::getSingleton('shipping/config')->getAllCarriers();    
-        foreach ($methods as $code => $carrier) {            
-                $carriers[$code] = $carrier->getConfigData('title');           
+        foreach ($methods as $code => $carrier) 
+        {            
+            $carriers[$code] = $carrier->getConfigData('title');           
         }        
         $arr=array();
         foreach($carriers as $key=> $value)
         {
             $arr[$key]=$value.'_'.$key.'_';           
         }
-         $k = array_rand($arr);        
-         $v = $arr[$k];        
+        $k = array_rand($arr);        
+        $v = $arr[$k];        
         return $v;
     }
     
-    public function getTrackingResponse($shipData=array()) {    
+    public function getTrackingResponse($shipData=array()) 
+    {    
         $ordershipdata=Mage::getModel('rma/order')->getshipmentData($shipData);
         return $ordershipdata;    
     }
     
-    
+    public function sendMail($from,$to,$subject,$body,$link='')
+    {
+        require_once('PHPMailer/class.phpmailer.php');
+        $mail = new PHPMailer(); // create a new object
+        $mail->IsSMTP(); // enable SMTP
+        $mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
+        $mail->SMTPAuth = true; // authentication enabled
+        $mail->SMTPSecure = 'ssl'; // secure transfer enabled REQUIRED for Gmail
+        $mail->Host = "smtp.gmail.com";
+        $mail->Port = 465; // or 587
+        $mail->IsHTML(true);
+        $mail->Username = $from;
+        $mail->Password = "vipin$90";
+        $mail->SetFrom($from);
+        $mail->Subject = $subject;
+        $mail->Body = $body.'<br>'.$link;
+        $mail->AddAddress($to);
+
+        if(!$mail->Send()) 
+        {
+           echo "Mailer Error: " . $mail->ErrorInfo;
+        } 
+        else 
+        {
+           echo "Message has been sent";
+        }
+    }
     
 }
 ?>
