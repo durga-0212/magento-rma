@@ -19,6 +19,19 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
         $invoiceIds = $orderObject->getInvoiceCollection()->getAllIds();
         return $invoiceIds;
     }
+
+    public function orderShipment($orderId=0)
+    {
+        $shipmentIds = array();
+        if(empty($orderId))
+        {
+            return $shipmentIds;
+        }
+
+        $orderObject = Mage::getModel('sales/order')->load($orderId);
+        $shipmentIds = $orderObject->getShipmentsCollection()->getAllIds();
+        return $shipmentIds;
+    }
     
     public function getTrackingNumber()
     {

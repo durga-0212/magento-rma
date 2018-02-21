@@ -65,8 +65,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             if($orderId > 0)
             {
                 $cancelType = 0;
-                $orderInvoices = Mage::helper('rma')->orderInvoices($orderId);
-                if(empty($orderInvoices))
+                $shipmentIds = Mage::helper('rma')->orderShipment($orderId);
+                if(empty($shipmentIds))
                 {
                     $cancelType = 1;
                 }
