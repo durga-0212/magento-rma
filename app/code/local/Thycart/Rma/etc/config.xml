@@ -37,6 +37,9 @@ and open the template in the editor.
                     <rma_eav_attributeoption>
                         <table>rma_eav_attribute_option</table>
                     </rma_eav_attributeoption>
+                    <link>
+                        <table>bankverification_link</table>
+                    </link>
                 </entities>
             </rma_resource>
         </models>

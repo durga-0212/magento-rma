@@ -108,4 +108,15 @@ CREATE TABLE `rma_eav_attribute_option` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='rma_eav_attribute_option'
 ");
 
+$installer->run("Drop table if exists `bankverification_link`;
+CREATE TABLE `bankverification_link` (
+ `entity_id` int(5) NOT NULL AUTO_INCREMENT,
+ `rma_order_id` int(5) NOT NULL,
+ `rma_order_item_id` int(5) NOT NULL,
+ `customer_id` int(5) NOT NULL,
+ `status` int(5) NOT NULL,
+ PRIMARY KEY (`entity_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+");
+
 $installer->endSetup();
