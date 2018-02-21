@@ -307,7 +307,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 ));
                 $modelLink->save();
             }
-            $link = "http://127.0.0.1/magento-rma/index.php/rma/index/bankform/rmaItemId".implode("-",$rmaItemIdArray);
+            $link = "http://127.0.0.1/magento-rma/index.php/rma/index/bankform/rmaItemId/".implode("-",$rmaItemIdArray);
             $from = 'anjalee.singh@adapty.com';
             $to = 'anjalee.singh@adapty.com';
             $subject = 'Return Received';

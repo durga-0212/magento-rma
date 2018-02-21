@@ -9,6 +9,6 @@ class Thycart_Rma_Model_Resource_Link_Collection extends Mage_Core_Model_Resourc
 {
     protected function _construct() 
     {
-        $this->_init('rma/order');
+        $this->_init('rma/link');
     }
 }

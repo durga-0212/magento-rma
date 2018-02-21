@@ -222,11 +222,20 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
 
     }
     
-    public function verifyRmaLinkDetails($idArray)
-    {
+    public function verifyRmaLinkDetails($id)
+    {       
+        $idArray = explode("-",$id);
         $modelCollection = Mage::getResourceModel('rma/link_collection')
             ->addFieldToSelect('status')
-            ->addFieldToFilter('rma_order_item_id', array('in' => $idArray));        
+            ->addFieldToFilter('rma_order_item_id',array('in' => $idArray));
+            
+        //echo"<pre>";print_r($modelCollection->getData());die;
+        $status = $modelCollection->getStatus();
+        print_r($status);die;
+        if(!$status)
+        {
+            return true;
+        }
     }
 
 }
