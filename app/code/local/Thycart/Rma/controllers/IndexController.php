@@ -115,19 +115,9 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             $status = Thycart_Rma_Model_Rma_Status::STATE_CANCELED;            
         }
         $customerModel = Mage::getSingleton('customer/session')->getCustomer();
-        $orderInfo = Mage::getModel('sales/order')->load($orderId);
 
-        $rmaOrderId = $this->saveRmaOrderData($customerModel, $orderId, $orderInfo, $status);
+        $orderModel = $this->saveRmaOrderData($customerModel, $orderId, $status);
 
-        $orderModel = Mage::getModel('rma/order'); 
-        $orderModel->setData(array(
-            'order_id'=>$orderId,'increment_id'=>$orderInfo->getIncrementId(),
-            'order_increment_id'=>$orderInfo->getIncrementId(),
-            'order_date'=>$orderInfo->getCreatedAt(),'date_requested'=>$date,
-            'store_id'=> $orderInfo->getStoreId(),'customer_id'=>$customerModel->getEntityId(),
-            'customer_name'=>$customerModel->getName(),'customer_email'=>$customerModel->getEmail(),
-            'status'=>$status)
-        );
         if($rmaOrderId)
         {
             foreach ($data['products'] as $key => $value) 
@@ -137,7 +127,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     //Pending Anjalee
                     $productInfo = Mage::getModel('rma/order')->getProductsById($data['order']);
                     $item_data=array(
-                        'rma_entity_id' => $rmaOrderId,
+                        'rma_entity_id' => $orderModel->getId(),
                         'qty_ordered'  => '3',
                         'product_name' => 'RMA Product',
                         'product_sku' => 'p003',
@@ -348,6 +338,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     public function saveRmaOrderData($customerModel, $orderId, $orderInfo, $status)
     {
         $date = Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s');
+        
+        $orderInfo = Mage::getModel('sales/order')->load($orderId);
         
         $lastInertId = 0;
         $orderModel = Mage::getModel('rma/order'); 
