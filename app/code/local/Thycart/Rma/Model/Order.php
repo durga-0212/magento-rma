@@ -15,7 +15,9 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
     {
         $customerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
         $orderInfo = Mage::getResourceModel("sales/order_collection")
-                    ->addFieldToFilter('customer_id',Mage::getSingleton('customer/session')->getCustomer()->getId());
+                    ->addFieldToFilter('customer_id',Mage::getSingleton('customer/session')->getCustomer()->getId())
+                    ->addFieldToFilter('status',array('neq'=>Mage_Sales_Model_Order::STATE_CANCELED));
+        
         if($dateRange)
         {
             $configDays = Mage::getStoreConfig('rma_section/rma_group/rma_days');

@@ -169,13 +169,17 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         $this->getResponse()->setBody($response);
     }
 
-    public function saveAction() { 
+    public function saveAction() 
+    { 
         $post_data = $this->getRequest()->getPost(); 
         $id = $this->getRequest()->getParam('id');
         $rmaItemArray = array();
         $sendLink = 0;
+        $sendMail = 0;
         $modelRma = Mage::getModel('rma/order')->load($id);
         $customerId = $modelRma->getCustomerId();
+        $from = 'anjalee.singh@adapty.com';
+        $to = 'anjalee.singh@adapty.com';
         if($post_data)
         {
             $counter=0; 
@@ -192,6 +196,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
 
                     $processing_status=Thycart_Rma_Model_Rma_Status::STATE_PROCESSING;
                     $return_received_status=Thycart_Rma_Model_Rma_Status::STATE_RETURN_RECEIVED;               
+                    
                     if($value['status'] == $processing_status && $status!=$processing_status)
                     {
                         $saveShipmentNumber = $this->saveShipmentNumber($post_data['order_id'],$value);
@@ -201,6 +206,10 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                         $updateInventory =$this->updateInventory($value);
                         $rmaItemArray[] = $key;
                         $sendLink = 1;                      
+                    }
+                    elseif($value['status'] == Thycart_Rma_Model_Rma_Status::STATE_COMPLETE && $status!= Thycart_Rma_Model_Rma_Status::STATE_COMPLETE)
+                    {
+                        $sendMail = 1;
                     }
 
                     $arr=array(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE,Thycart_Rma_Model_Rma_Status::STATE_CANCELED);
@@ -217,10 +226,20 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 if($saveShipmentNumber)
                 {
                     Mage::getSingleton('core/session')->addSuccess('Tracking Number is generated');
+                    $subject = 'RMA Processed';
+                    $body = 'Your Rma Request has been processed';
+                    $this->sendMail($from,$to,$subject,$body);
                 }
                 if($sendLink)
                 {
-                    $this->saveRmaLink($id,$rmaItemArray,$customerId);
+                    $this->saveRmaLink($id,$rmaItemArray,$customerId,$from,$to);
+                }
+                if($sendMail)
+                {
+                    $subject = 'RMA Completed';
+                    $body = 'Your Rma Request has been completed';
+                    $this->sendMail($from,$to,$subject,$body);
+                    Mage::getSingleton('core/session')->addSuccess('Rma Request has been completed');
                 }
                 $modelRma->addData(array('status'=>Thycart_Rma_Model_Rma_Status::STATE_PENDING));
 
@@ -288,7 +307,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         }
     }
     
-    public function saveRmaLink($rmaOrderId,$rmaItemIdArray,$customerId)
+    public function saveRmaLink($rmaOrderId,$rmaItemIdArray,$customerId,$from,$to)
     {   
         if(empty($rmaOrderId) || empty($rmaItemIdArray) || empty($customerId))
         {
@@ -296,7 +315,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         }
         else 
         {
-            foreach($rmaItemIdArray as $key=>$rmaItemId)
+            foreach($rmaItemIdArray as $key => $rmaItemId)
             {
                 $modelLink = Mage::getModel('rma/link');
                 $modelLink->addData(array(
@@ -307,9 +326,8 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 ));
                 $modelLink->save();
             }
-            $link = "http://127.0.0.1/magento-rma/index.php/rma/index/bankform/rmaItemId/".implode("-",$rmaItemIdArray);
-            $from = 'anjalee.singh@adapty.com';
-            $to = 'anjalee.singh@adapty.com';
+            $url = Mage::getBaseUrl();
+            $link = $url."rma/index/bankform/rmaItemId/".implode("-",$rmaItemIdArray);
             $subject = 'Return Received';
             $body = 'Your product has been received';
             $this->sendMail($from,$to,$subject,$body,$link);
@@ -319,6 +337,11 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
     public function sendMail($from,$to,$subject,$body,$link='')
     {
         Mage::helper('rma')->sendMail($from,$to,$subject,$body,$link);
+    }
+    
+    public function getCustomerEmailId()
+    {
+        $emailId = Mage::getSingleton('customer/session')->getCustomer()->getEmail();
     }
     
 }

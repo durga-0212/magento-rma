@@ -71,7 +71,7 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
         $mail->Port = 465; // or 587
         $mail->IsHTML(true);
         $mail->Username = $from;
-        $mail->Password = "vipin$90";
+        $mail->Password = "";
         $mail->SetFrom($from);
         $mail->Subject = $subject;
         $mail->Body = $body.'<br>'.$link;
@@ -79,11 +79,11 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
 
         if(!$mail->Send()) 
         {
-           echo "Mailer Error: " . $mail->ErrorInfo;
+           return false;
         } 
         else 
         {
-           echo "Message has been sent";
+           return true;
         }
     }
     

@@ -6,12 +6,11 @@
  */
 class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
 {
-    
-      /**
-     * Action predispatch
-     *
-     * Check customer authentication for some actions
-     */
+    /**
+    * Action predispatch
+    *
+    * Check customer authentication for some actions
+    */
     public function preDispatch()
     {
         parent::preDispatch();
@@ -37,26 +36,25 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $this->getLayout()->getBlock('head')->setTitle($this->__('Create RMA'));
         $this->renderLayout();
     }
-    
-    
+        
     public function viewAction()
     {
-            $this->loadLayout();        
-            $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
-            $this->renderLayout();
-            // Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
+        $this->loadLayout();        
+        $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
+        $this->renderLayout();
+        // Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
     }
     
     public function saveCommentAction() 
     {
-       $postData= $this->getRequest()->getParams();
-       $postData['created_at']=Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s');      
-       $modelObj=Mage::getModel('rma/rma_history')->setData($postData)->save();
-       if($modelObj)
-       {
+        $postData= $this->getRequest()->getParams();
+        $postData['created_at']=Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s');      
+        $modelObj=Mage::getModel('rma/rma_history')->setData($postData)->save();
+        if($modelObj)
+        {
             $url = Mage::helper('core/http')->getHttpReferer() ? Mage::helper('core/http')->getHttpReferer():$this->_getRefererUrl();
             Mage::app()->getResponse()->setRedirect($url);  
-       }
+        }
     }
     
     public function productinfoAction()
@@ -111,7 +109,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $status = Thycart_Rma_Model_Rma_Status::STATE_PENDING;
         if(isset($data['cancelType']) && $data['cancelType'] ==1)
         {
-            $status = Thycart_Rma_Model_Rma_Status::STATE_CANCELED;
+            $status = Thycart_Rma_Model_Rma_Status::STATE_CANCELED;            
         }
         $orderModel = Mage::getModel('rma/order'); 
         $date = Mage::getModel('core/date')->date('Y-m-d H:i:s');
@@ -135,16 +133,10 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     );
                     $rmaItemModel = Mage::getModel('rma/rma_item');  
                     $rmaItemModel->setData($item_data);
+                    $productName[] = $item_data['product_name'];
                     $rmaItemModel->save();
-                   if(!isset($data['cancelType']) || $data['cancelType'] ==0)
-                   {
-                    $this->_redirect('*/*/index');
-                   }
-                   else{
-                     $this->_redirect('*/*/bankform');   
-                   }
                 }           
-            }  
+            } 
             if(!isset($data['cancelType']) || $data['cancelType'] ==0)
             {
                 $rmaHistoryModel = Mage::getModel('rma/rma_history');
@@ -156,9 +148,14 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 $order = Mage::getModel('sales/order')->load($data['order_id']);
                 $order->setState(Mage_Sales_Model_Order::STATE_CANCELED, true)->save();
             }
+            
             $rmaAttributeModel = Mage::getModel('rma/rma_attributes');
             $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'delivery_status'=>$data['delivery_status'],'reason'=>$data['reason'],'created_at'=>$date));
-            $rmaAttributeModel->save();      
+            if($rmaAttributeModel->save())
+            {
+                $mailResult = $this->checkForSendingMail($data['cancelType'],$data['order_id'],$productName);            
+            }
+            $this->_redirect('*/*/index');
         }
     }
     
@@ -180,27 +177,40 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     public function bankFormAction() 
     {
         $id = $this->getRequest()->getParam('rmaItemId');
-        $this->verifyRmaLinkDetails($id);
-        $this->loadLayout();
-        $this->renderLayout();
+        $validRma = $this->verifyRmaLinkDetails($id);
+        if($validRma)
+        {
+            $this->loadLayout();
+            $this->renderLayout();
+        }
+        else
+        {
+            $this->_redirect('customer/account/');
+            Mage::getSingleton('core/session')->addError('You have already filled bank details');
+        }
     }
     
     public function savebankdetailsAction()
     {
-        if(empty($this->getRequest()->getParam('bankname')) || empty($this->getRequest()->getParam('account_no')) || empty($this->getRequest()->getParam('ifsc_code')))
+        if(empty($this->getRequest()->getParam('bankname')) || empty($this->getRequest()->getParam('account_no')) || empty($this->getRequest()->getParam('ifsc_code')) || empty($this->getRequest()->getParam('rmaItemId')))
         {
             Mage::getSingleton('core/session')->addError('Please fill all the details');
             $this->_redirect('*/*/bankForm');
             return;
         }
+        $rmaItemId = $this->getRequest()->getParam('rmaItemId');
         $postData = $this->getRequest()->getParams();
-
-        $id = Mage::getSingleton('customer/session')->getCustomer()->getEntityId();
-        $modelCustomer = Mage::getModel('customer/customer')->load($id);
+        $customerId = Mage::getSingleton('customer/session')->getCustomer()->getEntityId();
+        $modelCustomer = Mage::getModel('customer/customer')->load($customerId);
         $modelCustomer->addData($postData);
-        $modelCustomer->save();
-        $this->_redirect('*/*/index');
-        return;
+        $updateCustomerDetails = $modelCustomer->save();
+        if($updateCustomerDetails)
+        {
+            $this->changeRmaLinkStatus($rmaItemId,$customerId);
+            $this->changeRmaItemStatus($rmaItemId);
+            $this->_redirect('*/*/index');
+            Mage::getSingleton('core/session')->addSuccess('Bank Details Saved Successfully');
+        }      
     }
 
     public function cancelOrderAction()
@@ -216,26 +226,88 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $this->renderLayout();
     }
     
-    public function notifyCustomerByEmail()
-    {
-        //$this->_redirect();
-
-    }
-    
     public function verifyRmaLinkDetails($id)
     {       
         $idArray = explode("-",$id);
         $modelCollection = Mage::getResourceModel('rma/link_collection')
             ->addFieldToSelect('status')
-            ->addFieldToFilter('rma_order_item_id',array('in' => $idArray));
-            
-        //echo"<pre>";print_r($modelCollection->getData());die;
-        $status = $modelCollection->getStatus();
-        print_r($status);die;
-        if(!$status)
+            ->addFieldToFilter('rma_order_item_id',array('in' => $idArray));            
+        
+        $collectionData = $modelCollection->getData();
+        if(empty($collectionData))
         {
-            return true;
+            return 0;
         }
+        $statusArray = array_column($collectionData, 'status');
+        if(in_array(1,$statusArray))
+        {
+            return 0;
+        }
+        return 1;
+    }
+    
+    public function changeRmaLinkStatus($rmaItemId,$customerId)
+    { 
+        $rmaItemIdArray = explode("-",$rmaItemId);
+        $entityIdArray = Mage::getResourceModel('rma/link_collection')
+            ->addFieldToSelect('entity_id')
+            ->addFieldToFilter('customer_id',$customerId)
+            ->addFieldToFilter('rma_order_item_id',array('in'=>$rmaItemIdArray));
+        
+        foreach($entityIdArray as $key => $value)
+        {
+            $modelRmaLink = Mage::getModel('rma/link')->load($value['entity_id']);            
+            $modelRmaLink->addData(array('status'=>1));
+            $result = $modelRmaLink->save();
+        }
+    }
+    
+    public function changeRmaItemStatus($rmaItemId)
+    { 
+        $rmaItemIdArray = explode("-",$rmaItemId);
+        foreach($rmaItemIdArray as $id)
+        {
+            $modelRmaItem = Mage::getModel('rma/rma_item')->load($id);
+            $modelRmaItem->addData(array('item_status'=> Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST));
+            $changeItemStatus = $modelRmaItem->save();
+        }
+        if($changeItemStatus)
+        {
+            $from = 'anjalee.singh@adapty.com';
+            $to = 'anjalee.singh@adapty.com';
+            $subject = 'Rma Payment Request';
+            $body = 'Customer Bank Details have been saved';
+            $resultMail = $this->sendMail($from,$to,$subject,$body);
+        }
+    }
+    
+    public function sendMail($from,$to,$subject,$body,$link='')
+    {
+        $resultMail = Mage::helper('rma')->sendMail($from,$to,$subject,$body,$link);
+        return $resultMail;
+    }
+    
+    public function getCustomerEmailId()
+    {
+        $emailId = Mage::getSingleton('customer/session')->getCustomer()->getEmail();
+    }
+    
+    public function checkForSendingMail($cancelType='',$orderId,$productArray)
+    {
+        $productName = implode(",",$productArray);
+        $from = 'anjalee.singh@adapty.com';
+        $to = 'anjalee.singh@adapty.com';
+        $subject = 'Return Request for OrderId '.$orderId;
+        $body = 'Rma Request have been placed for products'.'<br>'.$productName;
+        if($cancelType)
+        {
+            $subject = 'Order Cancellation for OrderId '.$orderId;
+            $body = 'Order has been canceled for'.'<br>'.$productName;            
+            $url = Mage::getBaseUrl();
+            $link = $url."rma/index/bankform/";            
+        }        
+        $resultMail = $this->sendMail($from,$to,$subject,$body);
+        return $resultMail;
     }
 
 }
