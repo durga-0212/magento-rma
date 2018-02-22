@@ -135,6 +135,10 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     $rmaItemModel->setData($item_data);
                     $productName[] = $item_data['product_name'];
                     $rmaItemModel->save();
+                    if($data['cancelType'])
+                    {
+                        $successInventory = Mage::helper('rma')->updateInventory($value['item_id'],$value['qty_requested']);
+                    }
                 }           
             } 
             if(!isset($data['cancelType']) || $data['cancelType'] ==0)

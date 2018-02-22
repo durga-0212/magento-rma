@@ -170,8 +170,8 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
     }
 
     public function saveAction() 
-    { 
-        $post_data = $this->getRequest()->getPost(); 
+    {       
+        $post_data = $this->getRequest()->getPost();        
         $id = $this->getRequest()->getParam('id');
         $rmaItemArray = array();
         $sendLink = 0;
@@ -203,7 +203,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                     }
                     elseif($value['status'] == $return_received_status && $status!= $return_received_status)
                     {
-                        $updateInventory =$this->updateInventory($value);
+                        $updateInventory = Mage::helper('rma')->updateInventory($value['order_item_id'],$value['qty_approved']);
                         $rmaItemArray[] = $key;
                         $sendLink = 1;                      
                     }
@@ -288,23 +288,6 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         $successShipment = $shipmenttrackModel->save(); 
         }
         return $successShipment;                 
-    }
-    
-    public function updateInventory($value)
-    {
-        $modelSalesItem = Mage::getModel('sales/order_item')->load($value['order_item_id']);
-        $pid = $modelSalesItem->getProductId();
-        $inventoryModel = Mage::getModel('cataloginventory/stock_item')->load($pid);
-        $backOrders = $inventoryModel->getBackorders();
-        $originalQty = $inventoryModel->getQty();
-        $qty = $value['qty_approved'];
-        $updatedQty = $originalQty+$qty;
-        if($backOrders == 0 || $originalQty>0)
-        {
-            $inventoryModel->addData(array('qty'=>$updatedQty));
-            $successInventory = $inventoryModel->save();
-            return $successInventory;
-        }
     }
     
     public function saveRmaLink($rmaOrderId,$rmaItemIdArray,$customerId,$from,$to)
