@@ -116,12 +116,12 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         }
         $customerModel = Mage::getSingleton('customer/session')->getCustomer();
 
-        $orderModel = $this->saveRmaOrderData($customerModel, $orderId, $status);
+        $rmaOrderId = $this->saveRmaOrderData($customerModel, $orderId, $status);  
 
         if($rmaOrderId)
         {
             foreach ($data['products'] as $key => $value) 
-            {                
+            {     
                 if($value['checked'] ||  $data['cancelType'])
                 {
                     //Pending Anjalee
@@ -132,7 +132,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                         'product_name' => 'RMA Product',
                         'product_sku' => 'p003',
                         'order_item_id' => '50',
-                        'product_id' => $value['product_id'],
+                        'product_id' => $key,
                         'qty_requested' => $value['qty_requested'],
                         'item_status' => $status
                     );
@@ -150,7 +150,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             if(!isset($data['cancelType']) || $data['cancelType'] ==0)
             {
                 $rmaHistoryModel = Mage::getModel('rma/rma_history');
-                $rmaHistoryModel->setData(array('rma_entity_id'=> $orderModel->getId(),'is_visible_on_front'=>1,'comment'=>'Your RMA request has been placed','status'=>Thycart_Rma_Model_Rma_Status::STATE_PENDING,'created_at'=>$date,'is_admin'=>1));
+                $rmaHistoryModel->setData(array('rma_entity_id'=> $rmaOrderId,'is_visible_on_front'=>1,'comment'=>'Your RMA request has been placed','status'=>Thycart_Rma_Model_Rma_Status::STATE_PENDING,'created_at'=>$date,'is_admin'=>1));
                 $rmaHistoryModel->save();
             }
             else
@@ -160,7 +160,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             }
             
             $rmaAttributeModel = Mage::getModel('rma/rma_attributes');
-            $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'delivery_status'=>$data['delivery_status'],'reason'=>$data['reason'],'created_at'=>$date));
+            $rmaAttributeModel->setData(array('rma_entity_id'=> $rmaOrderId,'resolution'=>$data['resolution_type'],'delivery_status'=>$data['delivery_status'],'reason'=>$data['reason'],'created_at'=>$date));
             if($rmaAttributeModel->save())
             {
                 $mailResult = $this->checkForSendingMail($data['cancelType'],$data['order_id'],$productName);            
@@ -335,12 +335,12 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         }
     }
 
-    public function saveRmaOrderData($customerModel, $orderId, $orderInfo, $status)
+    public function saveRmaOrderData($customerModel, $orderId, $status)
     {
         $date = Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s');
         
         $orderInfo = Mage::getModel('sales/order')->load($orderId);
-        
+
         $lastInertId = 0;
         $orderModel = Mage::getModel('rma/order'); 
         $orderModel->setData(array(
@@ -356,6 +356,6 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             'status'=>$status)
         );
         $orderModel->save();
-        return $orderModel;
+        return $orderModel->getId();
     }
 }
