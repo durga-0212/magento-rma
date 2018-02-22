@@ -25,10 +25,17 @@ class Thycart_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_G
     protected function _prepareColumns()
     {   
         $this->addColumn('id', array(
-          'header'    => Mage::helper('rma')->__('ID'),
+          'header'    => Mage::helper('rma')->__('RMA ID'),
           'align'     =>'right',
           'width'     => '10px',
           'index'     => 'entity_id',
+        ));
+        
+        $this->addColumn('order_id', array(
+          'header'    => Mage::helper('rma')->__('Order ID'),
+          'align'     =>'right',
+          'width'     => '10px',
+          'index'     => 'order_id',
         ));
         
         $this->addColumn('order_date', array(
@@ -39,7 +46,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_G
         ));
         
         $this->addColumn('date_requested', array(
-          'header'    => Mage::helper('rma')->__('Requested Date'),
+          'header'    => Mage::helper('rma')->__('Created At'),
           'align'     =>'left',
           'index'     => 'date_requested',
           'width'     => '50px',
