@@ -1,5 +1,5 @@
 <?php
-    $productInfo = Mage::registry('productInfo');  
+    $productInfo = Mage::registry('productInfo');    
     $alltrue = 1;
     $cancelType = isset($productInfo['is_cancel']) ? $productInfo['is_cancel'] : 0;
     if($cancelType):
@@ -69,6 +69,7 @@
         <input type="hidden" name="Product[[<?php echo $key;?>][item_id]]" value="<?php echo $value['item_id'];?>">
         <input type="hidden" id="product_name_<?php echo $key;?>" name="Product[[<?php echo $key;?>][name]]" value="<?php echo $value['name'];?>">
         <input type="hidden" name="Product[[<?php echo $key;?>][sku]]" value="<?php echo $value['sku'];?>">
+        <input type="hidden" name="Product[[<?php echo $key;?>][product_id]]" value="<?php echo $value['product_id']?>">
         <input type="hidden" name="Product[[<?php echo $key;?>][product_options]]" value="<?php echo $value['product_options'];?>">
         <?php $product_price = isset($value['base_original_price'])? $value['base_original_price']: '';
         ?>

@@ -34,21 +34,19 @@ $installer->run("Drop table if exists `rma_order_item`;
 CREATE TABLE `rma_order_item` (
  `entity_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Entity Id',
  `rma_entity_id` int(11) unsigned NOT NULL COMMENT 'Rma Entity Id',
- `is_qty_decimal` smallint(5) DEFAULT NULL COMMENT 'Is item quantity decimal',
  `qty_ordered` decimal(12,4) NOT NULL DEFAULT '0.0000' COMMENT 'Qty of ordered items',
  `qty_requested` decimal(12,4) NOT NULL DEFAULT '0.0000' COMMENT 'Qty of requested items',
- `qty_authorized` decimal(12,4) NOT NULL DEFAULT '0.0000' COMMENT 'Qty of authorized items',
  `qty_approved` decimal(12,4) NOT NULL DEFAULT '0.0000' COMMENT 'Qty of approved items',
  `qty_returned` decimal(12,4) NOT NULL DEFAULT '0.0000' COMMENT 'Qty of returned items',
  `order_item_id` int(11) NOT NULL COMMENT 'Order Item Id',
+ `product_id` int(11) NOT NULL,
  `product_name` text COMMENT 'Product Name For Backend',
  `product_sku` text COMMENT 'Product Sku For Backend',
- `product_options` text COMMENT 'Product Options',
  `item_status` text NOT NULL COMMENT 'Status',
  PRIMARY KEY (`entity_id`),
  KEY `rma_order_item_ibfk_1` (`rma_entity_id`),
  CONSTRAINT `rma_order_item_ibfk_1` FOREIGN KEY (`rma_entity_id`) REFERENCES `rma_order` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='rma_order_item'
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='rma_order_item'
 ");
 
 

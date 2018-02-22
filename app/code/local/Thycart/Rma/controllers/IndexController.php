@@ -127,8 +127,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                         'product_name' => $value['name'],
                         'product_sku' => $value['sku'],
                         'order_item_id' => $value['item_id'],
+                        'product_id' => $value['product_id'],
                         'qty_requested' => $value['qty_requested'],
-                        'product_options' => $value['product_options'],
                         'item_status' => $status
                     );
                     $rmaItemModel = Mage::getModel('rma/rma_item');  
