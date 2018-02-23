@@ -115,9 +115,9 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             $status = Thycart_Rma_Model_Rma_Status::STATE_CANCELED;            
         }
         $customerModel = Mage::getSingleton('customer/session')->getCustomer();
-        $orderInfo = Mage::getModel('sales/order')->load($data['order']);
+        $orderInfo = Mage::getModel('sales/order')->load($orderId);
 
-        $rmaOrderId = $this->saveRmaOrderData($customerModel, $orderId, $status);
+        $rmaOrderId = $this->saveRmaOrderData($customerModel, $orderId, $orderInfo, $status);
 
         $orderModel = Mage::getModel('rma/order'); 
         $orderModel->setData(array(
@@ -138,25 +138,25 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     $productInfo = Mage::getModel('rma/order')->getProductsById($data['order']);
                     $item_data=array(
                         'rma_entity_id' => $rmaOrderId,
-                        'qty_ordered'  => $value['qty_ordered'],
-                        'product_name' => $value['name'],
-                        'product_sku' => $value['sku'],
-                        'order_item_id' => $value['item_id'],
+                        'qty_ordered'  => '3',
+                        'product_name' => 'RMA Product',
+                        'product_sku' => 'p003',
+                        'order_item_id' => '50',
                         'product_id' => $value['product_id'],
                         'qty_requested' => $value['qty_requested'],
                         'item_status' => $status
                     );
                     $rmaItemModel = Mage::getModel('rma/rma_item');  
                     $rmaItemModel->setData($item_data);
-                    //$rmaItemModel->save();
+                    $rmaItemModel->save();
                     $productName[] = $item_data['product_name'];
-                    
-                    if($data['cancelType'])
-                    {
-                        //$successInventory = Mage::helper('rma')->updateInventory($value['product_id'],$value['qty_requested']);
-                    }
-                }           
-            }
+                
+                }
+                if($data['cancelType'])
+                {
+                    Mage::getModel('sales/order')->load($orderId)->cancel()->save();
+                }
+            }die;
             if(!isset($data['cancelType']) || $data['cancelType'] ==0)
             {
                 $rmaHistoryModel = Mage::getModel('rma/rma_history');
@@ -165,8 +165,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             }
             else
             {
-                $order = Mage::getModel('sales/order')->load($data['order_id']);
-                $order->setState(Mage_Sales_Model_Order::STATE_CANCELED, true)->save();
+               Mage::getModel('sales/order')->load($data['order_id'])->cancel()->save();
+               
             }
             
             $rmaAttributeModel = Mage::getModel('rma/rma_attributes');
@@ -345,7 +345,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         }
     }
 
-    public function saveRmaOrderData($customerModel, $orderId, $status)
+    public function saveRmaOrderData($customerModel, $orderId, $orderInfo, $status)
     {
         $date = Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s');
         
@@ -364,7 +364,6 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             'status'=>$status)
         );
         $orderModel->save();
-        $lastInertId = $orderModel->getId();
-        return $lastInertId;
+        return $orderModel;
     }
 }
