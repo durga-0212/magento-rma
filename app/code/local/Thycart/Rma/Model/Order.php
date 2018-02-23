@@ -17,7 +17,7 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
         $orderInfo = Mage::getResourceModel("sales/order_collection")
                     ->addFieldToFilter('customer_id',Mage::getSingleton('customer/session')->getCustomer()->getId())
                     ->addFieldToFilter('status',array('neq'=>Mage_Sales_Model_Order::STATE_CANCELED));
-        
+                    
         if($dateRange)
         {
             $configDays = Mage::getStoreConfig('rma_section/rma_group/rma_days');
@@ -26,19 +26,22 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract
             $date = date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s", strtotime($currentDate)) . -$configDays."  day"));
             $orderInfo->addAttributeToFilter('created_at', array('from'=>$date, 'to'=>$currentDate));
         }
-        
         return $orderInfo;
     }
     
-    public function getProductsById($id)
+    public function getProductsById($id,$productId='')
     {
         $productInfo = Mage::getModel('sales/order_item')->getCollection()
                        ->addAttributeToSelect('*')
                        ->join(array('sfo' => 'sales/order'), 'main_table.order_id = sfo.entity_id')
                        ->addAttributeToSelect('*')
-                       ->addAttributeToFilter('order_id',$id)
-                       ->getData();
-        return ($productInfo);
+                       ->addAttributeToFilter('order_id',$id);
+                       
+        if($productId)
+        {
+           $productInfo->addFieldToFilter('product_id',$productId); 
+        }
+        return $productInfo->getData();
     }
 
     public function getRmaProductsByOrderItemId($orderItemId)

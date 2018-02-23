@@ -70,7 +70,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 {
                     $cancelType = 1;
                 }
-                $productInfo = Mage::getModel('rma/order')->getProductsById($orderId);
+                $productInfo = Mage::getModel('rma/order')->getProductsById($orderId);  
                 foreach($productInfo as $key => $value)
                 {
                     $productModel = Mage::getModel('catalog/product')->load($value['product_id']);
@@ -104,23 +104,36 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     }
     
     public function saveAction()
-    {
-        $data = $this->getRequest()->getParams();
+    {   
+        $data = $this->getRequest()->getParams();        
+        echo "<pre>";print_r($data);die;
         $status = Thycart_Rma_Model_Rma_Status::STATE_PENDING;
         if(isset($data['cancelType']) && $data['cancelType'] ==1)
         {
             $status = Thycart_Rma_Model_Rma_Status::STATE_CANCELED;            
         }
         $orderModel = Mage::getModel('rma/order'); 
-        $date = Mage::getModel('core/date')->date('Y-m-d H:i:s');
+        $date = Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s');
         $customerModel = Mage::getSingleton('customer/session')->getCustomer();
-        $orderModel->setData(array('order_id'=>$data['order_id'],'increment_id'=>$data['increment_id'],'order_increment_id'=>$data['increment_id'],'order_date'=>$data['order_date'],'date_requested'=>$date,'store_id'=> $data['store_id'],'customer_id'=>$customerModel->getEntityId(),'customer_name'=>$customerModel->getName(),'customer_email'=>$customerModel->getEmail(),'status'=>$status));
-        if($orderModel->save())
-        {
+        $orderInfo = Mage::getModel('sales/order')->load($data['order']);
+        $orderModel->setData(array(
+            'order_id'=>$data['order'],'increment_id'=>$orderInfo->getIncrementId(),
+            'order_increment_id'=>$orderInfo->getIncrementId(),
+            'order_date'=>$orderInfo->getCreatedAt(),'date_requested'=>$date,
+            'store_id'=> $orderInfo->getStoreId(),'customer_id'=>$customerModel->getEntityId(),
+            'customer_name'=>$customerModel->getName(),'customer_email'=>$customerModel->getEmail(),
+            'status'=>$status)
+        );
+        //echo "<pre>";print_r($orderModel);die;
+//        if($orderModel->save())
+//        {
             foreach ($data['Product'] as $key => $value) 
-            {
+            {                
                 if($value['checked'] ||  $data['cancelType'])
                 {
+                    $productInfo = Mage::getModel('rma/order')->getProductsById($data['order'],$value['checked']);
+                    //echo "<pre>";print_r($productInfo);die;
+                    print_r($value['checked']);die;
                     $item_data=array(
                         'rma_entity_id' => $orderModel->getId(),
                         'qty_ordered'  => $value['qty_ordered'],
@@ -133,14 +146,15 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     );
                     $rmaItemModel = Mage::getModel('rma/rma_item');  
                     $rmaItemModel->setData($item_data);
+                    //$rmaItemModel->save();
                     $productName[] = $item_data['product_name'];
-                    $rmaItemModel->save();
+                    
                     if($data['cancelType'])
                     {
-                        $successInventory = Mage::helper('rma')->updateInventory($value['item_id'],$value['qty_requested']);
+                        //$successInventory = Mage::helper('rma')->updateInventory($value['product_id'],$value['qty_requested']);
                     }
                 }           
-            } 
+            }die; 
             if(!isset($data['cancelType']) || $data['cancelType'] ==0)
             {
                 $rmaHistoryModel = Mage::getModel('rma/rma_history');
@@ -160,7 +174,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 $mailResult = $this->checkForSendingMail($data['cancelType'],$data['order_id'],$productName);            
             }
             $this->_redirect('*/*/index');
-        }
+        //}
     }
     
     public function calculatePriceAction()

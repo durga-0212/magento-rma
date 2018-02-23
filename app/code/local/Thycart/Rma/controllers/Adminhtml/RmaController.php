@@ -171,7 +171,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
 
     public function saveAction() 
     {       
-        $post_data = $this->getRequest()->getPost();        
+        $post_data = $this->getRequest()->getPost();                
         $id = $this->getRequest()->getParam('id');
         $rmaItemArray = array();
         $sendLink = 0;
@@ -203,7 +203,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                     }
                     elseif($value['status'] == $return_received_status && $status!= $return_received_status)
                     {
-                        $updateInventory = Mage::helper('rma')->updateInventory($value['order_item_id'],$value['qty_approved']);
+                        $updateInventory = Mage::helper('rma')->updateInventory($value['product_id'],$value['qty_approved']);
                         $rmaItemArray[] = $key;
                         $sendLink = 1;                      
                     }

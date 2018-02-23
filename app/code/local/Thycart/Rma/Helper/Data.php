@@ -100,15 +100,13 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
     
-    public function updateInventory($orderId,$qtyApproved)
+    public function updateInventory($productId,$qtyApproved)
     {
-        $modelSalesItem = Mage::getModel('sales/order_item')->load($orderId);
-        $pid = $modelSalesItem->getProductId();
-        $inventoryModel = Mage::getModel('cataloginventory/stock_item')->load($pid);
+        $inventoryModel = Mage::getModel('cataloginventory/stock_item')->load($productId);
         $backOrders = $inventoryModel->getBackorders();
         $originalQty = $inventoryModel->getQty();
         $updatedQty = $originalQty+$qtyApproved;
-        if($backOrders == 0 || $originalQty>0)
+        if($backOrders == 0 || $originalQty>=0)
         {
             $inventoryModel->addData(array('qty'=>$updatedQty));
             $successInventory = $inventoryModel->save();

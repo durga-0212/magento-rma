@@ -61,16 +61,16 @@
             </td>
             <td class="total" id="productPrice_<?php echo $key;?>"><?php echo $value['base_row_total'] ?></td>
         </tr>            
-        <input type="hidden" name="order_id" value="<?php echo $value['order_id'];?>">
-        <input type="hidden" name="increment_id" value="<?php echo $value['increment_id'];?>">
-        <input type="hidden" name="order_date" value="<?php echo $value['created_at'];?>">
-        <input type="hidden" name="store_id" value="<?php echo $value['store_id'];?>">
-        <input type="hidden" id="qty_ordered_<?php echo $key;?>" name="Product[[<?php echo $key;?>][qty_ordered]]" value="<?php echo round($value['qty_ordered']);?>">
-        <input type="hidden" name="Product[[<?php echo $key;?>][item_id]]" value="<?php echo $value['item_id'];?>">
-        <input type="hidden" id="product_name_<?php echo $key;?>" name="Product[[<?php echo $key;?>][name]]" value="<?php echo $value['name'];?>">
-        <input type="hidden" name="Product[[<?php echo $key;?>][sku]]" value="<?php echo $value['sku'];?>">
-        <input type="hidden" name="Product[[<?php echo $key;?>][product_id]]" value="<?php echo $value['product_id']?>">
-        <input type="hidden" name="Product[[<?php echo $key;?>][product_options]]" value="<?php echo $value['product_options'];?>">
+<!--        <input type="hidden" name="order_id" value="<?php //echo $value['order_id'];?>">
+        <input type="hidden" name="increment_id" value="<?php //echo $value['increment_id'];?>">
+        <input type="hidden" name="order_date" value="<?php //echo $value['created_at'];?>">
+        <input type="hidden" name="store_id" value="<?php //echo $value['store_id'];?>">
+        <input type="hidden" id="qty_ordered_<?php //echo $key;?>" name="Product[[<?php //echo $key;?>][qty_ordered]]" value="<?php //echo round($value['qty_ordered']);?>">
+        <input type="hidden" name="Product[[<?php //echo $key;?>][item_id]]" value="<?php //echo $value['item_id'];?>">
+        <input type="hidden" id="product_name_<?php //echo $key;?>" name="Product[[<?php //echo $key;?>][name]]" value="<?php //echo $value['name'];?>">
+        <input type="hidden" name="Product[[<?php //echo $key;?>][sku]]" value="<?php //echo $value['sku'];?>">
+        <input type="hidden" name="Product[[<?php //echo $key;?>][product_id]]" value="<?php //echo $value['product_id']?>">
+        <input type="hidden" name="Product[[<?php //echo $key;?>][product_options]]" value="<?php //echo $value['product_options'];?>">-->
         <?php $product_price = isset($value['base_original_price'])? $value['base_original_price']: '';
         ?>
         <input type="hidden" id="original_price_<?php echo $key;?>" name="original_price" value="<?php echo $product_price?>">
