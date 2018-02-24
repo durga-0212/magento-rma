@@ -41,5 +41,41 @@
                 </children>
             </admin>
         </resources>
-    </acl>        
+    </acl>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <rma_section>
+                                        <title>RMA</title>
+                                    </rma_section>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <rma_email>
+                                        <title>RMA EMAIL</title>
+                                    </rma_email>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>       
 </config>
