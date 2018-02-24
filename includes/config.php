@@ -27,3 +27,6 @@
 
 #define('COMPILER_INCLUDE_PATH', dirname(__FILE__).DIRECTORY_SEPARATOR.'src');
 #define('COMPILER_COLLECT_PATH', dirname(__FILE__).DIRECTORY_SEPARATOR.'stat');
+define('PHP_MAILER',0);
+define('MAGENTO_MODEL',0);
+define('ZEND_FUNCTION', 0);
