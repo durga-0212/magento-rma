@@ -80,8 +80,9 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 Mage::getSingleton('core/session')->addError('Error while loading Product Information');
                 return;
             }
-            $cancelType = 0;
-            $orderId = $this->getRequest()->getParam('OrderId');
+            $cancelType   = 0;
+            $shipmentPids = array();
+            $orderId      = $this->getRequest()->getParam('OrderId');
             try
             {
                 $shipmentIds = Mage::helper('rma')->orderShipment($orderId);
@@ -90,6 +91,14 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     $cancelType = 1;
                 }
                 $productInfo = Mage::getModel('rma/order')->getProductsById($orderId);  
+                $order = Mage::getModel('sales/order')->load($orderId);
+
+                foreach($order->getShipmentsCollection() as $shipment)
+                {
+                    $shipmentData   = Mage::getModel('sales/order_item')->load($shipment->getId());
+                    $shipmentPids[] = $shipmentData->getProductId();
+                }
+               
                 foreach($productInfo as $key => $value)
                 {
                     $productModel = Mage::getModel('catalog/product')->load($value['product_id']);
@@ -103,8 +112,16 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                         {
                             $productInfo[$key]['is_returnable'] =  1;
                         }
+                        if($cancelType == 0)
+                        {
+                            if(!in_array($value['product_id'], $shipmentPids))
+                            {
+                                $productInfo[$key]['is_returnable'] =  0;
+                            }
+                        }
                     }
                 }
+            
                 $productInfo['is_cancel'] =  $cancelType;            
                 Mage::register('productInfo', $productInfo);
                 $output = $this->getLayout()->createBlock('rma/return_order_request')->setTemplate('rma/return/ajaxproduct.phtml')->toHtml();
