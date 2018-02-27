@@ -11,7 +11,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_G
         parent::__construct();
         $this->setId('RmaGrid');
         $this->setDefaultSort('id');
-        $this->setDefaultDir('ASC');
+        $this->setDefaultDir('DESC');
         $this->setSaveParametersInSession(true);
     }
     
@@ -25,10 +25,17 @@ class Thycart_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_G
     protected function _prepareColumns()
     {   
         $this->addColumn('id', array(
-          'header'    => Mage::helper('rma')->__('ID'),
+          'header'    => Mage::helper('rma')->__('RMA ID'),
           'align'     =>'right',
           'width'     => '10px',
           'index'     => 'entity_id',
+        ));
+        
+        $this->addColumn('order_id', array(
+          'header'    => Mage::helper('rma')->__('Order ID'),
+          'align'     =>'right',
+          'width'     => '10px',
+          'index'     => 'order_id',
         ));
         
         $this->addColumn('order_date', array(
@@ -39,28 +46,27 @@ class Thycart_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_G
         ));
         
         $this->addColumn('date_requested', array(
-          'header'    => Mage::helper('rma')->__('Requested Date'),
+          'header'    => Mage::helper('rma')->__('Created At'),
           'align'     =>'left',
           'index'     => 'date_requested',
           'width'     => '50px',
         ));
           
         $this->addColumn('customer_name', array(
-            'header'    => Mage::helper('rma')->__('Customer Name'),
-            'width'     => '150px',
-            'align'     =>'content',
-            'index'     =>'customer_name',
+            'header'  => Mage::helper('rma')->__('Customer Name'),
+            'width'   => '150px',
+            'align'   =>'content',
+            'index'   =>'customer_name',
         ));
         
         $this->addColumn('status', array(
-            'header'    => Mage::helper('rma')->__('Status'),
-            'width'     => '150px',
-            'align'     =>'content',
-            'index'     =>'status',
+            'header'   => Mage::helper('rma')->__('Status'),
+            'width'    => '150px',
+            'align'    =>'content',
+            'index'    =>'status',
         ));
         
-         $this->addColumn('action',
-            array(
+        $this->addColumn('action',array(
                 'header'    => Mage::helper('rma')->__('Action'),
                 'width'     => '50px',
                 'type'      => 'action',
@@ -68,9 +74,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_G
                 'actions'   => array(
                     array(
                         'caption' => Mage::helper('rma')->__('View'),
-                        'url'     => array(
-                            'base'=>'*/*/edit'                           
-                        ),
+                        'url'     => array('base'=>'*/*/edit'),
                         'field'   => 'id'
                     )
                 ),
@@ -95,10 +99,10 @@ class Thycart_Rma_Block_Adminhtml_Rma_Grid extends Mage_Adminhtml_Block_Widget_G
         $this->getMassactionBlock()->setFormFieldName('id');
         $this->getMassactionBlock()->setUseSelectAll(true);
         $this->getMassactionBlock()->addItem('closed', array(
-                         'label'=> Mage::helper('rma')->__('Closed'),
-                         'url'  => $this->getUrl('*/adminhtml_rma/massRemove'),
-                         'confirm' => Mage::helper('rma')->__('Are you sure?')
-                ));
+            'label'=> Mage::helper('rma')->__('Closed'),
+            'url'  => $this->getUrl('*/adminhtml_rma/massRemove'),
+            'confirm' => Mage::helper('rma')->__('Are you sure?')
+        ));
         return $this;
     }
 }

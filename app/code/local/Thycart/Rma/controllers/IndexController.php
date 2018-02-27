@@ -6,33 +6,28 @@
  */
 class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
 {
-    
-      /**
-     * Action predispatch
-     *
-     * Check customer authentication for some actions
-     */
+    /**
+    * Action predispatch
+    *
+    * Check customer authentication for some actions
+    */
     public function preDispatch()
     {
         parent::preDispatch();
         $action = $this->getRequest()->getActionName();
         $loginUrl = Mage::helper('customer')->getLoginUrl();
 
-        if (!Mage::getSingleton('customer/session')->authenticate($this, $loginUrl)) {
+        if (!Mage::getSingleton('customer/session')->authenticate($this, $loginUrl)) 
+        {
             $this->setFlag('', self::FLAG_NO_DISPATCH, true);
         }
     }
     
-    
-     /*
-      Customer order history
-     */
     public function indexAction()
     {      
         $this->loadLayout();
         $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
         $this->renderLayout();
-       
     }
     
     public function addrequestAction() 
@@ -41,42 +36,69 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $this->getLayout()->getBlock('head')->setTitle($this->__('Create RMA'));
         $this->renderLayout();
     }
-    
-    
+        
     public function viewAction()
     {
-            $this->loadLayout();        
-            $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
-            $this->renderLayout();
-            // Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
+        $this->loadLayout();        
+        $this->getLayout()->getBlock('head')->setTitle($this->__('My Rma Returns History'));
+        $this->renderLayout();
     }
     
     public function saveCommentAction() 
     {
-       $postData= $this->getRequest()->getParams();
-       $postData['created_at']=Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s');      
-       $modelObj=Mage::getModel('rma/rma_history')->setData($postData)->save();
-       if($modelObj)
-       {
-            $url = Mage::helper('core/http')->getHttpReferer() ? Mage::helper('core/http')->getHttpReferer():$this->_getRefererUrl();
-            Mage::app()->getResponse()->setRedirect($url);  
-       }
+        if(empty($this->getRequest()->getParam('comment')) || empty($this->getRequest()->getParam('rma_entity_id')) || 
+            empty($this->getRequest()->getParam('status')))
+        {
+            Mage::getSingleton('core/session')->addError('Please Add Comment');
+            return;
+        }
+        try
+        {
+            $postData = $this->getRequest()->getParams();
+            $postData['created_at'] = Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s');      
+            $modelObj = Mage::getModel('rma/rma_history')->setData($postData)->save();
+            if($modelObj)
+            {
+                $url = Mage::helper('core/http')->getHttpReferer() ? Mage::helper('core/http')->getHttpReferer():$this->_getRefererUrl();
+                Mage::app()->getResponse()->setRedirect($url);  
+            }
+        }
+        catch(Exception $e)
+        {
+            Mage::getSingleton('core/session')->addError('Error while submitting comment');
+            $this->_redirect('*/*/view',array("id" => $this->getRequest()->getParam("rma_id")));
+            return;
+        }
     }
     
     public function productinfoAction()
-    {
+    { 
         if($this->getRequest()->isXmlHttpRequest())
         {
-            $orderId = $this->getRequest()->getParam('OrderId');
-            if($orderId > 0)
+            if(empty($this->getRequest()->getParam('OrderId')) || $this->getRequest()->getParam('OrderId') <= 0)
             {
-                $cancelType = 0;
-                $orderInvoices = Mage::helper('rma')->orderInvoices($orderId);
-                if(empty($orderInvoices))
+                Mage::getSingleton('core/session')->addError('Error while loading Product Information');
+                return;
+            }
+            $cancelType   = 0;
+            $shipmentPids = array();
+            $orderId      = $this->getRequest()->getParam('OrderId');
+            try
+            {
+                $shipmentIds = Mage::helper('rma')->orderShipment($orderId);
+                if(empty($shipmentIds))
                 {
                     $cancelType = 1;
                 }
-                $productInfo = Mage::getModel('rma/order')->getProductsById($orderId);
+                $productInfo = Mage::getModel('rma/order')->getProductsById($orderId);  
+                $order = Mage::getModel('sales/order')->load($orderId);
+
+                foreach($order->getShipmentsCollection() as $shipment)
+                {
+                    $shipmentData   = Mage::getModel('sales/order_item')->load($shipment->getId());
+                    $shipmentPids[] = $shipmentData->getProductId();
+                }
+               
                 foreach($productInfo as $key => $value)
                 {
                     $productModel = Mage::getModel('catalog/product')->load($value['product_id']);
@@ -90,133 +112,170 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                         {
                             $productInfo[$key]['is_returnable'] =  1;
                         }
+                        if($cancelType == 0)
+                        {
+                            if(!in_array($value['product_id'], $shipmentPids))
+                            {
+                                $productInfo[$key]['is_returnable'] =  0;
+                            }
+                        }
                     }
                 }
+            
                 $productInfo['is_cancel'] =  $cancelType;            
                 Mage::register('productInfo', $productInfo);
                 $output = $this->getLayout()->createBlock('rma/return_order_request')->setTemplate('rma/return/ajaxproduct.phtml')->toHtml();
                 $this->getResponse()->setBody($output);
             }
-            else 
+            catch(Exception $e)
             {
-                Mage::getSingleton('core/session')->addError('Something went wrong');
+                Mage::getSingleton('core/session')->addError('Error while loading Product Information');
+                return;
             }
         }
         else 
         {
-            Mage::getSingleton('core/session')->addError('Something went wrong');
+            Mage::getSingleton('core/session')->addError('Error while loading Product Information');
         }
+        
 
     }
     
     public function saveAction()
-    {
-        $data = $this->getRequest()->getParams();
-        $status = Thycart_Rma_Model_Rma_Status::STATE_PENDING;
-        if(isset($data['cancelType']) && $data['cancelType'] ==1)
+    {   
+        if(empty($this->getRequest()->getParam('order')) || empty($this->getRequest()->getParam('products')) 
+            || empty($this->getRequest()->getParam('resolution_type')) || empty($this->getRequest()->getParam('delivery_status'))
+            || empty($this->getRequest()->getParam('reason')))
         {
-            $status = Thycart_Rma_Model_Rma_Status::STATE_CANCELED;
-        }
-        $orderModel = Mage::getModel('rma/order'); 
-        $date = Mage::getModel('core/date')->date('Y-m-d H:i:s');
-        $customerModel = Mage::getSingleton('customer/session')->getCustomer();
-        $orderModel->setData(array('order_id'=>$data['order_id'],'increment_id'=>$data['increment_id'],'order_increment_id'=>$data['increment_id'],'order_date'=>$data['order_date'],'date_requested'=>$date,'store_id'=> $data['store_id'],'customer_id'=>$customerModel->getEntityId(),'customer_name'=>$customerModel->getName(),'customer_email'=>$customerModel->getEmail(),'status'=>$status));
-        if($orderModel->save())
-        {
-            foreach ($data['Product'] as $key => $value) 
-            {
-                if($value['checked'] ||  $data['cancelType'])
-                {
-                    $item_data=array(
-                        'rma_entity_id' => $orderModel->getId(),
-                        'qty_ordered'  => $value['qty_ordered'],
-                        'product_name' => $value['name'],
-                        'product_sku' => $value['sku'],
-                        'order_item_id' => $value['item_id'],
-                        'qty_requested' => $value['qty_requested'],
-                        'product_options' => $value['product_options'],
-                        'item_status' => $status
-                    );
-                    $rmaItemModel = Mage::getModel('rma/rma_item');  
-                    $rmaItemModel->setData($item_data);
-                    $rmaItemModel->save();
-                   if(!isset($data['cancelType']) || $data['cancelType'] ==0)
-                   {
-                    $this->_redirect('*/*/index');
-                   }
-                   else{
-                     $this->_redirect('*/*/bankform');   
-                   }
-                }           
-            }  
-            if(!isset($data['cancelType']) || $data['cancelType'] ==0)
-            {
-                $rmaHistoryModel = Mage::getModel('rma/rma_history');
-                $rmaHistoryModel->setData(array('rma_entity_id'=> $orderModel->getId(),'is_visible_on_front'=>1,'comment'=>'Your RMA request has been placed','status'=>Thycart_Rma_Model_Rma_Status::STATE_PENDING,'created_at'=>$date,'is_admin'=>1));
-                $rmaHistoryModel->save();
-            }
-            else
-            {
-                $order = Mage::getModel('sales/order')->load($data['order_id']);
-                $order->setState(Mage_Sales_Model_Order::STATE_CANCELED, true)->save();
-            }
-            $rmaAttributeModel = Mage::getModel('rma/rma_attributes');
-            $rmaAttributeModel->setData(array('rma_entity_id'=> $orderModel->getId(),'resolution'=>$data['resolution_type'],'delivery_status'=>$data['delivery_status'],'reason'=>$data['reason'],'created_at'=>$date));
-            $rmaAttributeModel->save();      
-        }
-    }
-    
-    public function calculatePriceAction()
-    {
-        if($this->getRequest()->isXmlHttpRequest())
-        {
-            $product_Qty = $this->getRequest()->getParam('product_Qty');
-            $product_price = $this->getRequest()->getParam('product_price');
-            $result = $product_Qty*$product_price;
-            $this->getResponse()->setBody($result);   
-        }
+            Mage::getSingleton('core/session')->addError('Please fill all the details');
+            $this->_redirect('*/*/addrequest/');
+            return;
+        }        
         else 
         {
-            Mage::getSingleton('core/session')->addError('Something went wrong');
+            try
+            {
+                $modelResource = Mage::getSingleton('core/resource')->getConnection('core_write');              
+                $modelResource->beginTransaction();
+                $date = Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s');
+                $data = $this->getRequest()->getParams();        
+                $orderId = $data['order'];      
+                $status = Thycart_Rma_Model_Rma_Status::STATE_PENDING;
+
+                if(isset($data['cancelType']) && $data['cancelType'] ==1)
+                {
+                    $status = Thycart_Rma_Model_Rma_Status::STATE_CANCELED;            
+                }
+                $customerModel = Mage::getSingleton('customer/session')->getCustomer();
+
+                $rmaOrderId = $this->saveRmaOrderData($customerModel, $orderId, $status);  
+                
+                if($rmaOrderId)
+                { 
+                    $productArray = $this->saveRmaOrderItemData($data['products'],$data['cancelType'],$orderId,$rmaOrderId,$status);
+                    
+                    if(!$productArray)
+                    {
+                        $modelResource->rollBack();
+                        return;
+                    }
+                    if(!isset($data['cancelType']) || $data['cancelType'] == 0)
+                    {                
+                        $rmaHistoryModel = Mage::getModel('rma/rma_history');
+                        $rmaHistoryModel->setData(array('rma_entity_id'=> $rmaOrderId,'is_visible_on_front'=>1,'comment'=>'Your RMA request has been placed','status'=>$status,'created_at'=>$date,'is_admin'=>1));
+                        $rmaHistoryModel->save();
+                    }
+                    else
+                    {               
+                       Mage::getModel('sales/order')->load($orderId)->cancel()->save();               
+                    }
+
+                    $rmaAttributeModel = Mage::getModel('rma/rma_attributes');
+                    $rmaAttributeModel->setData(array('rma_entity_id'=> $rmaOrderId,'resolution'=>$data['resolution_type'],'delivery_status'=>$data['delivery_status'],'reason'=>$data['reason'],'created_at'=>$date));
+                    if($rmaAttributeModel->save())
+                    {
+                        $mailResult = $this->checkForSendingMail($data['cancelType'],$orderId,$productArray,$customerModel);            
+                    }
+                    $this->_redirect('*/*/index');
+                }
+                $modelResource->commit();
+            }
+            catch(Exception $e)
+            {
+                $modelResource->rollBack();
+                $this->_redirect('*/*/addrequest');
+                Mage::getSingleton('core/session')->addError('RMA Request is not generated');
+            }
         }
     }
     
     public function bankFormAction() 
     {
-        if(!Mage::getSingleton('customer/session')->isLoggedIn())
+        if(empty($this->getRequest()->getParam('rmaItemId')))
         {
-            $this->_redirect('customer/account/login');
+            return;
         }
-        else
+        try
         {
-            $this->loadLayout();
-            $this->renderLayout();        
-            //Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
+            $id = $this->getRequest()->getParam('rmaItemId');
+            $validRma = $this->verifyRmaLinkDetails($id);
+            if($validRma)
+            {
+                $this->loadLayout();
+                $this->renderLayout();
+            }
+            else
+            {
+                $this->_redirect('customer/account/');
+                Mage::getSingleton('core/session')->addError('You have already filled bank details');
+            }
         }
-        
+        catch(Exception $e)
+        {
+            Mage::getSingleton('core/session')->addError('Error while loading Bank Form');
+        }
     }
     
     public function savebankdetailsAction()
     {
-        $postData = $this->getRequest()->getParams();
-        if($postData)
+        if(empty($this->getRequest()->getParam('bankname')) || empty($this->getRequest()->getParam('account_no')) || 
+            empty($this->getRequest()->getParam('ifsc_code')) || empty($this->getRequest()->getParam('rmaItemId')))
         {
-            if(!empty('bankname') && !empty('account_no') && !empty('ifsc_code'))
+            Mage::getSingleton('core/session')->addError('Please fill all the details');
+            $this->_redirect('*/*/bankForm');
+            return;
+        }
+        try
+        {
+            $rmaItemId = $this->getRequest()->getParam('rmaItemId');
+            $rmaItemIdArray = explode("-",$rmaItemId);
+            $postData = $this->getRequest()->getParams();
+            $customerModel = Mage::getSingleton('customer/session')->getCustomer();
+            $customerId = $customerModel->getEntityId();
+            $modelCustomer = Mage::getModel('customer/customer')->load($customerId);
+            $accountNo = Mage::helper('rma')->encryptBankDetail($postData['account_no']);
+            $postData['account_no'] = $accountNo;
+            $modelCustomer->addData($postData);
+            $updateCustomerDetails = $modelCustomer->save();
+            if($updateCustomerDetails)
             {
-                $id = Mage::getSingleton('customer/session')->getCustomer()->getEntityId();
-                $modelCustomer = Mage::getModel('customer/customer')->load($id);
-                $modelCustomer->addData($postData);
-                $modelCustomer->save();
+                $result = $this->changeRmaLinkStatus($rmaItemIdArray,$customerId);
+                if(!$result)
+                {
+                    Mage::getSingleton('core/session')->addError('Error while saving Bank Details');
+                    $this->_redirect('*/*/bankForm');
+                    return;
+                }
+                $resultStatus = $this->changeRmaItemStatus($rmaItemIdArray,$customerModel);
                 $this->_redirect('*/*/index');
-            }
-            else 
-            {
-                Mage::getSingleton('core/session')->addError('Please fill all the details');
+                Mage::getSingleton('core/session')->addSuccess('Bank Details Saved Successfully');
             }
         }
-        else 
+        catch(Exception $e)
         {
-            Mage::getSingleton('core/session')->addError('Data not posted');
+            Mage::getSingleton('core/session')->addError('Error while saving Bank Details');
+            $this->_redirect('*/*/bankForm');
+            return;
         }
     }
 
@@ -227,10 +286,213 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $this->renderLayout();      
     }
     
-    public function notifyCustomerByEmail()
-    {
-        //$this->_redirect();
+    public function bankAction()
+    {   
+        $this->loadLayout();
+        $this->renderLayout();
+    }
+    
+    public function verifyRmaLinkDetails($id)
+    {   
+        if(empty($id))
+        {
+            return;
+        }
+        try
+        {
+            $idArray = explode("-",$id);
+            $modelCollection = Mage::getResourceModel('rma/link_collection')
+                ->addFieldToSelect('status')
+                ->addFieldToFilter('rma_order_item_id',array('in' => $idArray));            
 
+            $collectionData = $modelCollection->getData();
+            if(empty($collectionData))
+            {
+                return 0;
+            }
+            $statusArray = array_column($collectionData, 'status');
+            if(in_array(1,$statusArray))
+            {
+                return 0;
+            }
+            return 1;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
+    }
+    
+    public function changeRmaLinkStatus($rmaItemIdArray,$customerId)
+    { 
+        if(empty($rmaItemIdArray) || empty($customerId))
+        {
+            return; 
+        }
+        try
+        {
+            $entityIdArray = Mage::getResourceModel('rma/link_collection')
+                ->addFieldToSelect('entity_id')
+                ->addFieldToFilter('customer_id',$customerId)
+                ->addFieldToFilter('rma_order_item_id',array('in'=>$rmaItemIdArray));
+
+            foreach($entityIdArray as $key => $value)
+            {
+                $modelRmaLink = Mage::getModel('rma/link')->load($value['entity_id']);            
+                $modelRmaLink->addData(array('status'=>1));
+                $result = $modelRmaLink->save();
+            }
+            return $result;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
+    }
+    
+    public function changeRmaItemStatus($rmaItemIdArray,$customerModel)
+    {   
+        if(empty($rmaItemIdArray) || empty($customerModel))
+        {
+            return;
+        }
+        try
+        {
+            foreach($rmaItemIdArray as $id)
+            {
+                $modelRmaItem = Mage::getModel('rma/rma_item')->load($id);
+                $modelRmaItem->addData(array('item_status'=> Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST));
+                $changeItemStatus = $modelRmaItem->save();
+            }
+            if($changeItemStatus)
+            {
+                $subject = 'Payment Requested for Rma';
+                $message = 'Payment Request';
+                $emailDetails = Mage::registry('emailDetails');
+                $resultMail =  Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$emailDetails[1],$emailDetails[0],$message);
+            }
+            return $changeItemStatus;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
+    }
+    
+    public function checkForSendingMail($cancelType='',$orderId,$productArray,$customerModel)
+    {
+        if(empty($orderId) || empty($productArray) || empty($customerModel))
+        {
+            return;
+        }
+        try
+        {
+            $message = "Rma Request in Pending State";
+            $subject = 'Return Request for OrderId '.$orderId;
+            if($cancelType)
+            {
+                $subject = 'Order Cancellation for OrderId '.$orderId;
+                $message = "Order Cancellation Request";
+                $url = Mage::getBaseUrl();
+                $link = $url."rma/index/bankform/";                
+            }   
+            
+            $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message);
+            return $resultMail;
+        }
+        catch(Exception $e)
+        {
+            Mage::getSingleton('core/session')->addError('Error in Sending Email while Rma Request is created');
+            return;
+        }
     }
 
+    public function saveRmaOrderData($customerModel, $orderId, $status)
+    {
+        if(empty($customerModel) || empty($orderId) || empty($status))
+        {
+            return;
+        }
+        try
+        {
+            $date = Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s');        
+            $orderInfo = Mage::getModel('sales/order')->load($orderId);
+            $orderModel = Mage::getModel('rma/order'); 
+            $orderModel->setData(array(
+                'order_id'=>$orderId,
+                'increment_id'=>$orderInfo->getIncrementId(),
+                'order_increment_id'=>$orderInfo->getIncrementId(),
+                'order_date'=>$orderInfo->getCreatedAt(),
+                'date_requested'=>$date,
+                'store_id'=> $orderInfo->getStoreId(),
+                'customer_id'=>$customerModel->getEntityId(),
+                'customer_name'=>$customerModel->getName(),
+                'customer_email'=>$customerModel->getEmail(),
+                'status'=>$status)
+            );
+            $orderModel->save();
+            return $orderModel->getId();
+        }
+        catch(Exception $e)
+        {
+            Mage::getSingleton('core/session')->addError('Error while Saving Data In Rma Table');
+            return;
+        }
+    }
+    
+    public function saveRmaOrderItemData($productsArray,$cancelType,$orderId,$rmaOrderId,$status)
+    {        
+        if(empty($productsArray) || empty($orderId) || empty($rmaOrderId) || empty($status))
+        {            
+            return;
+        }
+        $productArray = array();
+        try
+        {
+            foreach ($productsArray as $key => $value) 
+            {  
+                if($value['checked'] ||  $cancelType )
+                {                
+                    if(empty($value['qty_requested']))
+                    {
+                        Mage::getSingleton('core/session')->addError('Please fill all details');
+                        $this->_redirect('*/*/addrequest/');
+                        return false;
+                    }
+                    $productInfo = Mage::getModel('rma/order')->getProductInfo($key,$orderId);
+                    if($value['qty_requested'] > $productInfo['qty_ordered'])
+                    {
+                        Mage::getSingleton('core/session')->addError('You can not return '.$value['qty_requested'].' '.$productInfo['name']);
+                        $this->_redirect('*/*/addrequest/');
+                        return false;
+                    }
+                    $item_data=array(
+                        'rma_entity_id' => $rmaOrderId,
+                        'qty_ordered'  => $productInfo['qty_ordered'],
+                        'product_name' => $productInfo['name'],
+                        'product_sku' => $productInfo['sku'],
+                        'order_item_id' => $productInfo['item_id'],
+                        'product_id' => $key,
+                        'qty_requested' => $value['qty_requested'],
+                        'item_status' => $status
+                    );
+                    $rmaItemModel = Mage::getModel('rma/rma_item');  
+                    $rmaItemModel->setData($item_data);                
+                    $rmaItemModel->save();
+                    $prodName = $item_data['product_name'];
+                    $prodQty = $item_data['qty_requested'];
+                    $productArray[$prodName] = $prodQty;
+                }
+            }
+            return $productArray;
+        }
+        catch(Exception $e)
+        {
+            Mage::getSingleton('core/session')->addError('Error while Saving Data In Rma Item Table');
+            return;
+        }
+    }
 }

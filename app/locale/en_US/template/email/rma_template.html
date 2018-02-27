@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	{{template config_path="design/email/header"}}
+	<h3>{{var message}}</h3>
+	<span>Order ID:-{{var orderid}}</span>
+	{{block type='core/template' area='frontend' template='rma/email.phtml' productDetails=$product_details}}
+	{{if link}}
+	<a href="{{var link}}">Please fill your bank details </a>
+	{{/if}}
+	{{template config_path="design/email/footer"}}
+</body>
+</html>
+
+<style type="text/css">
+	tbody{
+		border:1px solid #ccc;
+	}
+</style>

@@ -1,9 +1,12 @@
 <?xml version="1.0" ?>
 <layout version="0.1.0">
     <customer_account translate="label">
-       <block type="rma/account_navigation" name="rma_account_navigation">                   
+        <block type="rma/account_navigation" name="rma_account_navigation">                   
             <action method="addDashboardLink"><name>rma</name><path>rma/index</path><label>Rma</label></action>                       
         </block>
+        <reference name="customer_account_navigation">
+            <action method="addLink"><name>bankdetails</name><path>rma/index/bank</path><label>MY Bank Details</label></action>      
+        </reference>
     </customer_account>
     
     <rma_index_index translate="label">
@@ -47,8 +50,7 @@
             </reference>
     </rma_index_addrequest>
     
-    <rma_index_bankform>
-        
+    <rma_index_bankform>        
         <label>Customer Account Form</label>
         <reference name="content">
             <block type="core/template" name="bank.form" template="rma/return/bankform.phtml"/>
@@ -59,10 +61,19 @@
         <label>Cancel Order Request</label>
         <update handle="customer_account"/>
         <reference name="my.account.wrapper">
-        <block type="rma/return_history" name="customer.account.link.back" template="customer/account/link/back.phtml"/> 
-        <block type="rma/return_order_request" name="rma.return.order.request"/>
+            <block type="rma/return_history" name="customer.account.link.back" template="customer/account/link/back.phtml"/> 
+            <block type="rma/return_order_request" name="rma.return.order.request"/>
         </reference>
     </rma_index_cancelorder>
-
+    
+    <rma_index_bank>
+        <update handle="customer_account"/>
+            <reference name="my.account.wrapper">
+                    <block type="rma/adminhtml_customer_tab" name="rma.adminhtml.customer.tab">
+                        
+                    </block>
+                <block type="rma/return_history" name="customer.account.link.back" template="customer/account/link/back.phtml"/>
+            </reference>
+    </rma_index_bank>
 </layout>
 

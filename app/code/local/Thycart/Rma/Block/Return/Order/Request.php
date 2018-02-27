@@ -18,9 +18,9 @@ class Thycart_Rma_Block_Return_Order_Request extends Mage_Core_Block_Template
         $this->setTemplate('rma/return/rma.phtml');    
     }
     
-    public function getOrders()
+    public function getOrders($dateRange=0)
     {  
-        $orderInfo = Mage::getModel('rma/order')->getOrdersById();       
+        $orderInfo = Mage::getModel('rma/order')->getOrdersById($dateRange);       
         return $orderInfo;
     }
 
@@ -40,5 +40,6 @@ class Thycart_Rma_Block_Return_Order_Request extends Mage_Core_Block_Template
         $collection = Mage::getModel('rma/rma_item')->getCollection();
         return $collection; 
     }
+    
 }
 

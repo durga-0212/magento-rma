@@ -1,0 +1,19 @@
+<div class="entry-edit">
+    <div class="entry-edit-head"><h4 class="icon-head head-customer-view"><?php echo Mage::helper('rma')->__('Bank Information') ?></h4></div>
+    <fieldset>
+        <table cellspacing="3" class="box-left">
+            <tr>
+                <td><strong><?php echo $this->__('Bank Name:') ?></strong></td>
+                <td><?php echo $this->getBankName(); ?></td>
+            </tr>            
+            <tr>
+                <td><strong><?php echo $this->__('Account Number:') ?></strong></td>
+                <td><?php echo $this->getAccountNumber(); ?></td>
+            </tr>
+            <tr>
+                <td><strong><?php echo $this->__('IFSC Code:') ?></strong></td>
+                <td><?php echo $this->getIfscCode(); ?></td>
+            </tr>            
+        </table>        
+    </fieldset>
+</div>

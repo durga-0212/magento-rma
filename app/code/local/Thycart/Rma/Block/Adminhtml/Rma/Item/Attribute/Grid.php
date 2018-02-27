@@ -17,8 +17,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Grid extends Mage_Adminhtml
     
     protected function _prepareCollection()
     {
-        $collection = Mage::getModel('rma/rma_eav_attribute')->getCollection();
-                      //->join(array('rma' => 'rma/rma_eav_attributeoption'), 'main_table.attribute_id = rma.attribute_id');       
+        $collection = Mage::getModel('rma/rma_eav_attribute')->getCollection();                             
         $this->setCollection($collection);
         return parent::_prepareCollection();
     }
@@ -32,47 +31,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Grid extends Mage_Adminhtml
             'sortable'  =>true,
             'index'     => 'attribute_code',
         ));
-        
-//        $this->addColumn('scope', array(
-//            'header'    => Mage::helper('rma')->__('Scope'),
-//            'align'     =>'left',          
-//            'width'     => '50px',
-//            'index'     => 'scope',
-//            'type' => 'options',
-//            'options' => array(
-//                  '2' => Mage::helper('rma')->__('Global'),
-//                  '1' => Mage::helper('rma')->__('Website'),
-//                  '0' => Mage::helper('rma')->__('Store View'),
-//              ),
-//            'align' => 'center',
-//        ));
-        
-        $this->addColumn('is_required', array(
-            'header'    => Mage::helper('rma')->__('Is Required'),
-            'align'     =>'left',          
-            'width'     => '50px',
-            'index'     => 'is_required',
-            'type'      => 'options',
-            'options' => array(
-                  '1' => Mage::helper('rma')->__('Yes'),
-                  '0' => Mage::helper('rma')->__('No'),
-              ),
-            'align' => 'center',
-        ));
-          
-        $this->addColumn('is_unique', array(
-            'header'    => Mage::helper('rma')->__('Is Unique'),
-            'width'     => '50px',
-            'align'     =>'content',
-            'index'     =>'is_unique',
-            'type'      => 'options',
-            'options' => array(
-                  '1' => Mage::helper('rma')->__('Yes'),
-                  '0' => Mage::helper('rma')->__('No'),
-              ),
-            'align' => 'center',
-        ));
-        
+
         $this->addColumn('scope', array(
             'header'    => Mage::helper('rma')->__('Scope'),
             'align'     =>'left',          
@@ -80,31 +39,30 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Grid extends Mage_Adminhtml
             'index'     => 'scope',
             'type' => 'options',
             'options' => array(
-                  '2' => Mage::helper('rma')->__('Global'),
-                  '1' => Mage::helper('rma')->__('Website'),
-                  '0' => Mage::helper('rma')->__('Store View'),
+                '2' => Mage::helper('rma')->__('Global'),
+                '1' => Mage::helper('rma')->__('Website'),
+                '0' => Mage::helper('rma')->__('Store View'),
               ),
             'align' => 'center',
         ));
         
-        $this->addColumn('action',
-            array(
-                'header'    => Mage::helper('rma')->__('Action'),
-                'width'     => '50px',
-                'type'      => 'action',
-                'getter'     => 'getId',
-                'actions'   => array(
-                    array(
-                        'caption' => Mage::helper('rma')->__('View'),
-                        'url'     => array(
-                            'base'=>'*/*/edit'                           
-                        ),
-                        'field'   => 'id'
-                    )
-                ),
-                'filter'    => false,
-                'sortable'  => false,
-                'index'     => 'stores',
+        $this->addColumn('action',array(            
+            'header'    => Mage::helper('rma')->__('Action'),
+            'width'     => '50px',
+            'type'      => 'action',
+            'getter'     => 'getId',
+            'actions'   => array(
+                array(
+                    'caption' => Mage::helper('rma')->__('View'),
+                    'url'     => array(
+                        'base'=>'*/*/edit'                           
+                    ),
+                    'field'   => 'id'
+                )
+            ),
+            'filter'    => false,
+            'sortable'  => false,
+            'index'     => 'stores',
         ));
       
         return parent::_prepareColumns();
@@ -121,9 +79,9 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Grid extends Mage_Adminhtml
         $this->getMassactionBlock()->setFormFieldName('id');
         $this->getMassactionBlock()->setUseSelectAll(true);
         $this->getMassactionBlock()->addItem('remove_message', array(
-                         'label'=> Mage::helper('rma')->__('Remove RMA(s)'),
-                         'url'  => $this->getUrl('*/adminhtml_attribute/massRemove'),
-                         'confirm' => Mage::helper('rma')->__('Are you sure?')
+                        'label'=> Mage::helper('rma')->__('Remove RMA Attributes'),
+                        'url'  => $this->getUrl('*/adminhtml_attribute/massRemove'),
+                        'confirm' => Mage::helper('rma')->__('Are you sure?')
                 ));
         return $this;
     }

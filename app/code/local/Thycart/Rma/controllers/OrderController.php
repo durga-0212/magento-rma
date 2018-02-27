@@ -11,16 +11,17 @@ class Thycart_Rma_OrderController extends Mage_Sales_OrderController
 
         $this->getLayout()->getBlock('head')->setTitle($this->__('My Orders'));
         $orderList = $this->getLayout()->getBlock('sales.order.history');
-
-        $orders = $orderList->getOrders();
+        
+        $orders = $orderList->getOrders();        
         if(!empty($orders->getData()))
         {         
             foreach ($orders as $key => $order) 
             {
                 $order->setshowCancelBtn(0);
-                $invoiceIds = Mage::helper('rma')->orderInvoices($order['entity_id']);
+                $shipmentIds = Mage::helper('rma')->orderShipment($order['entity_id']);
+                $status = $order->getStatus();
 
-                if(empty($invoiceIds))
+                if(empty($shipmentIds) &&  strtolower($status)!= Mage_Sales_Model_Order::STATE_CANCELED)
                 {
                     $order->setshowCancelBtn(1);
                 }

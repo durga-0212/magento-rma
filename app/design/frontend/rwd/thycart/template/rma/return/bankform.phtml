@@ -15,7 +15,7 @@
 <br/>
 <tr>
     <td><label>Account Number</label></td>
-    <td><input type="text" name="account_no" class="required-entry"/></td>
+    <td><input type="password" name="account_no" class="required-entry"/></td>
 </tr>
 <br/>
 <tr>
@@ -29,6 +29,7 @@
 </tr>
 <br/>
 </table>
+    <input type="hidden" name="rmaItemId" value="<?php echo $this->getRequest()->getParam('rmaItemId')?>">
 </form>
 
 <script type="text/javascript">

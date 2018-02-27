@@ -21,19 +21,6 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit_Tab_Form extends Mage_
         'values'    => array('0' => 'Store View','1' => 'Website', '2' => 'Global'),
         ));
         
-        $fieldset->addField('is_unique', 'select', array(
-        'label'     => Mage::helper('rma')->__('Unique Value'),
-        'name'      => 'is_unique',
-        'values'    => array('0' => 'No','1' => 'Yes'),
-        'after_element_html' => '<small>Not shared with other Products</small>',
-        ));
-        
-        $fieldset->addField('is_required', 'select', array(
-        'label'     => Mage::helper('rma')->__('Value Required'),
-        'name'      => 'is_required',
-        'values'    => array('0' => 'No','1' => 'Yes'),
-        ));
-        
         if($id)
         {
             $form->getElement('attribute_code')->setDisabled(1);

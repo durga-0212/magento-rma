@@ -6,105 +6,139 @@
  * and open the template in the editor.
  */
 
-class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Action {
+class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Action 
+{
 
-    public function indexAction() {
-        $this->_title($this->__("RMA"));
-        $this->_title($this->__("RMA Detail"));
+    public function indexAction() 
+    {
+        $this->_title($this->__("RMA Grid"));
         $this->loadLayout();
         $this->renderLayout();
-        //Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
     }
 
-    public function massRemoveAction() {      
-        try {           
+    public function massRemoveAction() 
+    {    
+        if(empty($this->getRequest()->getPost('id')))
+        {
+            return;
+        }
+        try 
+        {           
             $ids = $this->getRequest()->getPost('id', array());           
-            foreach ($ids as $id) {
+            foreach ($ids as $id) 
+            {
                 $model = Mage::getModel("rma/order")->load($id);
                 $model->addData(array("status"=>Thycart_Rma_Model_Rma_Status::STATE_CLOSED));                
                 $model->save();
                 $modelitem = Mage::getModel("rma/rma_item")->getCollection()
-                        ->addFieldToFilter('rma_entity_id',$id);
-                       
+                    ->addFieldToFilter('rma_entity_id',$id);
+                    
                 foreach($modelitem->getData() as $key=> $value)
                 {
                     $modelStatus = Mage::getModel("rma/rma_item")->load($value['entity_id']);
-                    //echo $value['entity_id']; 
                     $modelStatus->addData(array("item_status"=>Thycart_Rma_Model_Rma_Status::STATE_COMPLETE));                
                     $modelStatus->save();  
                 }                              
             }
-            Mage::getSingleton("adminhtml/session")->addSuccess(Mage::helper("adminhtml")->__("RMA(s) was successfully removed"));
-        } catch (Exception $e) {
+            Mage::getSingleton("adminhtml/session")->addSuccess(Mage::helper("adminhtml")->__("RMA(s) was successfully Closed"));
+        } 
+        catch (Exception $e) 
+        {
             Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
         }
         $this->_redirect('*/*/');
     }
     
-    public function massRemoveItemAction() {      
-        try {           
+    public function massRemoveItemAction() 
+    {   
+        if(empty($this->getRequest()->getPost('id')))
+        {
+            return;
+        }
+        try 
+        {           
             $ids = $this->getRequest()->getPost('id', array());           
-            foreach ($ids as $id) {
+            foreach ($ids as $id) 
+            {
                 $model = Mage::getModel("rma/rma_item")->load($id);
                 $model->addData(array("item_status"=>Thycart_Rma_Model_Rma_Status::STATE_COMPLETE));               
                 $model->save();   
-                foreach($model->getData() as $key=> $value)
-                {
-                    $modelStatus = Mage::getModel("rma/order")->load($value['rma_entity_id']);
-                    $modelStatus->addData(array("status"=>Thycart_Rma_Model_Rma_Status::STATE_CLOSED));                
-                    $modelStatus->save();  
-                    break;
-                }                
             }
-            Mage::getSingleton("adminhtml/session")->addSuccess(Mage::helper("adminhtml")->__("RMA(s) was successfully removed"));
-        } catch (Exception $e) {
+            Mage::getSingleton("adminhtml/session")->addSuccess(Mage::helper("adminhtml")->__("RMA(s) was successfully Completed"));
+        } 
+        catch (Exception $e) 
+        {
             Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
         }
         $this->_redirect('*/*/');
     } 
      
    
-    public function exportCsvAction() {
+    public function exportCsvAction() 
+    {
         $fileName = 'thycart_rma.csv';
         $grid = $this->getLayout()->createBlock('rma/adminhtml_rma_grid');
         $this->_prepareDownloadResponse($fileName, $grid->getCsvFile());
     }
 
-    public function exportExcelAction() {
+    public function exportExcelAction() 
+    {
         $fileName = 'thycart_rma.xml';
         $grid = $this->getLayout()->createBlock('rma/adminhtml_rma_grid');
         $this->_prepareDownloadResponse($fileName, $grid->getExcelFile($fileName));
     }
 
-    public function editAction() {
-
-        $this->_title($this->__("RMA"));
-        $id = $this->getRequest()->getParam("id");
-        $model = Mage::getModel("rma/order")->load($id);
-        if ($model->getId() || $id == 0) {
-            Mage::register("rma_data", $model);
-            $this->loadLayout();
-            $this->_setActiveMenu("sales/rma");
-            $this->_addBreadcrumb(Mage::helper("adminhtml")->__("Rma"), Mage::helper("adminhtml")->__("Rma"));
-            $this->renderLayout();
-            //Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
-        } else {
-            Mage::getSingleton("adminhtml/session")->addError(Mage::helper("rma")->__("RMA does not exist."));
-            $this->_redirect("*/*/");
+    public function editAction() 
+    {
+        try
+        {
+            $this->_title($this->__("RMA Description"));
+            $id = $this->getRequest()->getParam("id");
+            $model = Mage::getModel("rma/order")->load($id);
+            if ($model->getId() || $id == 0) 
+            {
+                Mage::register("rma_data", $model);
+                $this->loadLayout();
+                $this->_setActiveMenu("sales/rma");
+                $this->renderLayout();
+            } 
+            else 
+            {
+                Mage::getSingleton("adminhtml/session")->addError(Mage::helper("rma")->__("RMA does not exist."));
+                $this->_redirect("*/*/");
+            }
+        }
+        catch(Exception $e)
+        {
+            Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
+            $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
+            return;
         }
     }
 
-    public function newAction() {
+    public function newAction() 
+    {
         $this->_forward('edit');
     }
 
-    public function productGridAction() {
-        $this->loadLayout();
-        $this->getLayout()->getBlock('adminhtml.rma.edit.tab.productgrid');
-        $this->renderLayout();
+    public function productGridAction() 
+    {
+        try
+        {
+            $this->loadLayout();
+            $this->getLayout()->getBlock('adminhtml.rma.edit.tab.productgrid');
+            $this->renderLayout();
+        }
+        catch(Exception $e)
+        {
+            Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
+            $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
+            return;
+        }
     }
 
-    public function addCommentAction() {
+    public function addCommentAction() 
+    {
         try {
             $model = Mage::getModel('rma/order');
             $data = $this->getRequest()->getPost('comment');
@@ -127,15 +161,14 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
 
             $history = Mage::getModel('rma/rma_history');
             $history->setRmaEntityId((int) $rmaId)
-                    ->setComment($comment)
-                    ->setIsVisibleOnFront($visible)
-                    ->setIsCustomerNotified($notify)
-                    ->setStatus($status)
-                    ->setCreatedAt(Mage::getSingleton('core/date')->gmtDate())
-                    ->setIsAdmin(1)
-                    ->save();
-
-
+                ->setComment($comment)
+                ->setIsVisibleOnFront($visible)
+                ->setIsCustomerNotified($notify)
+                ->setStatus($status)
+                ->setCreatedAt(Mage::getSingleton('core/date')->gmtDate())
+                ->setIsAdmin(1)
+                ->save();
+            
             $this->loadLayout();
             $response = $this->getLayout()->getBlock('comments_history')->toHtml();
         } catch (Mage_Core_Exception $e) {
@@ -155,129 +188,191 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         $this->getResponse()->setBody($response);
     }
 
-    public function saveAction() { 
-        $post_data = $this->getRequest()->getPost(); 
-        $id = $this->getRequest()->getParam('id');
-        
-        if($post_data)
+    public function saveAction() 
+    {            
+        if(empty($this->getRequest()->getParam('order_id')) || empty($this->getRequest()->getParam('items')))
         {
-            $flag=0;
-            try {
+            Mage::getSingleton('core/session')->addError('Please fill all the details');
+            $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
+            return;
+        }
+        $rmaItemArray = array();
+        $productArray = array();
+        $sendLink = 0;
+        $completeMail = 0;
+        $counter = 0;
+        $id = $this->getRequest()->getParam('id');
+        $post_data = $this->getRequest()->getPost();
+        $orderId = $post_data['order_id'];
+        $modelRma = Mage::getModel('rma/order')->load($id);
+        $customerId = $modelRma->getCustomerId();
+        $customerModel = Mage::getModel('customer/customer')->load($customerId);        
+        $statusCheck = (array_column($post_data['items'],'status'));
+        if(in_array(Thycart_Rma_Model_Rma_Status::STATE_PENDING,$statusCheck))
+        {
+            Mage::getSingleton('adminhtml/session')->addError("Select Processing for all items");
+            $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
+            return;
+        }
+     
+        try 
+        { 
             foreach ($post_data['items'] as $key => $value) 
             {  
-                $statusModel = Mage::getModel('rma/rma_item')->load($key);
-                $status = $statusModel->getItemStatus();
+                $rmaItemModel = Mage::getModel('rma/rma_item')->load($key);
+                $status = $rmaItemModel->getItemStatus();
+                $productName = $rmaItemModel->getProductName();
+                $productId = $rmaItemModel->getProductId(); 
+                $orderItemId = $rmaItemModel->getOrderItemId();
                 
-                $model = Mage::getModel("rma/rma_item")->load($key);
-                $model->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
-                $result = $model->save();
                 $processing_status=Thycart_Rma_Model_Rma_Status::STATE_PROCESSING;
                 $return_received_status=Thycart_Rma_Model_Rma_Status::STATE_RETURN_RECEIVED;               
-                if($value['status'] == $processing_status && $status!=$processing_status)
+
+                if($value['status'] == $processing_status && $status!= $processing_status && $value['qty_approved']>0)
                 {
-                    $shipData=array(
-                        'order_id'=> $post_data['order_id'],
-                        'item_id' => $value['order_item_id']
-                    );
-                    $shipDetails = Mage::getModel('rma/order')->getShipmentDetails($shipData);
-                    //print_r($shipDetails); die;
-                    $track_data= Mage::helper('rma')->getTrackingNumber();                   
-                    $track_details= explode('_', $track_data); 
-                    foreach ($shipDetails as $key => $value) {                    
-                         $shipmenttrackModel = Mage::getModel('sales/order_shipment_track'); 
-                         
-                        $shipmenttrackModel->addData(array(
-                        'parent_id'  => $value['entity_id'],
-                        'order_id' => $value['order_id'],
-                        'track_number'  => $track_details[2],                        
-                        'title' => $track_details[0],
-                        'carrier_code' =>  $track_details[1],
-                        'created_at' =>Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s')                                         
-                    ));
-                    
-                   
-                    $successShipment = $shipmenttrackModel->save(); 
-                    } 
-                    if($successShipment)
-                    {
-                        Mage::getSingleton('core/session')->addSuccess('Tracking Number has been generated');
-                    }
+                    $saveShipmentNumber = $this->saveShipmentNumber($post_data['order_id'],$orderItemId);
                 }
-                elseif($value['status'] == $return_received_status && $status!=$return_received_status)
+                elseif($value['status'] == $return_received_status && $status!= $return_received_status && $value['qty_approved']>0)
                 {
-                    $modelSalesItem = Mage::getModel('sales/order_item')->load($value['order_item_id']);
-                    $pid = $modelSalesItem->getProductId();
-                    $inventoryModel = Mage::getModel('cataloginventory/stock_item')->load($pid);
-                    $backOrders = $inventoryModel->getBackorders();
-                    $originalQty = $inventoryModel->getQty();
-                    $qty = $value['qty_approved'];
-                    $updatedQty = $originalQty+$qty;
-                    if($backOrders == 0)
-                    {
-                        $inventoryModel->addData(array('qty'=>$updatedQty));
-                        $successInventory = $inventoryModel->save();
-                    }
-                    else 
-                    {
-                        if($originalQty>0)
-                        {
-                            $inventoryModel->addData(array('qty'=>$updatedQty));                          
-                            $successInventory = $inventoryModel->save();                       
-                        }
-                    }
-                    if($successInventory)
-                    {
-                        Mage::getSingleton('core/session')->addSuccess('Inventory Updated');
-                    }
-                        
+                    $updateInventory = Mage::helper('rma')->updateInventory($productId,$value['qty_approved']);
+                    $rmaItemArray[] = $key;
+                    $sendLink = 1;                      
                 }
-                elseif($value['status'] == Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST)
+                elseif($value['status'] == Thycart_Rma_Model_Rma_Status::STATE_COMPLETE && $status!= Thycart_Rma_Model_Rma_Status::STATE_COMPLETE && $value['qty_approved']>0)
                 {
-                  $url = Mage::getUrl();
-                  header('Location: '.$url.'rma/index/bankform/');
-                  //$this->_redirect($url.'rma/index/bankform/');
+                    $completeMail = 1;
                 }
-                                 
+                $rmaItemModel->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
+                
+                $result = $rmaItemModel->save();
                 $arr=array(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE,Thycart_Rma_Model_Rma_Status::STATE_CANCELED);
-             
+
                 if(in_array($value['status'], $arr))
                 {               
-                    $flag=1;              
+                    $counter++;              
                 }
-                else
-                {
-                    $flag=2;             
-                }          
+                $productArray[$productName] = $value['qty_approved']; 
+                
             }
+            Mage::helper('rma')->detailsForEmail($productArray,$orderId);
             
-           
-            $modelRma = Mage::getModel('rma/order')->load($id);
-           
-            if($flag == 1)
+            if($updateInventory)
+            {
+                Mage::getSingleton('core/session')->addSuccess('Inventory Updated');
+            }
+            if($saveShipmentNumber)
+            {
+                Mage::getSingleton('core/session')->addSuccess('Tracking Number is generated');
+                $subject = 'RMA Processed';
+                $message = 'Rma Request in Processing State';
+                $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message);
+            }
+            if($sendLink)
+            {
+                $this->saveRmaLink($id,$rmaItemArray,$customerId,$customerModel,$orderId,$productArray);
+            }
+            if($completeMail)
+            {
+                $subject = 'RMA Completed';
+                $message = 'Rma Request Completed';
+                $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message);
+                Mage::getSingleton('core/session')->addSuccess('Rma Request has been completed');
+            }
+            $modelRma->addData(array('status'=>Thycart_Rma_Model_Rma_Status::STATE_PENDING));
+
+            if(count($post_data['items']) === $counter)
             {                    
                 $modelRma->addData(array('status'=>Thycart_Rma_Model_Rma_Status::STATE_CLOSED));
             }
-            else 
-            {
-                $modelRma->addData(array('status'=>Thycart_Rma_Model_Rma_Status::STATE_PENDING));
-            }
             $modelRma->save();
-            }
-            catch(Exception $e){
-                Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
-                Mage::getSingleton("adminhtml/session")->setMessageData($this->getRequest()->getPost());
-                $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
-                return;
-            }
-           
-            
         }
-        else 
+        catch(Exception $e)
         {
-            Mage::getSingleton('core/session')->addError('Data not posted');
+            Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
+            $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
+            return;
         }
 
         $this->_redirect("*/*/");
     }
+    
+    public function saveShipmentNumber($order_id,$orderItemId)
+    {
+        if(empty($order_id) || empty($orderItemId))
+        {
+            return;
+        }
+        $shipData=array(
+            'order_id'=> $order_id,
+            'item_id' => $orderItemId
+        );
+        try
+        {
+            $shipDetails = Mage::getModel('rma/order')->getShipmentDetails($shipData);
+            $track_data= Mage::helper('rma')->getTrackingNumber();                   
+            $track_details= explode('_', $track_data); 
+            foreach ($shipDetails as $key => $value)               
+            {                    
+                $shipmenttrackModel = Mage::getModel('sales/order_shipment_track');
+                $shipmenttrackModel->addData(array(
+                    'parent_id'  => $value['entity_id'],
+                    'order_id' => $value['order_id'],
+                    'track_number'  => $track_details[2],                        
+                    'title' => $track_details[0],
+                    'carrier_code' =>  $track_details[1],
+                    'created_at' =>Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s')                                         
+                ));
+                
+                $successShipment = $shipmenttrackModel->save(); 
+            }
+            return $successShipment;
+        }
+        catch(Exception $e)
+        {
+            Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
+            return;
+        }
+    }
+    
+    public function saveRmaLink($rmaOrderId,$rmaItemIdArray,$customerId,$customerModel,$orderId,$productArray)
+    {   
+        if(empty($rmaOrderId) || empty($rmaItemIdArray) || empty($customerId) 
+            || empty($customerModel) || empty($orderId) || empty($productArray))
+        {
+            Mage::getSingleton('core/session')->addError('Invalid data while saving Rma Link details');
+        }
+        else 
+        {
+            try
+            {
+                foreach($rmaItemIdArray as $key => $rmaItemId)
+                {
+                    $modelLink = Mage::getModel('rma/link');
+                    $modelLink->addData(array(
+                        'rma_order_id'=>$rmaOrderId,
+                        'rma_order_item_id'=>$rmaItemId,
+                        'customer_id'=>$customerId,
+                        'status'=>0
+                    ));
+                    $modelLink->save();
+                }
+                $url = Mage::getBaseUrl();
+                $link = $url."rma/index/bankform/rmaItemId/".implode("-",$rmaItemIdArray);
+                $subject = 'Return Received';
+                $message = 'Rma request in Return Received State';
+                $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message,$link);
+            }
+            catch(Exception $e)
+            {
+                Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
+                return;
+            }
+        }
+    }
 
+    public function getCustomerEmailId()
+    {
+        $emailId = Mage::getSingleton('customer/session')->getCustomer()->getEmail();
+    }
+    
 }

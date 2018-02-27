@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <config>
     <modules>
         <Thycart_Rma>
-            <version>0.1.1</version> 
+            <version>0.1.0</version> 
         </Thycart_Rma>
     </modules>
     <global>
@@ -37,17 +32,25 @@ and open the template in the editor.
                     <rma_eav_attributeoption>
                         <table>rma_eav_attribute_option</table>
                     </rma_eav_attributeoption>
+                    <link>
+                        <table>bankverification_link</table>
+                    </link>
                 </entities>
             </rma_resource>
+            <customer>
+                <rewrite>
+                    <session>Thycart_Rma_Model_Session</session>
+                </rewrite>
+            </customer>
         </models>
         <resources>
             <rma_setup>
                 <setup>
                     <module>Thycart_Rma</module>
                 </setup>
-            <connection>
-                <use>core_setup</use>
-            </connection>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
             </rma_setup> 
             <rma_write>
                 <connection> 
@@ -70,12 +73,21 @@ and open the template in the editor.
                 <class>Thycart_Rma_Helper</class>
             </rma>
         </helpers>
+        <template>
+            <email>
+                <rma_template>
+                    <label>Rma Template</label>
+                    <file>rma_template.html</file>
+                    <type>html</type>
+                </rma_template>
+            </email>
+        </template>
     </global>
     <admin>
         <routers>
             <rma>
                <use>admin</use>
-                <args>
+               <args>
                     <module>Thycart_Rma</module>
                     <frontName>rma</frontName>                    
                 </args> 
@@ -90,25 +102,6 @@ and open the template in the editor.
                 </rma>
             </updates>
         </layout>
-        <acl>
-            <resources>
-                <admin>
-                    <children>
-                        <system>
-                            <children>
-                                <config>
-                                    <children>
-                                        <rma_section>
-                                            <title>RMA</title>
-                                        </rma_section>
-                                    </children>
-                                </config>
-                            </children>
-                        </system>
-                    </children>
-                </admin>
-            </resources>
-        </acl>
     </adminhtml>
     <frontend>
         <routers>
