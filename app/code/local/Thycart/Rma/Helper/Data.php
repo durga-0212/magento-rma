@@ -256,4 +256,28 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::register('emailDetails',$emailDetails);
     }
     
+    public function encryptBankDetail($data)
+    {
+        if(empty($data) || !is_numeric($data))
+        {
+            return false;
+        }
+        $key        = hash('sha256',KEY);
+        $iv         = substr(hash('sha256', IV), 0, 16);
+        $encrypted  = openssl_encrypt($data, ENCRYPTMETHOD, $key, 0, $iv);
+        $encrypted  = base64_encode($encrypted);
+        return $encrypted;
+    }
+
+    public function decryptBankDetail($data)
+    {
+        if(empty($data))
+        {
+            return false;
+        }
+        $key        = hash('sha256',KEY);
+        $iv         = substr(hash('sha256', IV), 0, 16);
+        $decrypted  = openssl_decrypt(base64_decode($data),ENCRYPTMETHOD , $key, 0, $iv);
+        return $decrypted;
+    }
 }
