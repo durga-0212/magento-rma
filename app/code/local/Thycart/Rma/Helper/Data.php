@@ -31,7 +31,6 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
 
         $orderObject = Mage::getModel('sales/order')->load($orderId);
         $shipmentIds = $orderObject->getShipmentsCollection()->getAllIds();
-        print_r($shipmentIds);die;
         return $shipmentIds;
     }
     
