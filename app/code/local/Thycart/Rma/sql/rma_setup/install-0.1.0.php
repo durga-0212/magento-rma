@@ -85,13 +85,11 @@ CONSTRAINT `FK_RMA_ATTRIBUTES_RMA_ENTITY_ID_RMA_ORDER_ENTITY_ID` FOREIGN KEY (`r
 
 $installer->run("Drop table if exists `rma_eav_attribute`; 	
 CREATE TABLE `rma_eav_attribute` (
-`attribute_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Attribute Id',
-`attribute_code` varchar(255) NOT NULL COMMENT 'Attribute Code',
-`is_required` smallint(5) unsigned NOT NULL COMMENT 'Is Required',
-`is_unique` smallint(5) unsigned NOT NULL COMMENT 'Is Unique',
-`scope` varchar(50) NOT NULL COMMENT 'Scope',
-PRIMARY KEY (`attribute_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='rma_eav_attribute'
+ `attribute_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Attribute Id',
+ `attribute_code` varchar(255) NOT NULL COMMENT 'Attribute Code',
+ `scope` varchar(50) NOT NULL COMMENT 'Scope',
+ PRIMARY KEY (`attribute_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='rma_eav_attribute'
 ");    
 
 
@@ -106,6 +104,7 @@ CONSTRAINT `FK_RMA_EAV_ATTR_OPT_ATTR_ID_RMA_EAV_ATTR_OPT_ATTR_ID` FOREIGN KEY (`
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='rma_eav_attribute_option'
 ");
 
+
 $installer->run("Drop table if exists `bankverification_link`;
 CREATE TABLE `bankverification_link` (
 `entity_id` int(5) NOT NULL AUTO_INCREMENT,
@@ -117,10 +116,12 @@ PRIMARY KEY (`entity_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 ");
 
-$installer->run("INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`,`is_required`,`is_unique`,`scope`) VALUES ('1', 'resolution', '1', '1', '2');
-INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`, `is_required`, `is_unique`, `scope`) VALUES ('2', 'delivery_status', '1', '1', '2');
-INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`, `is_required`, `is_unique`, `scope`) VALUES ('3', 'item_status', '1', '1', '2');
+
+$installer->run("INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`,`scope`) VALUES ('1','resolution','2');
+INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`, `scope`) VALUES ('2','delivery_status','2');
+INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`,`scope`) VALUES ('3','item_status','2');
 ");
+
 
 $installer->run("INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('1','1','cancel');
 INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('2','1','refund');
