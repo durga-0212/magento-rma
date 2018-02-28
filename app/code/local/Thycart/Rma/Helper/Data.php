@@ -74,7 +74,7 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
     }
     
     public function sendMail($to, $recepientName, $subject, $orderid, $productName, $message, $link='')
-    {
+    { 
         if(empty($to) || empty($recepientName) || empty($subject) ||empty($orderid) || empty($productName) || empty($message))
         {
             return false;
@@ -92,7 +92,7 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
                 $mail->Port = 465;
                 $mail->IsHTML(true);
                 $mail->Username = Mage::getStoreConfig('rma_email/email_group/sender_email');
-                $mail->Password = '';
+                $mail->Password = 'vipin$90';
                 $mail->SetFrom(Mage::getStoreConfig('rma_email/email_group/sender_email'));
                 $mail->Subject = $subject;
                 $body = $message;
@@ -134,8 +134,8 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
         }
         if(ZEND_FUNCTION)
         {
-            $sender_email = 'ritesh.shukla@adapty.com';
-            $sender_name = "sender name";
+            $sender_email = Mage::getStoreConfig('rma_email/email_group/sender_email');
+            $sender_name  = Mage::getStoreConfig('rma_email/email_group/sender_name');
 
             $mail = new Zend_Mail();
             $mail->setBodyHtml(Mage::helper('rma')->getEmailBody($orderid, $productName, $message ,$link)); 
@@ -153,7 +153,8 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
             }
             catch(Exception $ex)
             {
-                die("Error sending mail to $to,$error_msg");
+                echo $ex->getMessage();
+                return;
             }
         }
         if(Mage::getStoreConfig('rma_email/email_group/transactional_email'))
@@ -220,16 +221,39 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
     }
     public function updateInventory($productId,$qtyApproved)
     {
-        $inventoryModel = Mage::getModel('cataloginventory/stock_item')->load($productId);
-        $backOrders = $inventoryModel->getBackorders();
-        $originalQty = $inventoryModel->getQty();
-        $updatedQty = $originalQty+$qtyApproved;
-        if($backOrders == 0 || $originalQty>=0)
+        if(empty($productId) || empty($qtyApproved))
         {
-            $inventoryModel->addData(array('qty'=>$updatedQty));
-            $successInventory = $inventoryModel->save();
-            return $successInventory;
+            return;
         }
+        try
+        {
+            $inventoryModel = Mage::getModel('cataloginventory/stock_item')->load($productId);
+            $originalQty = $inventoryModel->getQty();
+            $updatedQty = $originalQty+$qtyApproved;
+            if($originalQty>=0)
+            {
+                $inventoryModel->addData(array('qty'=>$updatedQty));
+                $successInventory = $inventoryModel->save();
+                return $successInventory;
+            }
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
+    }
+    
+    public function detailsForEmail($productArray,$orderId)
+    {   
+        $emailDetails = '';
+        if(empty($productArray) || empty($orderId))
+        {
+            return;
+        }
+        
+        $emailDetails = array($productArray,$orderId);
+        Mage::register('emailDetails',$emailDetails);
     }
     
 }
