@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
 <layout version="0.1.0">
     <rma_adminhtml_rma_edit>    
-         <reference name="head">
+        <reference name="head">
             <action method="addJs"><script>lib/jquery/jquery-1.10.2.min.js</script></action>
-	     <action method="addJs"><script>lib/jquery/noconflict.js</script></action>
-            <action method="addJs"><script>rma/test.js</script></action>
+	    <action method="addJs"><script>lib/jquery/noconflict.js</script></action>
+            <action method="addJS"><script>rma/checkquantity.js</script></action>
         </reference>
-        </rma_adminhtml_rma_edit> 
+    </rma_adminhtml_rma_edit> 
     <customer_account translate="label">
         <reference name="customer_account_navigation">                    
             <action method="addLink"><name>rma</name><path>rma/index</path><label>Rma</label></action>           
@@ -14,7 +14,7 @@
     </customer_account>
 
    
-        <rma_index_index translate="label">
+    <rma_index_index translate="label">
         <label>Customer My Account Returns History</label>
         <update handle="customer_account"/>
         <reference name="my.account.wrapper">
@@ -38,10 +38,10 @@
     </rma_adminhtml_rma_addcomment>
     
     <rma_adminhtml_rma_edit>       
-         <reference name="content">
+        <reference name="content">
             <block type="rma/adminhtml_rma_edit" name="adminhtml_rma_edit" />
-          </reference>
-           <reference name="left">
+        </reference>
+        <reference name="left">
             <block type="rma/adminhtml_rma_edit_tabs" name="adminhtml_rma_edit_tabs">
                 <block type="rma/adminhtml_rma_edit_tab_general" template="rma/edit/general.phtml" name="rma_edit_tab_general">
                     <block type="rma/adminhtml_rma_edit_tab_general_details" template="rma/edit/general/details.phtml" name="request_details" />                    
@@ -71,15 +71,14 @@
     </rma_adminhtml_attribute_index>
     
     <rma_adminhtml_attribute_view>
-         <reference name="content">
-              <block type="rma/adminhtml_rma_item_attribute_edit_tab_js" name="rma_item_attribute_edit_tab_js" />
+        <reference name="content">
+            <block type="rma/adminhtml_rma_item_attribute_edit_tab_js" name="rma_item_attribute_edit_tab_js" />
 <!--             <block type="core/template" name="sidesupport">
             <action method="setTemplate">
                <template>rma/options.phtml</template>
             </action>
-        </block>-->
-        
-         </reference>
+        </block>-->        
+        </reference>
     </rma_adminhtml_attribute_view>   
     
      <adminhtml_customer_edit>
@@ -91,20 +90,4 @@
         </reference>
     </adminhtml_customer_edit> 
 
-<!--    <rma_adminhtml_attribute_edit>
-        <reference name="content">
-            <block type="rma/adminhtml_rma_item_attribute_edit" name="rma_item_attribute_edit" />
-        <reference name="left">
-            <block type="rma/adminhtml_rma_item_attribute_edit_tabs" name="rma_item_attribute_edit_tabs">
-                
-                <block type="rma/adminhtml_rma_item_attribute_edit_tab_main" name="rma_item_attribute_edit_tab_general" />
-                <action method="addTab"><name>general</name><block>rma_item_attribute_edit_tab_general</block></action>
-                <block type="enterprise_rma/adminhtml_rma_item_attribute_edit_tab_options" name="enterprise_rma_item_attribute_edit_tab_options" />
-                <action method="addTab"><name>options</name><block>enterprise_rma_item_attribute_edit_tab_options</block></action>
-            </block>
-        </reference>
-        <reference name="rma_item_attribute_edit">            
-            <block type="rma/adminhtml_rma_item_attribute_edit_js" template="eav/attribute/options.phtml" />       
-        </reference>
-    </rma_adminhtml_attribute_edit>-->
 </layout>

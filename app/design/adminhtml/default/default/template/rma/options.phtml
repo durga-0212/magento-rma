@@ -1,10 +1,5 @@
 <div>
 <ul class="messages">
-<!--    <li class="notice-msg">
-        <ul>
-            <li></li>
-        </ul>
-    </li>-->
 </ul>
 </div>
 <div class="entity-edit" id="matage-options-panel">
@@ -125,7 +120,7 @@ attributeOption.bindRemoveButtons();
     if($('add_new_option_button')){    
     Event.observe('add_new_option_button', 'click', attributeOption.add.bind(attributeOption));
 }
-<?php //print_r($this->getOptionValues());die;
+<?php 
 foreach ($this->getOptionValues() as $_value): ?>
     attributeOption.add(<?php echo $_value->toJson() ?>);
 <?php endforeach; ?>

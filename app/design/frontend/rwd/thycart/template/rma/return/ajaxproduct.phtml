@@ -34,8 +34,7 @@
     <?php
     $cnt = 0;
     if($alltrue==0):
-    foreach($productInfo as $key => $value): 
-        // echo "<pre>";print_r($value);die;
+    foreach($productInfo as $key => $value):
         $pid = $value['product_id'];
         if($productInfo['is_cancel'])
         {
@@ -47,7 +46,7 @@
         <tr>
             <?php if(empty($cancelType)): ?>
             <td>   
-            <input type="checkbox" name="products[<?php echo $pid;?>]['checked']" id="checkbox_product_<?php echo $key ?>" value='1'>
+            <input type="checkbox" name="products[<?php echo $pid;?>][checked]" id="checkbox_product_<?php echo $key ?>" value='1'>
             </td>
             <?php endif; ?>
             <td class="number"><?php echo $value['name']; ?></td>
@@ -58,7 +57,7 @@
                     if(empty($cancelType)): 
                         $readonly='';
                     endif; ?>
-                <input type="text" class="productQty" id="productQty_<?php echo $key;?>" name="products[<?php echo $pid;?>]['qty_requested']" value="<?php echo round($value['qty_ordered']); ?>" <?php echo $readonly;?> data-pid="<?php echo $pid;?>" data-price="<?php echo $value['base_original_price'];?>" data-orderedqty="<?php echo $value['qty_ordered'];?>">
+                <input type="text" class="productQty" id="productQty_<?php echo $key;?>" name="products[<?php echo $pid;?>][qty_requested]" value="<?php echo round($value['qty_ordered']); ?>" <?php echo $readonly;?> data-pid="<?php echo $pid;?>" data-price="<?php echo $value['base_original_price'];?>" data-orderedqty="<?php echo $value['qty_ordered'];?>" data-name="<?php echo $value['name'];?>">
             </td>
             <td class="total" id="productPrice_<?php echo $pid;?>"><?php echo $value['base_row_total'] ?></td>
         </tr>            
@@ -161,12 +160,13 @@
         var pid = $j(this).data('pid');
         var price = $j(this).data('price');
         var orderedQty = parseInt($j(this).data('orderedqty'));
+        var productName = $j(this).data('name');
         var qty_requested = parseInt($j(this).val());
         
         if(qty_requested > orderedQty)
         {
             $j("#notification-message").show();
-            $j("#notification").html("You can not return more than "+orderedQty);
+            $j("#notification").html("You can not return "+qty_requested+" "+productName);
         }
         else
         {

@@ -51,6 +51,7 @@
     
     var $j = jQuery.noConflict();
     var cancelType = 0;
+    var i = 0;
     $j(window).ready(function(){
 
         $j("#selectOrder").change( function() {
@@ -84,7 +85,7 @@
         $j("#requestForm").on('click', '#submit', function (e)
         {
             cnt=$j('#cnt').val();
-            if(cancelType ==0)
+            if(cancelType == 0)
             {
                 var checked = $j('#my-rma-table').find(':checked').length;
                 if(checked === 2)
@@ -105,28 +106,24 @@
                 $j("#notification-message1").hide();
             }
             
-            
             for (i = 0; i < cnt; i++) 
-            {            
-                var selectedQtyById=$j('#productQty_'+i).val();            
-                var orderedQty = $j('#qty_ordered_'+i).val();       
-                var product_name=$j("#product_name_"+i).val();              
-                  
-                if(selectedQtyById > orderedQty)
+            {         
+                var orderedQty = $j('.productQty').data('orderedqty');
+                var productName = $j('.productQty').data('name');
+                var qtyRequested = parseInt($j('.productQty').val());
+                if(qtyRequested > orderedQty)
                 {   
                     $j("#notification-message").show();
                     $j("#notification").empty();
-                    $j("#notification").append("You can not return more than "+orderedQty+" "+product_name);
+                    $j("#notification").append("You can not return "+qtyRequested+" "+productName);
                     e.stopImmediatePropagation();
                     e.preventDefault();return;
                 }
                 else
-               {
-                $j("#notification-message").hide();
-               }
+                {
+                    $j("#notification-message").hide();
+                }
             }
-            
-
         });
     var customForm = new VarienForm('requestForm'); 
     });

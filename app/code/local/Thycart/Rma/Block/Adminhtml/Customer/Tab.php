@@ -74,7 +74,8 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
     {
         $customerModel = $this->getCustomerModel();
         $accountNumber = $customerModel->getAccountNo();
-        return $accountNumber;
+        $accountNo = Mage::helper('rma')->decryptBankDetail($accountNumber);
+        return $accountNo;
     }
     
     public function getIfscCode() 
