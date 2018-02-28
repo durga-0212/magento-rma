@@ -206,48 +206,45 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         $orderId = $post_data['order_id'];
         $modelRma = Mage::getModel('rma/order')->load($id);
         $customerId = $modelRma->getCustomerId();
-        $customerModel = Mage::getModel('customer/customer')->load($customerId);
-        
-        try 
+        $customerModel = Mage::getModel('customer/customer')->load($customerId);        
+        $statusCheck = (array_column($post_data['items'],'status'));
+        if(in_array(Thycart_Rma_Model_Rma_Status::STATE_PENDING,$statusCheck))
         {
+            Mage::getSingleton('adminhtml/session')->addError("Select Processing for all items");
+            $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
+            return;
+        }
+     
+        try 
+        { 
             foreach ($post_data['items'] as $key => $value) 
-            {             
-                if(empty($value['status']))                    
-                {
-                    Mage::getSingleton('core/session')->addError('Please fill all the details');
-                    $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
-                    return; 
-                }
-                
+            {  
                 $rmaItemModel = Mage::getModel('rma/rma_item')->load($key);
                 $status = $rmaItemModel->getItemStatus();
                 $productName = $rmaItemModel->getProductName();
                 $productId = $rmaItemModel->getProductId(); 
                 $orderItemId = $rmaItemModel->getOrderItemId();
                 
-                $model = Mage::getModel("rma/rma_item")->load($key);
-
                 $processing_status=Thycart_Rma_Model_Rma_Status::STATE_PROCESSING;
                 $return_received_status=Thycart_Rma_Model_Rma_Status::STATE_RETURN_RECEIVED;               
 
                 if($value['status'] == $processing_status && $status!= $processing_status && $value['qty_approved']>0)
                 {
                     $saveShipmentNumber = $this->saveShipmentNumber($post_data['order_id'],$orderItemId);
-                    $model->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
                 }
                 elseif($value['status'] == $return_received_status && $status!= $return_received_status && $value['qty_approved']>0)
                 {
                     $updateInventory = Mage::helper('rma')->updateInventory($productId,$value['qty_approved']);
-                    $model->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
                     $rmaItemArray[] = $key;
                     $sendLink = 1;                      
                 }
                 elseif($value['status'] == Thycart_Rma_Model_Rma_Status::STATE_COMPLETE && $status!= Thycart_Rma_Model_Rma_Status::STATE_COMPLETE && $value['qty_approved']>0)
                 {
-                    $model->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
                     $completeMail = 1;
                 }
-                $result = $model->save();
+                $rmaItemModel->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
+                
+                $result = $rmaItemModel->save();
                 $arr=array(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE,Thycart_Rma_Model_Rma_Status::STATE_CANCELED);
 
                 if(in_array($value['status'], $arr))
