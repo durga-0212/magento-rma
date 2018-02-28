@@ -10,13 +10,13 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid_Column_Renderer_Textin
             $value = intval($value);
         }
         $class = 'input-text ' . $this->getColumn()->getValidateClass();
-        $html = '<input type="text" id="qtyApproved"';
+        $html = '<input type="text" class="validate-not-negative-number validate-no-html-tags validate-greater-than-zero validate-digits validate-number" id="qtyApproved"';
         $html .= 'name="items[' . $row->getId() . '][' . $this->getColumn()->getId() . ']" ';
         $html .= 'value="' . $value . '" ';
-        if ($row['item_status']==Thycart_Rma_Model_Rma_Status::STATE_CANCELED) {
+        if ($row['item_status']==Thycart_Rma_Model_Rma_Status::STATE_CANCELED)
+        {
             $html .= ' disabled="disabled" ';          
         }
-//        $html .= 'class="' . $class . '" />';
         return $html;  
     }
     
