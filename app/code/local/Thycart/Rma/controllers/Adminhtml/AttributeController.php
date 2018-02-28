@@ -6,13 +6,11 @@
  * and open the template in the editor.
  */
 class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controller_Action
-{
-    public  function _initAction()
+{   
+    public function _initAction()
     {
         $this->loadLayout()
-             ->_setActiveMenu('sales/rma')
-             ->_addBreadcrumb(Mage::helper('rma')->__('RMA'))
-             ->_addBreadcrumb(Mage::helper('rma')->__('Manage RMA Item Attribute'));
+            ->_setActiveMenu('sales/rma');
         return $this;
     }
     
@@ -20,7 +18,7 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
     {
         $this->_title($this->__('Manage RMA Item Attribute'));
         $this->_initAction()
-             ->renderLayout();
+            ->renderLayout();
         //Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
     }
     
@@ -34,18 +32,17 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
     {
         $attributeId = $this->getRequest()->getParam('id');
         $attributeObject = $this->_initAttribute();
-            //->setEntityTypeId($this->_getEntityType()->getId());
 
         $this->_title($this->__('Manage RMA Item Attributes'));
         Mage::register('attribute_data', $attributeObject);
-        if ($attributeId) {
+        if ($attributeId) 
+        {
             $attributeObject->load($attributeId);
-        } else {
+        } else 
+        {
             $this->_title($this->__('New Attribute'));
             $label = Mage::helper('rma')->__('Add RMA Item Attribute');
         }
-        
-       
         
         if (!empty($attributeData)) { 
             $attributeObject->setData($attributeData);
@@ -55,14 +52,12 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
             ->_addBreadcrumb($label, $label)
             ->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_item_attribute_edit"))
             ->_addLeft($this->getLayout()->createBlock("rma/adminhtml_rma_item_attribute_edit_tabs"))
-            ->renderLayout();
-        //Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());        
+            ->renderLayout();  
     }
     
     public function _initAttribute()
     {
-        $attribute = Mage::getModel('rma/rma_eav_attribute');//->getCollection();
-                     //->join(array('rma' => 'rma/rma_eav_attributeoption'), 'main_table.attribute_id = rma.attribute_id');
+        $attribute = Mage::getModel('rma/rma_eav_attribute');
         $websiteId = $this->getRequest()->getParam('website');
         if ($websiteId) {
             $attribute->setWebsite($websiteId);
@@ -142,29 +137,29 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
             catch (Exception $e) 
             {
                 Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
-                Mage::getSingleton("adminhtml/session")->setMessageData($this->getRequest()->getPost());
                 $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
                 return;
             }
-
         }
         $this->_redirect("*/*/");
-        
     }
     
     public function deleteAction()
     {
-        if( $this->getRequest()->getParam("id") > 0 ) {
-                try {
-                        $model = Mage::getModel("rma/rma_eav_attribute");
-                        $model->setId($this->getRequest()->getParam("id"))->delete();
-                        Mage::getSingleton("adminhtml/session")->addSuccess(Mage::helper("adminhtml")->__("RMA was successfully deleted"));
-                        $this->_redirect("*/*/");
-                } 
-                catch (Exception $e) {
-                        Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
-                        $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
-                }
+        if( $this->getRequest()->getParam("id") > 0 ) 
+        {
+            try 
+            {
+                $model = Mage::getModel("rma/rma_eav_attribute");
+                $model->setId($this->getRequest()->getParam("id"))->delete();
+                Mage::getSingleton("adminhtml/session")->addSuccess(Mage::helper("adminhtml")->__("RMA Attribute was successfully deleted"));
+                $this->_redirect("*/*/");
+            } 
+            catch (Exception $e) 
+            {
+                Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
+                $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
+            }
         }
         $this->_redirect("*/*/");
     }
@@ -172,19 +167,21 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
 
     public function massRemoveAction()
     {
-            try {
-                    $ids = $this->getRequest()->getPost('id', array());
-                    foreach ($ids as $id) 
-                    {
-                        $model = Mage::getModel("rma/rma_eav_attribute");
-                        $model->setId($id)->delete();
-                    }
-                    Mage::getSingleton("adminhtml/session")->addSuccess(Mage::helper("adminhtml")->__("RMA(s) was successfully removed"));
+        try 
+        {
+            $ids = $this->getRequest()->getPost('id', array());
+            foreach ($ids as $id) 
+            {
+                $model = Mage::getModel("rma/rma_eav_attribute");
+                $model->setId($id)->delete();
             }
-            catch (Exception $e) {
+            Mage::getSingleton("adminhtml/session")->addSuccess(Mage::helper("adminhtml")->__("RMA Attributes was successfully removed"));
+        }
+        catch (Exception $e) 
+        {
             Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
-            }
-            $this->_redirect('*/*/');
+        }
+        $this->_redirect('*/*/');
     }
 }
 
