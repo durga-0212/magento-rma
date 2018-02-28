@@ -1,0 +1,12 @@
+<table>
+	<tr>
+		<th>Product Name</th>
+		<th>Quantity</th>
+	</tr>
+	<?php foreach ($this->getProductDetails() as $name => $qty){?>
+		<tr>	
+			<td><?php echo $name; ?></td>
+			<td><?php echo $qty; ?></td>
+		</tr>	
+	<?php } ?>
+</table>
