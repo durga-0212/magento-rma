@@ -1,11 +1,11 @@
 <?php
-    $productInfo = Mage::registry('productInfo');    
+    $productInfo = Mage::registry('orderArray');    
     $alltrue = 1;
     $cancelType = isset($productInfo['is_cancel']) ? $productInfo['is_cancel'] : 0;
     if($cancelType):
         $alltrue = 0;
     else:
-        foreach($productInfo as $item => $value ): 
+        foreach($productInfo['productDetails']  as $item => $value ): 
             if($value['is_returnable']==1) { $alltrue = 0;break; }
         endforeach;
     endif;
@@ -33,15 +33,17 @@
     <tbody id="ramTable">
     <?php
     $cnt = 0;
-    if($alltrue==0):
-    foreach($productInfo as $key => $value):
+    if($alltrue == 0):
+    foreach($productInfo['productDetails'] as $key => $value):
+        $returnable = $value['is_returnable'];
         $pid = $value['product_id'];
         if($productInfo['is_cancel'])
         {
-            $value['is_returnable'] = 1;
+            $returnable = 1;
         }
-        if($value['is_returnable']): 
+        if(isset($returnable) && $returnable == 1): 
             $cnt++;
+            
     ?> 
         <tr>
             <?php if(empty($cancelType)): ?>
