@@ -68,9 +68,8 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
 
     }
     public function saveAction()
-    {        
-        if(empty($this->getRequest()->getParam('option')) || empty($this->getRequest()->getParam('attribute_code')) 
-            || empty($this->getRequest()->getParam('scope')))
+    {    
+        if(empty($this->getRequest()->getParam('option')) || empty($this->getRequest()->getParam('attribute_code'))) 
         {
             Mage::getSingleton('core/session')->addError('Please fill all the details');
             $this->_redirect('*/*/');
@@ -142,6 +141,9 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
             $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
             return;
         }
+        
+        Mage::getSingleton('adminhtml/session')->addSuccess('Rma Attribute Saved Successfully');
+        $this->_redirect("*/*/");
     }
     
     public function deleteAction()
