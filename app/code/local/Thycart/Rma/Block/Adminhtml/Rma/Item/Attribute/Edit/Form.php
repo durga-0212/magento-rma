@@ -7,8 +7,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit_Form extends Mage_Admi
         "id" => "edit_form",
         "action" => $this->getUrl("*/*/save", array("id" => $this->getRequest()->getParam("id"))),
         "method" => "post",
-        )
-        );
+        ));
         $form->setUseContainer(true);
         $this->setForm($form);
         return parent::_prepareForm();

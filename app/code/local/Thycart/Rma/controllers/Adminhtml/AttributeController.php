@@ -68,74 +68,80 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
 
     }
     public function saveAction()
-    {
-        $post_data = $this->getRequest()->getPost();       
-        $option = $this->getRequest()->getParam('option');
-        $id = $this->getRequest()->getParam('id');
-        if(empty($post_data))
+    {        
+        if(empty($this->getRequest()->getParam('option')) || empty($this->getRequest()->getParam('attribute_code')) 
+            || empty($this->getRequest()->getParam('scope')))
         {
-            Mage::getSingleton('core/session')->addError('Data not posted');
+            Mage::getSingleton('core/session')->addError('Please fill all the details');
+            $this->_redirect('*/*/');
+            return;
         }
-        if ($post_data) 
+        $post_data = $this->getRequest()->getPost();
+        $option = $this->getRequest()->getParam('option');
+        
+        try 
         {
-            try 
+            $model = Mage::getModel("rma/rma_eav_attribute");
+
+            if($this->getRequest()->getParam('id')) 
             {
-                $model = Mage::getModel("rma/rma_eav_attribute");
-
-                if($this->getRequest()->getParam('id')) 
+                $model->load($this->getRequest()->getParam('id'));
+            }        
+            $model->addData(array("attribute_code"=>$post_data['attribute_code'],"scope"=>$post_data['scope']));
+            $result = $model->save();
+            if($result)
+            { 
+                $optionModel = Mage::getModel("rma/rma_eav_attributeoption");
+                if($this->getRequest()->getParam('id'))
                 {
-                    $model->load($this->getRequest()->getParam('id'));
-                }        
-                $model->addData(array("attribute_code"=>$post_data['attribute_code'],"is_required"=>$post_data['is_required'],"is_unique"=>$post_data['is_unique'],"scope"=>$post_data['scope']));
-                $result = $model->save();
-                if($result)
-                { 
-                    $optionModel = Mage::getModel("rma/rma_eav_attributeoption");
-                    if($this->getRequest()->getParam('id'))
-                    {
-                        $optionModel->load($this->getRequest()->getParam('id'),'attribute_id');
+                    $optionModel->load($this->getRequest()->getParam('id'),'attribute_id');
+                }
+
+                foreach($option['order'] as $key => $value)
+                {
+                    if(stristr($key,'option_'))
+                    {   
+                        $emptyCheck = stristr($key,'option_');
+                        if($emptyCheck)
+                        {   
+                            Mage::getSingleton('core/session')->addError('Cannot save blank entry');
+                            $this->_redirect('*/*/');
+                            return; 
+                        }
+                        $optionModelobj = Mage::getModel("rma/rma_eav_attributeoption");
+                        $optionModelobj->addData(array("attribute_id"=>$model->getId(),"value"=>$value));
+                        $optionModelobj->save();              
                     }
-
-                    foreach($option['order'] as $key => $value)
+                    else 
                     {
-                        if(stristr($key,'option_'))
+                        if(isset($option['delete'][$key]) && !empty($option['delete'][$key]))
                         {
-                            $optionModelobj = Mage::getModel("rma/rma_eav_attributeoption");
-                            $optionModelobj->addData(array("attribute_id"=>$model->getId(),"value"=>$value));
-                            $optionModelobj->save();              
+                            $deleteOptionModel = Mage::getModel("rma/rma_eav_attributeoption");
+                            $deleteOptionModel->setId($key);
+                            $deleteOptionModel->delete();
                         }
-                        else 
+                        else
                         {
-                            if(isset($option['delete'][$key]) && !empty($option['delete'][$key]))
-                            {
-                                $deleteOptionModel = Mage::getModel("rma/rma_eav_attributeoption");
-                                $deleteOptionModel->setId($key);
-                                $deleteOptionModel->delete();
-                            }
-                            else
-                            {
-                                $updateOptionModel = Mage::getModel("rma/rma_eav_attributeoption")->load($key);
-                                if($updateOptionModel)
-                                { 
-                                    $updateOptionModel->addData(array("attribute_id"=>$model->getId(),"value"=>$value));
-                                    $updateOptionModel->save();
-                                }    
-                            }
+                            $updateOptionModel = Mage::getModel("rma/rma_eav_attributeoption")->load($key);
+                            if($updateOptionModel)
+                            { 
+                                $updateOptionModel->addData(array("attribute_id"=>$model->getId(),"value"=>$value));
+                                $updateOptionModel->save();
+                            }    
                         }
-
                     }
 
                 }
 
-            } 
-            catch (Exception $e) 
-            {
-                Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
-                $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
-                return;
             }
+
+        } 
+        catch (Exception $e) 
+        {
+            Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
+            $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
+            return;
         }
-        $this->_redirect("*/*/");
     }
     
     public function deleteAction()

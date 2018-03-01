@@ -13,6 +13,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
     {
         $this->_title($this->__("RMA Grid"));
         $this->loadLayout();
+        $this->_setActiveMenu("sales/rma");
         $this->renderLayout();
     }
 
@@ -224,7 +225,6 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
             {  
                 if(empty($value['status']))
                 {
-                    
                     Mage::getSingleton('core/session')->addError('Please fill all the details');
                     $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
                     return;
@@ -276,6 +276,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 {
                     Mage::getSingleton('core/session')->addError('Approved Quantity should be greater than zero and less than quantity Requested');
                     $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
+                    return;
                 }
                 
                 $arr = array(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE,Thycart_Rma_Model_Rma_Status::STATE_CANCELED);

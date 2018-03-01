@@ -10,9 +10,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit
 
         parent::__construct();
 
-        //$this->_updateButton("save", "label", Mage::helper("rma")->__("Save Attribute"));
         $this->_updateButton("delete", "label", Mage::helper("rma")->__("Delete"));
-
 
         $this->_addButton("saveandcontinue", array(
                 "label"     => Mage::helper("rma")->__("Save And Continue Edit"),
@@ -25,8 +23,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit
                 editForm.submit($('edit_form').action+'back/edit/');
             }";
         
-    }
-    
+    }    
 
     /**
      * Return header text for edit block
@@ -45,24 +42,5 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit
         }
     }
 
-    /**
-     * Return validation url for edit form
-     *
-     * @return string
-     */
-//    public function getValidationUrl()
-//    {
-//        return $this->getUrl('*/*/validate', array('_current' => true));
-//    }
-
-    /**
-     * Return save url for edit form
-     *
-     * @return string
-     */
-//    public function getSaveUrl()
-//    {
-//        return $this->getUrl('*/*/save', array('_current' => true, 'back' => null));
-//    }
 }
 
