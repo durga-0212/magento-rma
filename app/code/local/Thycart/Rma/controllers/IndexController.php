@@ -149,7 +149,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     }
     
     public function saveAction()
-    {   
+    {        
         if(empty($this->getRequest()->getParam('order')) || empty($this->getRequest()->getParam('products')) 
             || empty($this->getRequest()->getParam('resolution_type')) || empty($this->getRequest()->getParam('delivery_status'))
             || empty($this->getRequest()->getParam('reason')))
@@ -157,7 +157,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             Mage::getSingleton('core/session')->addError('Please fill all the details');
             $this->_redirect('*/*/addrequest/');
             return;
-        }        
+        }
         else 
         {
             try
@@ -166,7 +166,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 $modelResource->beginTransaction();
                 $date = Mage::getModel('core/date')->gmtDate('Y-m-d H:i:s');
                 $data = $this->getRequest()->getParams();        
-                $orderId = $data['order'];      
+                $orderId = $data['order']; 
+                $consignmentNo = $this->getRequest()->getParam('consign_number');
                 $status = Thycart_Rma_Model_Rma_Status::STATE_PENDING;
 
                 if(isset($data['cancelType']) && $data['cancelType'] ==1)
@@ -175,7 +176,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 }
                 $customerModel = Mage::getSingleton('customer/session')->getCustomer();
 
-                $rmaOrderId = $this->saveRmaOrderData($customerModel, $orderId, $status);  
+                $rmaOrderId = $this->saveRmaOrderData($customerModel, $orderId, $status, $consignmentNo);  
                 
                 if($rmaOrderId)
                 { 
@@ -247,7 +248,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             else
             {
                 $this->_redirect('customer/account/');
-                Mage::getSingleton('core/session')->addError('You have already filled bank details');
+                Mage::getSingleton('core/session')->addSuccess('You have already filled bank details');
             }
         }
         catch(Exception $e)
@@ -430,7 +431,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         }
     }
 
-    public function saveRmaOrderData($customerModel, $orderId, $status)
+    public function saveRmaOrderData($customerModel, $orderId, $status, $consignmentNo='')
     {
         if(empty($customerModel) || empty($orderId) || empty($status))
         {
@@ -445,6 +446,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 'order_id'=>$orderId,
                 'increment_id'=>$orderInfo->getIncrementId(),
                 'order_increment_id'=>$orderInfo->getIncrementId(),
+                'consignment_number'=>$consignmentNo,
                 'order_date'=>$orderInfo->getCreatedAt(),
                 'date_requested'=>$date,
                 'store_id'=> $orderInfo->getStoreId(),
@@ -473,7 +475,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         try
         {
             foreach ($productsArray as $key => $value) 
-            {  
+            { 
                 if($value['checked'] ||  $cancelType )
                 {                
                     if(empty($value['qty_requested']))
@@ -512,6 +514,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         catch(Exception $e)
         {
             Mage::getSingleton('core/session')->addError('Error while Saving Data In Rma Item Table');
+            echo $e->getMessage();
+            //$this->_redirect('*/*/addrequest');
             return;
         }
     }

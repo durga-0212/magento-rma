@@ -49,32 +49,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         }
         $this->_redirect('*/*/');
     }
-    
-    public function massRemoveItemAction() 
-    {       
-        if(empty($this->getRequest()->getPost('id')))
-        {
-            return;
-        }
-        try 
-        {           
-            $ids = $this->getRequest()->getPost('id', array());           
-            foreach ($ids as $id) 
-            {
-                $model = Mage::getModel("rma/rma_item")->load($id);
-                $model->addData(array("item_status"=>Thycart_Rma_Model_Rma_Status::STATE_COMPLETE));               
-                $model->save();   
-            }
-            Mage::getSingleton("adminhtml/session")->addSuccess(Mage::helper("adminhtml")->__("RMA(s) was successfully Completed"));
-        } 
-        catch (Exception $e) 
-        {
-            Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
-        }
-        $this->_redirect('*/*/');
-    } 
      
-   
     public function exportCsvAction() 
     {
         $fileName = 'thycart_rma.csv';
@@ -211,7 +186,6 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         $customerId = $modelRma->getCustomerId();        
         $statusCheck = (array_column($post_data['items'],'status'));
         
-        
         if(in_array(Thycart_Rma_Model_Rma_Status::STATE_PENDING,$statusCheck))
         {
             Mage::getSingleton('adminhtml/session')->addError("Select Processing for all items");
@@ -220,7 +194,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         }
         
         try 
-        { 
+        {   
             foreach ($post_data['items'] as $key => $value) 
             {  
                 if(empty($value['status']))
@@ -274,9 +248,9 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 }
                 else 
                 {
-                    Mage::getSingleton('core/session')->addError('Approved Quantity should be greater than zero and less than quantity Requested');
+                    Mage::getSingleton('core/session')->addError('Approved Quantity should be greater than zero and less than or equal quantity requested');
                     $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
-                    return;
+                    break;
                 }
                 
                 $arr = array(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE,Thycart_Rma_Model_Rma_Status::STATE_CANCELED);

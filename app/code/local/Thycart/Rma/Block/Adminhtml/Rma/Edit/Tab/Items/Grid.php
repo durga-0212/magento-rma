@@ -1,19 +1,7 @@
 <?php
 class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
-    /**
-     * Default limit collection
-     *
-     * @var int
-     */
-    protected $_defaultLimit = 0;
-
-    /**
-     * Variable to store store-depended string values of attributes
-     *
-     * @var null|array
-     */
-    protected $_attributeOptionValues = null;
+    
 
     /**
      * Block constructor
@@ -84,7 +72,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
             $this->addColumn('qty_canceled', array(
                 'header'=> Mage::helper('rma')->__('Canceled Qty'),
                 'width' => '10px',
-                'index' => 'qy_requested',            
+                'index' => 'qty_requested',            
                 'validate_class' => 'validate-greater-than-zero'
             ));
         }
@@ -96,13 +84,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
                 'index' => 'qty_approved',
                 'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
             ));
-           
-//        $this->addColumn('qty_returned', array(
-//            'header'=> Mage::helper('rma')->__('Returned Qty'),
-//            'width' => '80px',
-//            'index' => 'qty_returned',          
-//            'validate_class' => 'validate-greater-than-zero'
-//        ));   
+  
         }    
 
         $this->addColumn('reason', array(
@@ -133,114 +115,6 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
         )); 
         
         return parent::_prepareColumns();
-    }
-
-    /**
-     * Get available for return item quantity
-     *
-     * @param Varien_Object $row
-     * @return int
-     */
-    public function getQtyOrdered($row)
-    {
-        $orderItemsData = $this->getOrderItemsData();
-        if (is_array($orderItemsData)
-                && isset($orderItemsData[$row->getOrderItemId()])
-                && isset($orderItemsData[$row->getOrderItemId()]['qty_shipped'])
-                && isset($orderItemsData[$row->getOrderItemId()]['qty_returned'])) {
-            $return = $orderItemsData[$row->getOrderItemId()]['qty_shipped'] -
-                    $orderItemsData[$row->getOrderItemId()]['qty_returned'];
-        } else {
-            $return = 0;
-        }
-        return $return;
-    }
-
-    /**
-     * Get string value of "Reason to Return" Attribute
-     *
-     * @param Varien_Object $row
-     * @return string
-     */
-    public function getReasonOptionStringValue($row)
-    {
-        return $this->_getAttributeOptionStringValue($row->getReason());
-    }
-
-    /**
-     * Get string value of "Reason to Return" Attribute
-     *
-     * @param Varien_Object $row
-     * @return string
-     */
-    public function getResolutionOptionStringValue($row)
-    {
-        return $this->_getAttributeOptionStringValue($row->getResolution());
-    }
-
-    /**
-     * Get string value of "Reason to Return" Attribute
-     *
-     * @param Varien_Object $row
-     * @return string
-     */
-    public function getConditionOptionStringValue($row)
-    {
-        return $this->_getAttributeOptionStringValue($row->getCondition());
-    }
-
-    /**
-     * Get string value of "Status" Attribute
-     *
-     * @param Varien_Object $row
-     * @return string
-     */
-    public function getStatusOptionStringValue($row)
-    {
-        return $row->getStatusLabel();
-    }
-
-    /**
-     * Get string value option-type attribute by it's unique int value
-     *
-     * @param int $value
-     * @return string
-     */
-    protected function _getAttributeOptionStringValue($value)
-    {
-        if (is_null($this->_attributeOptionValues)) {
-            $this->_attributeOptionValues = Mage::helper('rma/eav')->getAttributeOptionStringValues();
-        }
-        if (isset($this->_attributeOptionValues[$value])) {
-            return $this->escapeHtml($this->_attributeOptionValues[$value]);
-        } else {
-            return $this->escapeHtml($value);
-        }
-    }
-
-    /**
-     * Sets all available fields in editable state
-     *
-     * @return Enterprise_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid
-     */
-    public function setAllFieldsEditable()
-    {
-        Mage::getSingleton('rma/item_status')->setAllEditable();
-        return $this;
-    }
-    
-    protected function _prepareMassaction()
-    {
-        $this->setMassactionIdField('entity_id');
-        $this->getMassactionBlock()->setFormFieldName('id');
-        $this->getMassactionBlock()->setUseSelectAll(true);
-        $this->getMassactionBlock()->addItem(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE, array(
-            'label'=> Mage::helper('rma')->__(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE),
-            'url'  => $this->getUrl('*/adminhtml_rma/massRemoveItem'),
-            'param'=> 3,
-            'confirm' => Mage::helper('rma')->__('Are you sure?')
-        ));
-        return $this;
     }
 
 }
