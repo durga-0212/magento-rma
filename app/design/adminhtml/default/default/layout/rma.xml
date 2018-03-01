@@ -4,7 +4,6 @@
         <reference name="head">
             <action method="addJs"><script>lib/jquery/jquery-1.10.2.min.js</script></action>
 	    <action method="addJs"><script>lib/jquery/noconflict.js</script></action>
-            <action method="addJS"><script>rma/checkquantity.js</script></action>
         </reference>
     </rma_adminhtml_rma_edit> 
     <customer_account translate="label">
