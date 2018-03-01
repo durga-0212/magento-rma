@@ -50,7 +50,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
     }
     
     public function massRemoveItemAction() 
-    {   
+    {       
         if(empty($this->getRequest()->getPost('id')))
         {
             return;
@@ -205,48 +205,76 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         $post_data = $this->getRequest()->getPost();
         $orderId = $post_data['order_id'];
         $modelRma = Mage::getModel('rma/order')->load($id);
-        $customerId = $modelRma->getCustomerId();
-        $customerModel = Mage::getModel('customer/customer')->load($customerId);        
+        $customerId = $modelRma->getCustomerId();        
         $statusCheck = (array_column($post_data['items'],'status'));
+        
         if(in_array(Thycart_Rma_Model_Rma_Status::STATE_PENDING,$statusCheck))
         {
             Mage::getSingleton('adminhtml/session')->addError("Select Processing for all items");
             $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
             return;
         }
-     
+        
         try 
         { 
             foreach ($post_data['items'] as $key => $value) 
             {  
+                if(empty($value['status']))
+                {
+                    Mage::getSingleton('core/session')->addError('Please fill all the details');
+                    $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
+                    return;
+                }
+                
+                $flag = 0;
                 $rmaItemModel = Mage::getModel('rma/rma_item')->load($key);
                 $status = $rmaItemModel->getItemStatus();
                 $productName = $rmaItemModel->getProductName();
                 $productId = $rmaItemModel->getProductId(); 
-                $orderItemId = $rmaItemModel->getOrderItemId();
+                $orderItemId = $rmaItemModel->getOrderItemId();                
+                $qtyRequested = $rmaItemModel->getQtyRequested();
                 
                 $processing_status=Thycart_Rma_Model_Rma_Status::STATE_PROCESSING;
                 $return_received_status=Thycart_Rma_Model_Rma_Status::STATE_RETURN_RECEIVED;               
 
-                if($value['status'] == $processing_status && $status!= $processing_status && $value['qty_approved']>0)
+                if($value['status'] == $processing_status && $status!= $processing_status && $value['qty_approved']>0
+                    && $value['qty_approved']<=$qtyRequested)
                 {
                     $saveShipmentNumber = $this->saveShipmentNumber($post_data['order_id'],$orderItemId);
+                    $flag = 1;
                 }
-                elseif($value['status'] == $return_received_status && $status!= $return_received_status && $value['qty_approved']>0)
+                elseif($value['status'] == $return_received_status && $status!= $return_received_status && $value['qty_approved']>0
+                    && $value['qty_approved']<=$qtyRequested)
                 {
                     $updateInventory = Mage::helper('rma')->updateInventory($productId,$value['qty_approved']);
                     $rmaItemArray[] = $key;
-                    $sendLink = 1;                      
+                    $sendLink = 1; 
+                    $flag = 1;
                 }
-                elseif($value['status'] == Thycart_Rma_Model_Rma_Status::STATE_COMPLETE && $status!= Thycart_Rma_Model_Rma_Status::STATE_COMPLETE && $value['qty_approved']>0)
+                elseif($value['status'] == Thycart_Rma_Model_Rma_Status::STATE_COMPLETE && $status!= Thycart_Rma_Model_Rma_Status::STATE_COMPLETE 
+                    && $value['qty_approved']>0 && $value['qty_approved']<=$qtyRequested)
                 {
                     $completeMail = 1;
+                    $flag = 1;
                 }
-                $rmaItemModel->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));
+                elseif($value['status'] == Thycart_Rma_Model_Rma_Status::STATE_CANCELED 
+                    && $value['qty_approved']>0 && $value['qty_approved']<=$qtyRequested)
+                {
+                    $flag = 1;
+                }
                 
-                $result = $rmaItemModel->save();
+                if($flag)
+                {
+                    $rmaItemModel->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));                
+                    $result = $rmaItemModel->save();
+                }
+                else 
+                {
+                    Mage::getSingleton('core/session')->addError('Approved Quantity should be greater than zero and less than quantity Requested');
+                    $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
+                }
+                
                 $arr=array(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE,Thycart_Rma_Model_Rma_Status::STATE_CANCELED);
-
                 if(in_array($value['status'], $arr))
                 {               
                     $counter++;              
@@ -265,17 +293,17 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 Mage::getSingleton('core/session')->addSuccess('Tracking Number is generated');
                 $subject = 'RMA Processed';
                 $message = 'Rma Request in Processing State';
-                $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message);
+                $resultMail = Mage::helper('rma')->sendMail($modelRma->getCustomerEmail(),$modelRma->getCustomerName(),$subject,$orderId,$productArray,$message);
             }
             if($sendLink)
             {
-                $this->saveRmaLink($id,$rmaItemArray,$customerId,$customerModel,$orderId,$productArray);
+                $this->saveRmaLink($id,$rmaItemArray,$customerId,$modelRma->getCustomerEmail(),$modelRma->getCustomerName(),$orderId,$productArray);
             }
             if($completeMail)
             {
                 $subject = 'RMA Completed';
                 $message = 'Rma Request Completed';
-                $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message);
+                $resultMail = Mage::helper('rma')->sendMail($modelRma->getCustomerEmail(),$modelRma->getCustomerName(),$subject,$orderId,$productArray,$message);
                 Mage::getSingleton('core/session')->addSuccess('Rma Request has been completed');
             }
             $modelRma->addData(array('status'=>Thycart_Rma_Model_Rma_Status::STATE_PENDING));
@@ -334,10 +362,10 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         }
     }
     
-    public function saveRmaLink($rmaOrderId,$rmaItemIdArray,$customerId,$customerModel,$orderId,$productArray)
+    public function saveRmaLink($rmaOrderId,$rmaItemIdArray,$customerId,$customerEmail,$customerName,$orderId,$productArray)
     {   
-        if(empty($rmaOrderId) || empty($rmaItemIdArray) || empty($customerId) 
-            || empty($customerModel) || empty($orderId) || empty($productArray))
+        if(empty($rmaOrderId) || empty($rmaItemIdArray) || empty($customerId) || empty($customerEmail)  
+            || empty($customerName) || empty($orderId) || empty($productArray))
         {
             Mage::getSingleton('core/session')->addError('Invalid data while saving Rma Link details');
         }
@@ -360,7 +388,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 $link = $url."rma/index/bankform/rmaItemId/".implode("-",$rmaItemIdArray);
                 $subject = 'Return Received';
                 $message = 'Rma request in Return Received State';
-                $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message,$link);
+                $resultMail = Mage::helper('rma')->sendMail($customerEmail,$customerName,$subject,$orderId,$productArray,$message,$link);
             }
             catch(Exception $e)
             {
