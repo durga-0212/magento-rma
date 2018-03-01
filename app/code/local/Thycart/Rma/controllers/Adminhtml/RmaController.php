@@ -198,6 +198,8 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         }
         $rmaItemArray = array();
         $productArray = array();
+        $updateInventory = '';
+        $saveShipmentNumber = '';
         $sendLink = 0;
         $completeMail = 0;
         $counter = 0;
@@ -207,6 +209,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         $modelRma = Mage::getModel('rma/order')->load($id);
         $customerId = $modelRma->getCustomerId();        
         $statusCheck = (array_column($post_data['items'],'status'));
+        
         
         if(in_array(Thycart_Rma_Model_Rma_Status::STATE_PENDING,$statusCheck))
         {
@@ -274,7 +277,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                     $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
                 }
                 
-                $arr=array(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE,Thycart_Rma_Model_Rma_Status::STATE_CANCELED);
+                $arr = array(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE,Thycart_Rma_Model_Rma_Status::STATE_CANCELED);
                 if(in_array($value['status'], $arr))
                 {               
                     $counter++;              

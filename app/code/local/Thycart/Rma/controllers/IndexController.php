@@ -80,7 +80,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 Mage::getSingleton('core/session')->addError('Error while loading Product Information');
                 return;
             }
-            $cancelType   = 0;
+            $cancelType = 0;
+            $productIds = '';
             $shipmentPids = array();
             $orderId      = $this->getRequest()->getParam('OrderId');
             try
@@ -91,14 +92,17 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     $cancelType = 1;
                 }
                 $productInfo = Mage::getModel('rma/order')->getProductsById($orderId);  
-                $order = Mage::getModel('sales/order')->load($orderId);
-
-                foreach($order->getShipmentsCollection() as $shipment)
+                $order = Mage::getModel('sales/order')->load($orderId);                
+                foreach($shipmentIds as $shipment)
                 {
-                    $shipmentData   = Mage::getModel('sales/order_item')->load($shipment->getId());
-                    $shipmentPids[] = $shipmentData->getProductId();
+                    $shipmentData   = Mage::getResourceModel('sales/order_shipment_item_collection')
+                        ->addFieldToSelect('product_id')
+                        ->addFieldToFilter('parent_id',$shipment)
+                        ->getData();
+                    $productIds = array_column($shipmentData,'product_id');
+                    $shipmentPids = array_merge($shipmentPids,$productIds);
                 }
-               
+                
                 foreach($productInfo as $key => $value)
                 {
                     $productModel = Mage::getModel('catalog/product')->load($value['product_id']);
