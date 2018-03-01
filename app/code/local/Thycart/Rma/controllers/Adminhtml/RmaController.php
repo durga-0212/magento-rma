@@ -224,6 +224,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
             {  
                 if(empty($value['status']))
                 {
+                    
                     Mage::getSingleton('core/session')->addError('Please fill all the details');
                     $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
                     return;
