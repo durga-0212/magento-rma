@@ -184,15 +184,17 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         $orderId = $post_data['order_id'];
         $modelRma = Mage::getModel('rma/order')->load($id);
         $customerId = $modelRma->getCustomerId();        
-        $statusCheck = (array_column($post_data['items'],'status'));
+        $statusCheck = array_column($post_data['items'],'status');
+        $qtyApprovedArray = array_column($post_data['items'],'qty_approved');        
         
-        if(in_array(Thycart_Rma_Model_Rma_Status::STATE_PENDING,$statusCheck))
+        $statusResult = $this->checkForStatusAndQuantity(Thycart_Rma_Model_Rma_Status::STATE_PENDING,$statusCheck,$post_data['items']);
+        if($statusResult)
         {
-            Mage::getSingleton('adminhtml/session')->addError("Select Processing for all items");
+            Mage::getSingleton('core/session')->addError('Approved Quantity should be greater than zero and less than or equal quantity requested');
             $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
             return;
         }
-        
+
         try 
         {   
             foreach ($post_data['items'] as $key => $value) 
@@ -213,7 +215,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 $qtyRequested = $rmaItemModel->getQtyRequested();
                 
                 $processing_status=Thycart_Rma_Model_Rma_Status::STATE_PROCESSING;
-                $return_received_status=Thycart_Rma_Model_Rma_Status::STATE_RETURN_RECEIVED;               
+                $return_received_status=Thycart_Rma_Model_Rma_Status::STATE_RETURN_RECEIVED;
 
                 if($value['status'] == $processing_status && $status!= $processing_status && $value['qty_approved']>0
                     && $value['qty_approved']<=$qtyRequested)
@@ -245,12 +247,6 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 {
                     $rmaItemModel->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));                
                     $result = $rmaItemModel->save();
-                }
-                else 
-                {
-                    Mage::getSingleton('core/session')->addError('Approved Quantity should be greater than zero and less than or equal quantity requested');
-                    $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
-                    break;
                 }
                 
                 $arr = array(Thycart_Rma_Model_Rma_Status::STATE_COMPLETE,Thycart_Rma_Model_Rma_Status::STATE_CANCELED);
@@ -377,9 +373,36 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         }
     }
 
-    public function getCustomerEmailId()
-    {
-        $emailId = Mage::getSingleton('customer/session')->getCustomer()->getEmail();
+    public function checkForStatusAndQuantity($status,$statusCheckArray,$rmaItemsArray) 
+    {   
+        if(empty($status) || empty($statusCheckArray) || empty($rmaItemsArray))
+        {
+            return;
+        }
+        try
+        {
+            if(in_array($status,$statusCheckArray))
+            {
+                Mage::getSingleton('adminhtml/session')->addError("Select Processing for all items");
+                $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
+                return;
+            }
+            $result = 0;
+            foreach($rmaItemsArray as $key => $value)
+            {
+                $modelItem = Mage::getModel('rma/rma_item')->load($key);
+                if($value['qty_approved'] > $modelItem->getQtyRequested())
+                {
+                    $result = 1;
+                    break;
+                }            
+            }
+            return $result;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
     }
-    
 }
