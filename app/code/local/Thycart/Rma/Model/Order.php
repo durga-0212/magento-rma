@@ -30,21 +30,6 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract {
         return $orderInfo;
     }
 
-    public function getProductsById($id) 
-    {
-        if(empty($id))
-        {
-            return;
-        }
-        $productInfo = Mage::getModel('sales/order_item')->getCollection()
-            ->addAttributeToSelect('*')
-            ->join(array('sfo' => 'sales/order'), 'main_table.order_id = sfo.entity_id')
-            ->addAttributeToSelect('*')
-            ->addAttributeToFilter('order_id', $id);
-
-        return $productInfo->getData();
-    }
-
     public function getRmaProductsByOrderItemId($orderItemId) 
     {
         if(empty($orderItemId))

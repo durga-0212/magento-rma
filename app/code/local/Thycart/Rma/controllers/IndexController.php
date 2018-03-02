@@ -92,9 +92,6 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 {
                     $cancelType = 1;
                 }
-                $productInfo = Mage::getModel('rma/order')->getProductsById($orderId);
-                
-                $order = Mage::getModel('sales/order')->load($orderId);                
                 foreach($shipmentIds as $shipment)
                 {
                     $shipmentData   = Mage::getResourceModel('sales/order_shipment_item_collection')
@@ -105,31 +102,38 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     $shipmentPids = array_merge($shipmentPids,$productIds);
                 }
                 
-                foreach($productInfo as $key => $value)
+                $orderArray = array();
+                $order = Mage::getModel('sales/order')->load($orderId);
+                $productInfo = $order->getAllVisibleItems();
+                
+                $orderArray['is_cancel'] = $cancelType;
+                
+                foreach($productInfo as $product)
                 {
-                    $productModel = Mage::getModel('catalog/product')->load($value['product_id']);
+                    $productModel = Mage::getModel('catalog/product')->load($product->getProductId());
                     $isReturnable = $productModel->getIsReturnable();
-                    $productInfo[$key]['is_returnable'] =  $isReturnable;            
+                    $product->setData('is_returnable', $isReturnable); 
+                    
+                               
                     if($isReturnable)
                     {
-                        $rmaProductsStatus = Mage::getModel('rma/order')->getRmaProductsByOrderItemId($value['item_id']);
-                        $productInfo[$key]['is_returnable'] =  0;
+                        $rmaProductsStatus = Mage::getModel('rma/order')->getRmaProductsByOrderItemId($product->getItemId());
+                        $product->setData('is_returnable', 0); 
                         if(empty($rmaProductsStatus))
                         {
-                            $productInfo[$key]['is_returnable'] =  1;
+                            $product->setData('is_returnable', 1);
                         }
                         if($cancelType == 0)
                         {
-                            if(!in_array($value['product_id'], $shipmentPids))
+                            if(!in_array($product->getProductId(), $shipmentPids))
                             {
-                                $productInfo[$key]['is_returnable'] =  0;
+                                $product->setData('is_returnable', 0); 
                             }
                         }
                     }
-                }
-            
-                $productInfo['is_cancel'] =  $cancelType;                
-                Mage::register('productInfo', $productInfo);              
+                    $orderArray['productDetails'][] = $product->getData();
+                }           
+                Mage::register('orderArray', $orderArray);              
                 $output = $this->getLayout()->createBlock('rma/return_order_request')->setTemplate('rma/return/ajaxproduct.phtml')->toHtml();              
                 $this->getResponse()->setBody($output);
             }
@@ -144,7 +148,6 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         {
             Mage::getSingleton('core/session')->addError('Error while loading Product Information');
         }
-        
 
     }
     
@@ -475,8 +478,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         try
         {
             foreach ($productsArray as $key => $value) 
-            { 
-                if($value['checked'] ||  $cancelType )
+            {   
+                if( isset($value['checked']) && !empty($value['checked']) || $cancelType )
                 {                
                     if(empty($value['qty_requested']))
                     {
@@ -515,7 +518,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         {
             Mage::getSingleton('core/session')->addError('Error while Saving Data In Rma Item Table');
             echo $e->getMessage();
-            //$this->_redirect('*/*/addrequest');
+            $this->_redirect('*/*/addrequest');
             return;
         }
     }
