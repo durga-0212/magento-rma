@@ -32,54 +32,52 @@ CONSTRAINT `FK_RMA_ORDER_STORE_ID_CORE_STORE_STORE_ID` FOREIGN KEY (`store_id`) 
 
 $installer->run("Drop table if exists `rma_order_item`;
 CREATE TABLE `rma_order_item` (
-`entity_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Entity Id',
-`rma_entity_id` int(11) unsigned NOT NULL COMMENT 'Rma Entity Id',
-`qty_ordered` decimal(12,4) NOT NULL DEFAULT '0.0000' COMMENT 'Qty of ordered items',
-`qty_requested` decimal(12,4) NOT NULL DEFAULT '0.0000' COMMENT 'Qty of requested items',
-`qty_approved` decimal(12,4) NOT NULL DEFAULT '0.0000' COMMENT 'Qty of approved items',
-`qty_returned` decimal(12,4) NOT NULL DEFAULT '0.0000' COMMENT 'Qty of returned items',
-`order_item_id` int(11) NOT NULL COMMENT 'Order Item Id',
-`product_id` int(11) NOT NULL,
-`product_name` text COMMENT 'Product Name For Backend',
-`product_sku` text COMMENT 'Product Sku For Backend',
-`item_status` text NOT NULL COMMENT 'Status',
-PRIMARY KEY (`entity_id`),
-KEY `rma_order_item_ibfk_1` (`rma_entity_id`),
-CONSTRAINT `rma_order_item_ibfk_1` FOREIGN KEY (`rma_entity_id`) REFERENCES `rma_order` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='rma_order_item'
+ `entity_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Entity Id',
+ `rma_entity_id` int(11) unsigned NOT NULL COMMENT 'Rma Entity Id',
+ `qty_ordered` decimal(12,4) NOT NULL DEFAULT '0.0000' COMMENT 'Qty of ordered items',
+ `qty_requested` decimal(12,4) NOT NULL DEFAULT '0.0000' COMMENT 'Qty of requested items',
+ `qty_approved` decimal(12,4) NOT NULL DEFAULT '0.0000' COMMENT 'Qty of approved items',
+ `order_item_id` int(11) NOT NULL COMMENT 'Order Item Id',
+ `product_id` int(11) NOT NULL,
+ `product_name` text COMMENT 'Product Name For Backend',
+ `product_sku` text COMMENT 'Product Sku For Backend',
+ `item_status` text NOT NULL COMMENT 'Status',
+ PRIMARY KEY (`entity_id`),
+ KEY `rma_order_item_ibfk_1` (`rma_entity_id`),
+ CONSTRAINT `rma_order_item_ibfk_1` FOREIGN KEY (`rma_entity_id`) REFERENCES `rma_order` (`entity_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='rma_order_item'
 ");
 
 
 $installer->run("Drop table if exists `rma_order_history`;
 CREATE TABLE `rma_order_history` (
-`entity_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Entity Id',
-`rma_entity_id` int(10) unsigned NOT NULL COMMENT 'Rma Entity Id',
-`is_customer_notified` int(10) DEFAULT NULL COMMENT 'Is Customer Notify',
-`is_visible_on_front` smallint(5) unsigned NOT NULL COMMENT 'Is Visible on front',
-`comment` varchar(255) NOT NULL COMMENT 'Comments',
-`status` varchar(20) NOT NULL COMMENT 'Status',
-`created_at` timestamp NULL DEFAULT NULL COMMENT 'Created date',
-`is_admin` smallint(5) unsigned NOT NULL COMMENT 'Is Admin',
-PRIMARY KEY (`entity_id`),
-KEY `FK_RMA_ORDER_HISTORY_RMA_ENTITY_ID_RMA_ORDER_ENTITY_ID` (`rma_entity_id`),
-CONSTRAINT `FK_RMA_ORDER_HISTORY_RMA_ENTITY_ID_RMA_ORDER_ENTITY_ID` FOREIGN KEY (`rma_entity_id`) REFERENCES `rma_order` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COMMENT='rma_order_history'
+ `entity_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Entity Id',
+ `rma_entity_id` int(10) unsigned NOT NULL COMMENT 'Rma Entity Id',
+ `is_customer_notified` int(10) DEFAULT NULL COMMENT 'Is Customer Notify',
+ `is_visible_on_front` smallint(5) unsigned NOT NULL COMMENT 'Is Visible on front',
+ `comment` varchar(255) NOT NULL COMMENT 'Comments',
+ `status` varchar(20) NOT NULL COMMENT 'Status',
+ `created_at` timestamp NULL DEFAULT NULL COMMENT 'Created date',
+ `is_admin` smallint(5) unsigned NOT NULL COMMENT 'Is Admin',
+ PRIMARY KEY (`entity_id`),
+ KEY `FK_RMA_ORDER_HISTORY_RMA_ENTITY_ID_RMA_ORDER_ENTITY_ID` (`rma_entity_id`),
+ CONSTRAINT `FK_RMA_ORDER_HISTORY_RMA_ENTITY_ID_RMA_ORDER_ENTITY_ID` FOREIGN KEY (`rma_entity_id`) REFERENCES `rma_order` (`entity_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='rma_order_history'
 ");
 
 
 $installer->run("Drop table if exists `rma_attributes`;       
 CREATE TABLE `rma_attributes` (
-`entity_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Entity Id',
-`rma_entity_id` int(10) unsigned NOT NULL COMMENT 'Rma Entity Id',
-`resolution` varchar(255) NOT NULL,
-`delivery_status` varchar(255) DEFAULT NULL,
-`reason` varchar(255) NOT NULL COMMENT 'Reason',
-`filename` varchar(255) NOT NULL COMMENT 'Image Filename',
-`created_at` timestamp NULL DEFAULT NULL COMMENT 'Created date',
-PRIMARY KEY (`entity_id`),
-KEY `FK_RMA_ATTRIBUTES_RMA_ENTITY_ID_RMA_ORDER_ENTITY_ID` (`rma_entity_id`),
-CONSTRAINT `FK_RMA_ATTRIBUTES_RMA_ENTITY_ID_RMA_ORDER_ENTITY_ID` FOREIGN KEY (`rma_entity_id`) REFERENCES `rma_order` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='rma_attributes'
+ `entity_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Entity Id',
+ `rma_entity_id` int(10) unsigned NOT NULL COMMENT 'Rma Entity Id',
+ `resolution` varchar(255) NOT NULL,
+ `delivery_status` varchar(255) DEFAULT NULL,
+ `reason` varchar(255) NOT NULL COMMENT 'Reason',
+ `created_at` timestamp NULL DEFAULT NULL COMMENT 'Created date',
+ PRIMARY KEY (`entity_id`),
+ KEY `FK_RMA_ATTRIBUTES_RMA_ENTITY_ID_RMA_ORDER_ENTITY_ID` (`rma_entity_id`),
+ CONSTRAINT `FK_RMA_ATTRIBUTES_RMA_ENTITY_ID_RMA_ORDER_ENTITY_ID` FOREIGN KEY (`rma_entity_id`) REFERENCES `rma_order` (`entity_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='rma_attributes'
 ");
 
 
@@ -117,9 +115,9 @@ PRIMARY KEY (`entity_id`)
 ");
 
 
-$installer->run("INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`,`scope`) VALUES ('1','resolution','2');
-INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`, `scope`) VALUES ('2','delivery_status','2');
-INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`,`scope`) VALUES ('3','item_status','2');
+$installer->run("INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`,`scope`) VALUES ('1','resolution','3');
+INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`, `scope`) VALUES ('2','delivery_status','3');
+INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`,`scope`) VALUES ('3','item_status','3');
 ");
 
 

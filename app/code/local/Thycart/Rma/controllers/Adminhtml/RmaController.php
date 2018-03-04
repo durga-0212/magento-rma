@@ -184,10 +184,17 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         $orderId = $post_data['order_id'];
         $modelRma = Mage::getModel('rma/order')->load($id);
         $customerId = $modelRma->getCustomerId();        
-        $statusCheck = array_column($post_data['items'],'status');
+        $statusCheckArray = array_column($post_data['items'],'status');
         $qtyApprovedArray = array_column($post_data['items'],'qty_approved');        
         
-        $statusResult = $this->checkForStatusAndQuantity(Thycart_Rma_Model_Rma_Status::STATE_PENDING,$statusCheck,$post_data['items']);
+        if(in_array(Thycart_Rma_Model_Rma_Status::STATE_PENDING,$statusCheckArray))
+        {
+            Mage::getSingleton('adminhtml/session')->addError("Select Processing for all items");
+            $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
+            return;
+        }
+        
+        $statusResult = $this->checkForQuantity($post_data['items']);
         if($statusResult)
         {
             Mage::getSingleton('core/session')->addError('Approved Quantity should be greater than zero and less than or equal quantity requested');
@@ -213,6 +220,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 $productId = $rmaItemModel->getProductId(); 
                 $orderItemId = $rmaItemModel->getOrderItemId();                
                 $qtyRequested = $rmaItemModel->getQtyRequested();
+                $qtyApproved = $rmaItemModel->getQtyApproved();
                 
                 $processing_status=Thycart_Rma_Model_Rma_Status::STATE_PROCESSING;
                 $return_received_status=Thycart_Rma_Model_Rma_Status::STATE_RETURN_RECEIVED;
@@ -224,7 +232,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                     $flag = 1;
                 }
                 elseif($value['status'] == $return_received_status && $status!= $return_received_status && $value['qty_approved']>0
-                    && $value['qty_approved']<=$qtyRequested)
+                    && $value['qty_approved'] == $qtyApproved)
                 {
                     $updateInventory = Mage::helper('rma')->updateInventory($productId,$value['qty_approved']);
                     $rmaItemArray[] = $key;
@@ -232,15 +240,25 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                     $flag = 1;
                 }
                 elseif($value['status'] == Thycart_Rma_Model_Rma_Status::STATE_COMPLETE && $status!= Thycart_Rma_Model_Rma_Status::STATE_COMPLETE 
-                    && $value['qty_approved']>0 && $value['qty_approved']<=$qtyRequested)
+                    && $value['qty_approved']>0 && $value['qty_approved'] == $qtyApproved)
                 {
                     $completeMail = 1;
                     $flag = 1;
                 }
-                elseif($value['status'] == Thycart_Rma_Model_Rma_Status::STATE_CANCELED 
-                    && $value['qty_approved']>0 && $value['qty_approved']<=$qtyRequested)
+                elseif($value['status'] == Thycart_Rma_Model_Rma_Status::STATE_CANCELED && $status!=Thycart_Rma_Model_Rma_Status::STATE_CANCELED 
+                    && $value['qty_approved']>0 && $value['qty_approved'] == $qtyApproved)
                 {
                     $flag = 1;
+                }
+                elseif($value['qty_approved']>0 && $value['qty_approved'] == $qtyApproved)
+                {
+                    $flag = 1;
+                }
+                else 
+                {
+                    Mage::getSingleton('adminhtml/session')->addError('Enter valid approved quantity');
+                    $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
+                    return;
                 }
                 
                 if($flag)
@@ -254,10 +272,8 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 {               
                     $counter++;              
                 }
-                $productArray[$productName] = $value['qty_approved']; 
-                
+                $productArray[$productName] = $value['qty_approved'];                 
             }
-            Mage::helper('rma')->detailsForEmail($productArray,$orderId);
             
             if($updateInventory)
             {
@@ -373,20 +389,14 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         }
     }
 
-    public function checkForStatusAndQuantity($status,$statusCheckArray,$rmaItemsArray) 
+    public function checkForQuantity($rmaItemsArray) 
     {   
-        if(empty($status) || empty($statusCheckArray) || empty($rmaItemsArray))
+        if(empty($rmaItemsArray))
         {
             return;
         }
         try
         {
-            if(in_array($status,$statusCheckArray))
-            {
-                Mage::getSingleton('adminhtml/session')->addError("Select Processing for all items");
-                $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
-                return;
-            }
             $result = 0;
             foreach($rmaItemsArray as $key => $value)
             {

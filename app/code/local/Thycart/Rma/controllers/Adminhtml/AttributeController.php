@@ -68,15 +68,41 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
 
     }
     public function saveAction()
-    {    
-        if(empty($this->getRequest()->getParam('option')) || empty($this->getRequest()->getParam('attribute_code'))) 
+    {        
+        $flag = 0;
+        $option = $this->getRequest()->getParam('option');
+        if(empty($this->getRequest()->getParam('id')))
+        {
+            if(empty($this->getRequest()->getParam('attribute_code')) || empty($this->getRequest()->getParam('scope')) 
+                || empty($option)) 
+            {  
+                $flag = 1;
+            }
+            elseif(empty(array_filter($option['order'])) && empty(array_filter($option['delete'])))
+            {    
+                $flag = 1;
+            }
+        }
+        else 
+        {
+            if(empty($this->getRequest()->getParam('attribute_code')) || empty($this->getRequest()->getParam('scope'))) 
+            {
+                $flag = 1;
+            }
+            elseif(empty($this->getRequest()->getParam('attribute_code')) || empty($this->getRequest()->getParam('scope')) 
+                ||empty($option))
+            {   
+                $flag = 1;
+            }
+
+        }
+        if($flag)
         {
             Mage::getSingleton('core/session')->addError('Please fill all the details');
             $this->_redirect('*/*/');
-            return;
+            return; 
         }
         $post_data = $this->getRequest()->getPost();
-        $option = $this->getRequest()->getParam('option');
         
         try 
         {
@@ -100,25 +126,23 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
                 {
                     if(stristr($key,'option_'))
                     {   
-                        $emptyCheck = stristr($key,'option_');
-                        if($emptyCheck)
-                        {   
-                            Mage::getSingleton('core/session')->addError('Cannot save blank entry');
-                            $this->_redirect('*/*/');
-                            return; 
-                        }
                         $optionModelobj = Mage::getModel("rma/rma_eav_attributeoption");
-                        $optionModelobj->addData(array("attribute_id"=>$model->getId(),"value"=>$value));
-                        $optionModelobj->save();              
+                        if(!empty(trim($value)))
+                        {
+                            $optionModelobj->addData(array("attribute_id"=>$model->getId(),"value"=>$value));
+                            $optionModelobj->save();
+                        }
+                                                             
                     }
                     else 
-                    {
-                        if(isset($option['delete'][$key]) && !empty($option['delete'][$key]))
+                    {                       
+                        if(isset($option['delete'][$key])  && !empty($option['delete'][$key]))
                         {
-                            $deleteOptionModel = Mage::getModel("rma/rma_eav_attributeoption");
-                            $deleteOptionModel->setId($key);
+                            $deleteOptionModel = Mage::getModel("rma/rma_eav_attributeoption");                                                            
+                            $deleteOptionModel->setId($key);                            
                             $deleteOptionModel->delete();
                         }
+                        
                         else
                         {
                             $updateOptionModel = Mage::getModel("rma/rma_eav_attributeoption")->load($key);

@@ -384,18 +384,24 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         }
         try
         {
+            $productArray = array();
             foreach($rmaItemIdArray as $id)
             {
                 $modelRmaItem = Mage::getModel('rma/rma_item')->load($id);
                 $modelRmaItem->addData(array('item_status'=> Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST));
                 $changeItemStatus = $modelRmaItem->save();
+                $name = $modelRmaItem->getProductName();
+                $quantity = $modelRmaItem->getQtyApproved();
+                $rmaEntityId = $modelRmaItem->getRmaEntityId();
+                $productArray[$name] = $quantity;
             }
+            $rmaModel = Mage::getModel('rma/order')->load($rmaEntityId);           
+            $orderId = $rmaModel->getOrderId();
             if($changeItemStatus)
             {
-                $subject = 'Payment Requested for Rma';
-                $message = 'Payment Request';
-                $emailDetails = Mage::registry('emailDetails');
-                $resultMail =  Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$emailDetails[1],$emailDetails[0],$message);
+                $subject = 'Payment Requested for OrderId '.$orderId;
+                $message = 'Payment Request';               
+                $resultMail =  Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message);
             }
             return $changeItemStatus;
         }
@@ -414,6 +420,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         }
         try
         {
+            $link = '';
             $message = "Rma Request in Pending State";
             $subject = 'Return Request for OrderId '.$orderId;
             if($cancelType)
@@ -424,12 +431,12 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 $link = $url."rma/index/bankform/";                
             }   
             
-            $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message);
+            $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message,$link);
             return $resultMail;
         }
         catch(Exception $e)
         {
-            Mage::getSingleton('core/session')->addError('Error in Sending Email while Rma Request is created');
+            Mage::getSingleton('core/session')->addError($e->getMessage());
             return;
         }
     }

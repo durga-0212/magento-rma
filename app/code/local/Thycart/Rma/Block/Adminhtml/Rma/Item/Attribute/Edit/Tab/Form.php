@@ -17,7 +17,8 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit_Tab_Form extends Mage_
         $fieldset->addField('scope', 'select', array(
         'label'     => Mage::helper('rma')->__('Scope'),
         'name'      => 'scope',
-        'values'    => array('0' => 'Store View','1' => 'Website', '2' => 'Global'),
+        'required'  => true,
+        'values'    => array('1' => 'Store View','2' => 'Website', '3' => 'Global'),
         ));
 
         if (Mage::getSingleton("adminhtml/session")->getAttributeData())
