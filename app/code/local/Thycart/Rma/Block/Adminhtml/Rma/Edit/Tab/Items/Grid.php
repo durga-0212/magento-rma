@@ -36,7 +36,9 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
      */
     protected function _prepareColumns()
     {
-        $rma = Mage::registry('rma_data');        
+        $rma = Mage::registry('rma_data');
+        $rmaItemModel = Mage::getModel('rma/rma_item')->load($rma->getEntityId(),'rma_entity_id');
+        $status = $rmaItemModel->getItemStatus();
         
         $this->addColumn('product_name', array(
             'header' => Mage::helper('rma')->__('Product Name'),
@@ -76,6 +78,15 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
                 'validate_class' => 'validate-greater-than-zero'
             ));
         }
+        elseif($status == Thycart_Rma_Model_Rma_Status::STATE_PENDING)
+        {
+            $this->addColumn('qty_approved', array(
+                'header'=> Mage::helper('rma')->__('Approved Qty'),
+                'width' => '10px',
+                'index' => 'qty_requested',
+                'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
+            ));
+        }
         else
         {
             $this->addColumn('qty_approved', array(
@@ -83,8 +94,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
                 'width' => '10px',
                 'index' => 'qty_approved',
                 'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
-            ));
-  
+            ));  
         }    
 
         $this->addColumn('reason', array(

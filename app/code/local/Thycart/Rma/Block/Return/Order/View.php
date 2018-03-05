@@ -9,10 +9,10 @@ class Thycart_Rma_Block_Return_Order_View extends Mage_Core_Block_Template
      public function __construct() {      
         parent::__construct();       
         $this->setTemplate('rma/return/view.phtml'); 
-       // $order_id = $this->getRequest()->getParam('order_id');  
         $rma_id = $this->getRequest()->getParam('rma_id'); 
-        $returns=Mage::getModel('rma/order')->load($rma_id);
-                 $this->setReturns($returns);
+        $returns = Mage::getModel('rma/order')->load($rma_id);
+        $this->setReturns($returns);
+        
         $order = Mage::getModel('sales/order')->load($returns->order_id);       
         if ($order->getId()) {
             $this->setOrdersinfo($order);           
@@ -27,7 +27,7 @@ class Thycart_Rma_Block_Return_Order_View extends Mage_Core_Block_Template
         $this->setRmaHistory($history);
     }
     
-     public function getOrderUrl($rma)
+    public function getOrderUrl($rma)
     {
         return $this->getUrl('sales/order/view/', array('order_id' => $rma->getOrderId()));
     }

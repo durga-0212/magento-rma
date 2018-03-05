@@ -98,7 +98,7 @@
                 }
                 else
                 {
-                $j("#notification-message1").hide();
+                    $j("#notification-message1").hide();
                 }
             }
             else
@@ -106,7 +106,7 @@
                 $j("#notification-message1").hide();
             }
             
-            for (i = 0; i < cnt; i++) 
+            for (i = 1; i <= cnt; i++) 
             {         
                 var orderedQty = $j('.productQty').data('orderedqty');
                 var productName = $j('.productQty').data('name');
@@ -114,8 +114,8 @@
                 if(qtyRequested > orderedQty)
                 {   
                     $j("#notification-message").show();
-                    $j("#notification").empty();
-                    $j("#notification").append("You can not return "+qtyRequested+" "+productName);
+                    $j("#notification").empty();                    
+                    $j("#notification").append("You can not return "+qtyRequested+" "+productName);                    
                     return false;
                 }
                 else

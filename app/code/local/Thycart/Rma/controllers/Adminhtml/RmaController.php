@@ -235,6 +235,9 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                     && $value['qty_approved'] == $qtyApproved)
                 {
                     $updateInventory = Mage::helper('rma')->updateInventory($productId,$value['qty_approved']);
+                    $modelProductName = Mage::getModel('rma/rma_item')->load($productId,'product_id');
+                    $name = $modelProductName->getProductName();
+                    $returnProductArray[$name] = $value['qty_approved'];
                     $rmaItemArray[] = $key;
                     $sendLink = 1; 
                     $flag = 1;
@@ -282,17 +285,17 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
             if($saveShipmentNumber)
             {
                 Mage::getSingleton('core/session')->addSuccess('Tracking Number is generated');
-                $subject = 'RMA Processed';
+                $subject = 'RMA Processed for OrderId '.$orderId;
                 $message = 'Rma Request in Processing State';
                 $resultMail = Mage::helper('rma')->sendMail($modelRma->getCustomerEmail(),$modelRma->getCustomerName(),$subject,$orderId,$productArray,$message);
             }
             if($sendLink)
             {
-                $this->saveRmaLink($id,$rmaItemArray,$customerId,$modelRma->getCustomerEmail(),$modelRma->getCustomerName(),$orderId,$productArray);
+                $this->saveRmaLink($id,$rmaItemArray,$customerId,$modelRma->getCustomerEmail(),$modelRma->getCustomerName(),$orderId,$returnProductArray);
             }
             if($completeMail)
             {
-                $subject = 'RMA Completed';
+                $subject = 'RMA Completed of OrderId '.$orderId;
                 $message = 'Rma Request Completed';
                 $resultMail = Mage::helper('rma')->sendMail($modelRma->getCustomerEmail(),$modelRma->getCustomerName(),$subject,$orderId,$productArray,$message);
                 Mage::getSingleton('core/session')->addSuccess('Rma Request has been completed');
@@ -377,7 +380,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 }
                 $url = Mage::getBaseUrl();
                 $link = $url."rma/index/bankform/rmaItemId/".implode("-",$rmaItemIdArray);
-                $subject = 'Return Received';
+                $subject = 'Return Received of OrderId '.$orderId;
                 $message = 'Rma request in Return Received State';
                 $resultMail = Mage::helper('rma')->sendMail($customerEmail,$customerName,$subject,$orderId,$productArray,$message,$link);
             }

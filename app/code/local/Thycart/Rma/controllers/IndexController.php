@@ -431,7 +431,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 $link = $url."rma/index/bankform/";                
             }   
             
-            $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message,$link);
+            $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message);
             return $resultMail;
         }
         catch(Exception $e)

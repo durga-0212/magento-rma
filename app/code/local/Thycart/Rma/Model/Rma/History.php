@@ -14,10 +14,22 @@ class Thycart_Rma_Model_Rma_History extends Mage_Core_Model_Abstract
     
     public function getHistoryCollection($id)
     {
-        $history=Mage::getResourceModel('rma/rma_history_collection')
-                 ->join(array('ro' => 'rma/order'), 'main_table.rma_entity_id = ro.entity_id', array(
-                    'customer_name'))
+        if(empty($id))
+        {
+            return;
+        }
+        try
+        {
+            $history = Mage::getResourceModel('rma/rma_history_collection')
+                ->join(array('ro' => 'rma/order'), 'main_table.rma_entity_id = ro.entity_id', array(
+                   'customer_name'))
                 ->addFieldToFilter('rma_entity_id',$id);
-        return $history;
+            return $history;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
     }
 }
