@@ -1,12 +1,10 @@
 <?php
-
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controller_Action
-{   
+{  
+    protected function _isAllowed()
+    {
+        return true;
+    } 
     public function _initAction()
     {
         $this->loadLayout()
@@ -19,53 +17,49 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
         $this->_title($this->__('Manage RMA Item Attribute'));
         $this->_initAction()
             ->renderLayout();
-        //Zend_Debug::dump($this->getLayout()->getUpdate()->getHandles());
     }
     
     public function newAction()
     {
-        $this->addActionLayoutHandles();
         $this->_forward('edit');
     }
     
     public function editAction() 
     {
-        $attributeId = $this->getRequest()->getParam('id');
-        $attributeObject = $this->_initAttribute();
-
+        $attributeId = 0;
+        if($this->getRequest()->getParam('id'))
+        {
+            $attributeId = $this->getRequest()->getParam('id');
+        }
         $this->_title($this->__('Manage RMA Item Attributes'));
-        Mage::register('attribute_data', $attributeObject);
-        if ($attributeId) 
+        try
         {
-            $attributeObject->load($attributeId);
-        } else 
+            $attributeObject = Mage::getModel('rma/rma_eav_attribute')->load($attributeId);           
+        }
+        catch (Exception $e)
         {
-            $this->_title($this->__('New Attribute'));
-            $label = Mage::helper('rma')->__('Add RMA Item Attribute');
+            Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
+            return;
+            exit();
         }
-        
-        if (!empty($attributeData)) { 
-            $attributeObject->setData($attributeData);
+        if (!empty($attributeObject) || empty($attributeId))
+        {
+            Mage::register('attribute_data', $attributeObject);
+            $this->loadLayout();
+            $this->_setActiveMenu('sales');
+    
+            $this->_initAction()
+                 ->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_item_attribute_edit"))
+                 ->_addLeft($this->getLayout()->createBlock("rma/adminhtml_rma_item_attribute_edit_tabs"))
+                 ->renderLayout();  
         }
-       
-        $this->_initAction()
-            ->_addBreadcrumb($label, $label)
-            ->_addContent($this->getLayout()->createBlock("rma/adminhtml_rma_item_attribute_edit"))
-            ->_addLeft($this->getLayout()->createBlock("rma/adminhtml_rma_item_attribute_edit_tabs"))
-            ->renderLayout();  
+        else
+        {
+            Mage::getSingleton('adminhtml/session')->addError(Mage::helper('rma')->__('Attribute does not exists'));
+            $this->_redirect('*/*/');
+            exit();
+        }
     }
-    
-    public function _initAttribute()
-    {
-        $attribute = Mage::getModel('rma/rma_eav_attribute');
-        $websiteId = $this->getRequest()->getParam('website');
-        if ($websiteId) {
-            $attribute->setWebsite($websiteId);
-        }
-        return $attribute;
-    }
-    
-    
     public function viewAction() 
     {
         $this->loadLayout();
@@ -74,73 +68,105 @@ class Thycart_Rma_Adminhtml_AttributeController extends Mage_Adminhtml_Controlle
 
     }
     public function saveAction()
-    {
-        $post_data = $this->getRequest()->getPost();       
+    {        
+        $flag = 0;
         $option = $this->getRequest()->getParam('option');
-        $id = $this->getRequest()->getParam('id');
-        if(empty($post_data))
+        if(empty($this->getRequest()->getParam('id')))
         {
-            Mage::getSingleton('core/session')->addError('Data not posted');
+            if(empty($this->getRequest()->getParam('attribute_code')) || empty($this->getRequest()->getParam('scope')) 
+                || empty($option)) 
+            {  
+                $flag = 1;
+            }
+            elseif(empty(array_filter($option['order'])) && empty(array_filter($option['delete'])))
+            {    
+                $flag = 1;
+            }
         }
-        if ($post_data) 
+        else 
         {
-            try 
+            if(empty($this->getRequest()->getParam('attribute_code')) || empty($this->getRequest()->getParam('scope'))) 
             {
-                $model = Mage::getModel("rma/rma_eav_attribute");
+                $flag = 1;
+            }
+            elseif(empty($this->getRequest()->getParam('attribute_code')) || empty($this->getRequest()->getParam('scope')) 
+                ||empty($option))
+            {   
+                $flag = 1;
+            }
 
-                if($this->getRequest()->getParam('id')) 
+        }
+        if($flag)
+        {
+            Mage::getSingleton('core/session')->addError('Please fill all the details');
+            $this->_redirect('*/*/');
+            return; 
+        }
+        $post_data = $this->getRequest()->getPost();
+        
+        try 
+        {
+            $model = Mage::getModel("rma/rma_eav_attribute");
+
+            if($this->getRequest()->getParam('id')) 
+            {
+                $model->load($this->getRequest()->getParam('id'));
+            }        
+            $model->addData(array("attribute_code"=>$post_data['attribute_code'],"scope"=>$post_data['scope']));
+            $result = $model->save();
+            if($result)
+            { 
+                $optionModel = Mage::getModel("rma/rma_eav_attributeoption");
+                if($this->getRequest()->getParam('id'))
                 {
-                    $model->load($this->getRequest()->getParam('id'));
-                }        
-                $model->addData(array("attribute_code"=>$post_data['attribute_code'],"is_required"=>$post_data['is_required'],"is_unique"=>$post_data['is_unique'],"scope"=>$post_data['scope']));
-                $result = $model->save();
-                if($result)
-                { 
-                    $optionModel = Mage::getModel("rma/rma_eav_attributeoption");
-                    if($this->getRequest()->getParam('id'))
-                    {
-                        $optionModel->load($this->getRequest()->getParam('id'),'attribute_id');
-                    }
+                    $optionModel->load($this->getRequest()->getParam('id'),'attribute_id');
+                }
 
-                    foreach($option['order'] as $key => $value)
-                    {
-                        if(stristr($key,'option_'))
+                foreach($option['order'] as $key => $value)
+                {
+                    if(stristr($key,'option_'))
+                    {   
+                        $optionModelobj = Mage::getModel("rma/rma_eav_attributeoption");
+                        if(!empty(trim($value)))
                         {
-                            $optionModelobj = Mage::getModel("rma/rma_eav_attributeoption");
                             $optionModelobj->addData(array("attribute_id"=>$model->getId(),"value"=>$value));
-                            $optionModelobj->save();              
+                            $optionModelobj->save();
                         }
-                        else 
+                                                             
+                    }
+                    else 
+                    {                       
+                        if(isset($option['delete'][$key])  && !empty($option['delete'][$key]))
                         {
-                            if(isset($option['delete'][$key]) && !empty($option['delete'][$key]))
-                            {
-                                $deleteOptionModel = Mage::getModel("rma/rma_eav_attributeoption");
-                                $deleteOptionModel->setId($key);
-                                $deleteOptionModel->delete();
-                            }
-                            else
-                            {
-                                $updateOptionModel = Mage::getModel("rma/rma_eav_attributeoption")->load($key);
-                                if($updateOptionModel)
-                                { 
-                                    $updateOptionModel->addData(array("attribute_id"=>$model->getId(),"value"=>$value));
-                                    $updateOptionModel->save();
-                                }    
-                            }
+                            $deleteOptionModel = Mage::getModel("rma/rma_eav_attributeoption");                                                            
+                            $deleteOptionModel->setId($key);                            
+                            $deleteOptionModel->delete();
                         }
-
+                        
+                        else
+                        {
+                            $updateOptionModel = Mage::getModel("rma/rma_eav_attributeoption")->load($key);
+                            if($updateOptionModel)
+                            { 
+                                $updateOptionModel->addData(array("attribute_id"=>$model->getId(),"value"=>$value));
+                                $updateOptionModel->save();
+                            }    
+                        }
                     }
 
                 }
 
-            } 
-            catch (Exception $e) 
-            {
-                Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
-                $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
-                return;
             }
+
+        } 
+        catch (Exception $e) 
+        {
+            Mage::getSingleton("adminhtml/session")->addError($e->getMessage());
+            $this->_redirect("*/*/edit", array("id" => $this->getRequest()->getParam("id")));
+            return;
         }
+        
+        Mage::getSingleton('adminhtml/session')->addSuccess('Rma Attribute Saved Successfully');
         $this->_redirect("*/*/");
     }
     

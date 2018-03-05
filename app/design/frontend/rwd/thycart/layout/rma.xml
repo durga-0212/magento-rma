@@ -2,7 +2,7 @@
 <layout version="0.1.0">
     <customer_account translate="label">
         <block type="rma/account_navigation" name="rma_account_navigation">                   
-            <action method="addDashboardLink"><name>rma</name><path>rma/index</path><label>Rma</label></action>                       
+            <action method="addDashboardLink"><name>rma</name><path>rma/index</path><label>Request Cancellation/Return</label></action>                       
         </block>
         <reference name="customer_account_navigation">
             <action method="addLink"><name>bankdetails</name><path>rma/index/bank</path><label>MY Bank Details</label></action>      

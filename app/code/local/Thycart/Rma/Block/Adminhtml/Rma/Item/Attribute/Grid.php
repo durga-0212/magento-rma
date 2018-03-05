@@ -39,9 +39,9 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Grid extends Mage_Adminhtml
             'index'     => 'scope',
             'type' => 'options',
             'options' => array(
-                '2' => Mage::helper('rma')->__('Global'),
-                '1' => Mage::helper('rma')->__('Website'),
-                '0' => Mage::helper('rma')->__('Store View'),
+                '3' => Mage::helper('rma')->__('Global'),
+                '2' => Mage::helper('rma')->__('Website'),
+                '1' => Mage::helper('rma')->__('Store View'),
               ),
             'align' => 'center',
         ));
@@ -79,10 +79,10 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Grid extends Mage_Adminhtml
         $this->getMassactionBlock()->setFormFieldName('id');
         $this->getMassactionBlock()->setUseSelectAll(true);
         $this->getMassactionBlock()->addItem('remove_message', array(
-                        'label'=> Mage::helper('rma')->__('Remove RMA Attributes'),
-                        'url'  => $this->getUrl('*/adminhtml_attribute/massRemove'),
-                        'confirm' => Mage::helper('rma')->__('Are you sure?')
-                ));
+            'label'=> Mage::helper('rma')->__('Remove RMA Attributes'),
+            'url'  => $this->getUrl('*/adminhtml_attribute/massRemove'),
+            'confirm' => Mage::helper('rma')->__('Are you sure?')
+        ));
         return $this;
     }
     

@@ -3,9 +3,21 @@ require_once('phpmailer/class.phpmailer.php');
 class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
 {     
     public function getAttributeOptionValues($attribute_code) 
-    {
-        $attribute_data=Mage::getModel('rma/rma_eav_attribute')->getAttributeCollection();
-        return $attribute_data[$attribute_code];
+    {   
+        if(empty($attribute_code))
+        {
+            return;
+        }
+        try
+        {
+            $attribute_data=Mage::getModel('rma/rma_eav_attribute')->getAttributeCollection();
+            return $attribute_data[$attribute_code];
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
     }
     
     public function orderInvoices($orderId=0)
@@ -15,10 +27,17 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
         {
             return $invoiceIds;
         }
-
-        $orderObject = Mage::getModel('sales/order')->load($orderId);
-        $invoiceIds = $orderObject->getInvoiceCollection()->getAllIds();
-        return $invoiceIds;
+        try
+        {
+            $orderObject = Mage::getModel('sales/order')->load($orderId);
+            $invoiceIds = $orderObject->getInvoiceCollection()->getAllIds();
+            return $invoiceIds;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
     }
 
     public function orderShipment($orderId=0)
@@ -28,49 +47,84 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
         {
             return $shipmentIds;
         }
-
-        $orderObject = Mage::getModel('sales/order')->load($orderId);
-        $shipmentIds = $orderObject->getShipmentsCollection()->getAllIds();
-        return $shipmentIds;
+        try
+        {
+            $orderObject = Mage::getModel('sales/order')->load($orderId);
+            $shipmentIds = $orderObject->getShipmentsCollection()->getAllIds();
+            return $shipmentIds;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
     }
     
     public function getTrackingNumber()
     {
         $digits_needed = 8;
         $random_number = ''; // set up a blank string
-        $count = 0;  
-        $carriers=$this->getEnabledshippingmethods();         
-        $random_number .= $carriers;        
-        while ($count < $digits_needed) 
+        $count = 0; 
+        try
         {
-            $random_digit = mt_rand(0, 9);                     
-            $random_number .= $random_digit;
-            $count++;
-        }          
-        return $random_number;
+            $carriers=$this->getEnabledshippingmethods();         
+            $random_number .= $carriers;        
+            while ($count < $digits_needed) 
+            {
+                $random_digit = mt_rand(0, 9);                     
+                $random_number .= $random_digit;
+                $count++;
+            }          
+            return $random_number;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
     }
     
     public function getEnabledshippingmethods()
-    {
-        $methods = Mage::getSingleton('shipping/config')->getAllCarriers();    
-        foreach ($methods as $code => $carrier) 
-        {            
-            $carriers[$code] = $carrier->getConfigData('title');           
-        }        
-        $arr=array();
-        foreach($carriers as $key=> $value)
+    {   
+        try
         {
-            $arr[$key]=$value.'_'.$key.'_';           
+            $methods = Mage::getSingleton('shipping/config')->getAllCarriers();    
+            foreach ($methods as $code => $carrier) 
+            {            
+                $carriers[$code] = $carrier->getConfigData('title');           
+            }        
+            $arr=array();
+            foreach($carriers as $key=> $value)
+            {
+                $arr[$key]=$value.'_'.$key.'_';           
+            }
+            $k = array_rand($arr);        
+            $v = $arr[$k];        
+            return $v;
         }
-        $k = array_rand($arr);        
-        $v = $arr[$k];        
-        return $v;
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
     }
     
     public function getTrackingResponse($shipData=array()) 
-    {    
-        $ordershipdata=Mage::getModel('rma/order')->getshipmentData($shipData);
-        return $ordershipdata;    
+    {   
+        if(empty($shipData))
+        {
+            return;
+        }
+        try
+        {
+            $ordershipdata=Mage::getModel('rma/order')->getshipmentData($shipData);
+            return $ordershipdata;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
     }
     
     public function sendMail($to, $recepientName, $subject, $orderid, $productName, $message, $link='')
@@ -243,19 +297,7 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
             return;
         }
     }
-    
-    public function detailsForEmail($productArray,$orderId)
-    {   
-        $emailDetails = '';
-        if(empty($productArray) || empty($orderId))
-        {
-            return;
-        }
-        
-        $emailDetails = array($productArray,$orderId);
-        Mage::register('emailDetails',$emailDetails);
-    }
-    
+
     public function encryptBankDetail($data)
     {
         if(empty($data) || !is_numeric($data))

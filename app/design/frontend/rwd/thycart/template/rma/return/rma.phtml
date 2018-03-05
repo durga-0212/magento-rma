@@ -17,6 +17,7 @@
     <label><h4>Order Id : </h4></label>
     <?php 
     $orderInfo = $this->getOrders(1);
+    $orderInfo->setOrder('entity_id','DESC');
     if(count($orderInfo)>0) : ?>
     <select name="order" id="selectOrder" class="validate-select">
         <option value="">-- Select Orders --</option>
@@ -84,7 +85,7 @@
 
         $j("#requestForm").on('click', '#submit', function (e)
         {
-            cnt=$j('#cnt').val();
+            var cnt = $j('#cnt').val();
             if(cancelType == 0)
             {
                 var checked = $j('#my-rma-table').find(':checked').length;
@@ -93,12 +94,11 @@
                     $j("#notification-message1").show();
                     $j("#notification1").empty();
                     $j("#notification1").append('Please select atleast one item');
-                    e.stopImmediatePropagation();  
-                    e.preventDefault();return;
+                    return false;
                 }
                 else
                 {
-                $j("#notification-message1").hide();
+                    $j("#notification-message1").hide();
                 }
             }
             else
@@ -106,7 +106,7 @@
                 $j("#notification-message1").hide();
             }
             
-            for (i = 0; i < cnt; i++) 
+            for (i = 1; i <= cnt; i++) 
             {         
                 var orderedQty = $j('.productQty').data('orderedqty');
                 var productName = $j('.productQty').data('name');
@@ -114,10 +114,9 @@
                 if(qtyRequested > orderedQty)
                 {   
                     $j("#notification-message").show();
-                    $j("#notification").empty();
-                    $j("#notification").append("You can not return "+qtyRequested+" "+productName);
-                    e.stopImmediatePropagation();
-                    e.preventDefault();return;
+                    $j("#notification").empty();                    
+                    $j("#notification").append("You can not return "+qtyRequested+" "+productName);                    
+                    return false;
                 }
                 else
                 {
