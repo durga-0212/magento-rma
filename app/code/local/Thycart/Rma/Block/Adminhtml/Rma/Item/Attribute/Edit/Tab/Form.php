@@ -4,6 +4,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit_Tab_Form extends Mage_
     protected function _prepareForm()
     {
         $form = new Varien_Data_Form();
+        $id = $this->getRequest()->getParam('id');
         $this->setForm($form);
         $fieldset = $form->addFieldset("attribute_form", array("legend"=>Mage::helper("rma")->__("General information")));
         
@@ -20,7 +21,11 @@ class Thycart_Rma_Block_Adminhtml_Rma_Item_Attribute_Edit_Tab_Form extends Mage_
         'required'  => true,
         'values'    => array('1' => 'Store View','2' => 'Website', '3' => 'Global'),
         ));
-
+        
+        if($id)
+        {
+            $form->getElement('attribute_code')->setReadonly(1);
+        }
         if (Mage::getSingleton("adminhtml/session")->getAttributeData())
         {
             $form->setValues(Mage::getSingleton("adminhtml/session")->getAttributeData());
