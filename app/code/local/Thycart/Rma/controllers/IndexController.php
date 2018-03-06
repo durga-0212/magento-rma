@@ -107,13 +107,21 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 $productInfo = $order->getAllVisibleItems();
                 $orderArray['total_paid']=$order->getBaseGrandTotal();
                 $orderArray['is_cancel'] = $cancelType;
-                
+                 $shipped_qty = array();
                 foreach($productInfo as $product)
-                {
+                {                   
                     $productModel = Mage::getModel('catalog/product')->load($product->getProductId());
                     $isReturnable = $productModel->getIsReturnable();
-                    $product->setData('is_returnable', $isReturnable); 
-                    
+                    $product->setData('is_returnable', $isReturnable);
+                    if($cancelType == 0)
+                    {
+                        $shipped_qty   = Mage::getResourceModel('sales/order_shipment_item_collection')
+                            ->addFieldToSelect('qty')
+                            ->addFieldToFilter('order_item_id',$product->getItemId())
+                            ->getFirstItem()
+                            ->getData();           
+                        $product->setData('qty_ordered',reset($shipped_qty));
+                    }
                                
                     if($isReturnable)
                     {
