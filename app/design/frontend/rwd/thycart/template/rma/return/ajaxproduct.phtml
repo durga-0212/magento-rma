@@ -1,5 +1,5 @@
 <?php
-    $productInfo = Mage::registry('orderArray');    
+    $productInfo = Mage::registry('orderArray');     
     $alltrue = 1;
     $cancelType = isset($productInfo['is_cancel']) ? $productInfo['is_cancel'] : 0;
     if($cancelType):
@@ -59,7 +59,7 @@
                     if(empty($cancelType)): 
                         $readonly='';
                     endif; ?>
-                <input type="text" class="productQty" id="productQty_<?php echo $key;?>" name="products[<?php echo $pid;?>][qty_requested]" value="<?php echo round($value['qty_ordered']); ?>" <?php echo $readonly;?> data-pid="<?php echo $pid;?>" data-price="<?php echo $value['base_original_price'];?>" data-orderedqty="<?php echo $value['qty_ordered'];?>" data-name="<?php echo $value['name'];?>">
+                <input type="text" class="productQty validate-digits validate-greater-than-zero validate-no-html-tags" id="productQty_<?php echo $key;?>" name="products[<?php echo $pid;?>][qty_requested]" value="<?php echo round($value['qty_ordered']); ?>" <?php echo $readonly;?> data-pid="<?php echo $pid;?>" data-price="<?php echo $value['base_original_price'];?>" data-orderedqty="<?php echo $value['qty_ordered'];?>" data-name="<?php echo $value['name'];?>">
             </td>
             <td class="total" id="productPrice_<?php echo $pid;?>"><?php echo $value['base_row_total'] ?></td>
         </tr>            
@@ -69,9 +69,15 @@
         <input type="hidden" id="original_price_<?php echo $key;?>" name="original_price" value="<?php echo $product_price?>">
         <?php
         endif;
-    endforeach;?>
-           
-    <?php        
+    endforeach;
+          if($cancelType): ?>
+        <tr>
+            <td>&nbsp;</td>
+             <td>&nbsp;</td>           
+            <td><strong>Grand Total:</strong> <?php echo $productInfo['total_paid']; ?></td>
+        </tr>
+      <?php
+        endif;     
     else: ?> 
         <tr>
             <td colspan="5" style="text-align: center; font-size: 12px;">Product cannot be return</td>
@@ -163,8 +169,7 @@
         var price = $j(this).data('price');
         var orderedQty = parseInt($j(this).data('orderedqty'));
         var productName = $j(this).data('name');
-        var qty_requested = parseInt($j(this).val());
-        
+        var qty_requested = parseInt($j(this).val());        
         if(qty_requested > orderedQty)
         {
             $j("#notification-message").show();

@@ -105,7 +105,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 $orderArray = array();
                 $order = Mage::getModel('sales/order')->load($orderId);
                 $productInfo = $order->getAllVisibleItems();
-                
+                $orderArray['total_paid']=$order->getBaseGrandTotal();
                 $orderArray['is_cancel'] = $cancelType;
                 
                 foreach($productInfo as $product)
