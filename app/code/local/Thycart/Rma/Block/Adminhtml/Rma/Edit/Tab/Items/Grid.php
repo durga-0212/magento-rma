@@ -15,6 +15,32 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
         $this->setFilterVisibility(false);
         $this->setSortable(false);
     }
+    
+    protected $_countTotals = true;
+
+    public function getTotals()
+    {
+        $rmaData = Mage::registry('rma_data');
+      //  if($rmaData['shipping_charge']!='')
+       /// {
+        $totals = new Varien_Object();
+        $fields = array(
+            'product_price' => 0, //actual column index, see _prepareColumns()            
+        );
+        foreach ($this->getCollection() as $item) {
+            foreach($fields as $field=>$value){
+                $fields[$field]+=$item->getData($field);
+            }
+        }
+        //First column in the grid
+        $fields['entity_id']='Totals';
+        $totals->setData($fields);
+        return $totals;
+        //}
+//        else{
+//            return false;
+//        }
+    }
 
     protected function _prepareCollection()
     {
