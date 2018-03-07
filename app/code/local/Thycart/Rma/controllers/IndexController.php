@@ -436,6 +436,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             return;
         }
         $productArray = array();
+        $totalShippedQty = 0;
+        $totalRequestedQty = 0;
         try
         {
             foreach ($productsArray as $key => $value) 
@@ -450,6 +452,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     }
                     $productInfo = Mage::getModel('rma/order')->getProductInfo($key,$orderId);
                     $shippedQty = Mage::getModel('rma/order')->getShippedQty($productInfo['item_id']);
+                    $totalShippedQty += $shippedQty;  
+                    $totalRequestedQty += $value['qty_requested'];
                     if($value['qty_requested'] > $shippedQty)
                     {
                         Mage::getSingleton('core/session')->addError('You can not return '.$value['qty_requested'].' '.$productInfo['name']);
@@ -475,6 +479,12 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     $productArray[$prodName] = $prodQty;
                 }
             }
+//            if($totalShippedQty == $totalRequestedQty)
+//            {
+//                $orderModel=Mage::getModel('rma/rma_order')->load($rmaOrderId);
+//                $orderModel->addData(array('shipping_charge',))
+//                
+//            }
             return $productArray;
         }
         catch(Exception $e)
