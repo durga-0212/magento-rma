@@ -165,13 +165,20 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
     }
 
     public function saveAction() 
-    {            
+    {
+        $post_data = $this->getRequest()->getPost();
+        
+        if(isset($post_data['comment']['status']) == Thycart_Rma_Model_Rma_Status::STATE_CLOSED)
+        {            
+            $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
+            return;
+        }
         if(empty($this->getRequest()->getParam('order_id')) || empty($this->getRequest()->getParam('items')))
         {
             Mage::getSingleton('core/session')->addError('Please fill all the details');
             $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
             return;
-        }
+        }        
         $rmaItemArray = array();
         $productArray = array();
         $updateInventory = '';
@@ -296,7 +303,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
             }
             if($sendLink)
             {
-                $this->saveRmaLink($id,$rmaItemArray,$customerId,$modelRma->getCustomerEmail(),$modelRma->getCustomerName(),$orderId,$returnProductArray);
+                $this->saveRmaLink($rmaItemArray,$customerModel,$orderId,$returnProductArray);
             }
             if($completeMail)
             {
@@ -361,35 +368,34 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
         }
     }
     
-    public function saveRmaLink($rmaOrderId,$rmaItemIdArray,$customerId,$customerEmail,$customerName,$orderId,$productArray)
+    public function saveRmaLink($rmaItemIdArray,$customerModel,$orderId,$productArray)
     {   
-        if(empty($rmaOrderId) || empty($rmaItemIdArray) || empty($customerId) || empty($customerEmail)  
-            || empty($customerName) || empty($orderId) || empty($productArray))
+        if(empty($rmaItemIdArray) || empty($customerModel)  || empty($orderId) || empty($productArray))
         {
-            Mage::getSingleton('core/session')->addError('Invalid data while saving Rma Link details');
+            return;
+            
         }
         else 
         {
             try
             {   
-                $link = '';
-                $customerModel = Mage::getModel('customer/customer')->load($customerId);               
+                $link = '';             
                 $rmaItemId = implode("-",$rmaItemIdArray);
                 $url = Mage::getBaseUrl();
                 if(empty($customerModel->getBankname()) || empty($customerModel->getAccountNo()) || empty($customerModel->getIfscCode()))
                 {
-                    $link = "<a href=".$url."rma/index/bank/rmaItemId".$rmaItemId.">Please fill your bank details</a>";                    
+                    $link = "<a href=".$url."rma/index/bank/rmaItemId/".$rmaItemId.">Please fill your bank details</a>";                    
                 } 
                 
                 $message = "<h3>Rma request in Return Received State</h3><br><span>Order Id ".$orderId."</span>";
                 $subject = 'Return Received of OrderId '.$orderId;                
-                $resultMail = Mage::helper('rma')->sendMail($customerEmail,$customerName,$subject,$productArray,$message,$link);
+                $resultMail = Mage::helper('rma')->sendMail($customerModel->getCustomerEmail(),$customerModel->getCustomerName(),$subject,$productArray,$message,$link);
 
                 if(!empty($customerModel->getBankname()) || !empty($customerModel->getAccountNo()) || !empty($customerModel->getIfscCode()))
                 {
                     $message = $message = "<h3>Rma request in Payment Request State</h3><br><span>Order Id ".$orderId."</span>";
                     $subject = 'Payment Requested for OrderId '.$orderId;                
-                    $resultMail = Mage::helper('rma')->sendMail($customerEmail,$customerName,$subject,$productArray,$message);
+                    $resultMail = Mage::helper('rma')->sendMail($customerModel->getCustomerEmail(),$customerModel->getCustomerName(),$subject,$productArray,$message);
                 }
                 
             }

@@ -96,11 +96,17 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
                 'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
             ));  
         }    
-
-        $this->addColumn('reason', array(
-            'header'=> Mage::helper('rma')->__('Reason to Return'),
+        
+        $this->addColumn('reason',array(
+            'header'=> Mage::helper('rma')->__('Reason'),
             'width' => '80px',
             'index' => 'reason',
+        ));
+        
+        $this->addColumn('reason', array(
+            'header'=> Mage::helper('rma')->__('Price'),
+            'width' => '80px',
+            'index' => 'product_price',
         ));
 
         $this->addColumn('delivery_status', array(
