@@ -40,12 +40,13 @@ CREATE TABLE `rma_order_item` (
  `order_item_id` int(11) NOT NULL COMMENT 'Order Item Id',
  `product_id` int(11) NOT NULL,
  `product_name` text COMMENT 'Product Name For Backend',
+ `product_price` decimal(12,4) DEFAULT NULL COMMENT 'PRODUCT PRICE',
  `product_sku` text COMMENT 'Product Sku For Backend',
  `item_status` text NOT NULL COMMENT 'Status',
  PRIMARY KEY (`entity_id`),
  KEY `rma_order_item_ibfk_1` (`rma_entity_id`),
  CONSTRAINT `rma_order_item_ibfk_1` FOREIGN KEY (`rma_entity_id`) REFERENCES `rma_order` (`entity_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='rma_order_item'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='rma_order_item'
 ");
 
 
@@ -101,19 +102,6 @@ KEY `FK_RMA_EAV_ATTR_OPT_ATTR_ID_RMA_EAV_ATTR_OPT_ATTR_ID` (`attribute_id`),
 CONSTRAINT `FK_RMA_EAV_ATTR_OPT_ATTR_ID_RMA_EAV_ATTR_OPT_ATTR_ID` FOREIGN KEY (`attribute_id`) REFERENCES `rma_eav_attribute` (`attribute_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='rma_eav_attribute_option'
 ");
-
-
-$installer->run("Drop table if exists `bankverification_link`;
-CREATE TABLE `bankverification_link` (
-`entity_id` int(5) NOT NULL AUTO_INCREMENT,
-`rma_order_id` int(5) NOT NULL,
-`rma_order_item_id` int(5) NOT NULL,
-`customer_id` int(5) NOT NULL,
-`status` int(5) NOT NULL,
-PRIMARY KEY (`entity_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
-");
-
 
 $installer->run("INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`,`scope`) VALUES ('1','resolution','3');
 INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`, `scope`) VALUES ('2','delivery_status','3');

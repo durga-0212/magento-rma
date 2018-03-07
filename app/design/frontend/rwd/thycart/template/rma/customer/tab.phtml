@@ -1,26 +1,85 @@
-<div class="entry-edit">
-    <div class="entry-edit-head"><h4 class="icon-head head-customer-view"><?php echo Mage::helper('rma')->__('Bank Information') ?></h4></div>
-    <fieldset>
-        <table cellspacing="3" class="box-left">
-            <tr>
-                <td><strong><?php echo $this->__('Bank Name:') ?></strong></td>
-                <td ><?php echo $this->getBankName(); ?></td>
-            </tr>            
-            <tr>
-                <td><strong><?php echo $this->__('Account Number:') ?></strong></td>
-                <td id="accountNumber"></td>
-            </tr>
-            <tr>
-                <td><strong><?php echo $this->__('IFSC Code:') ?></strong></td>
-                <td><?php echo $this->getIfscCode(); ?></td>
-            </tr>            
-        </table>        
-    </fieldset>
-</div>
+<form id="bankform" action="<?php echo Mage::getUrl('rma/index/savebankdetails'); ?>" method="post" onsubmit="return validateAccount()">
+    <table>
+        <tr>
+            <td><label>Bank Name</label></td>
+            <td><input type="text" name="bankname" class="validate-no-html-tags required-entry validate-alpha" value="<?php echo $this->getBankName(); ?>"/></td>
+        </tr>
+        <br/>
+        <tr>
+            <td><label>Account Number</label></td>
+            <td><input type="text" id="account_num" name="account_no" minlength="12" maxlength="16"  class="required-entry  validate-no-html-tags validate-digits validate-greater-than-zero" onkeypress="numberValidate(event)" value="<?php echo $this->getAccountNumber() ?>"/></td>
+        </tr>
+         <br/>
+        <tr>
+            <td><label>Confirm Account Number</label></td>
+            <td><input type="password" id="confirm_account" minlength="12" maxlength="16" class="required-entry validate-no-html-tags validate-digits validate-greater-than-zero" name="account_no" onkeypress="numberValidate(event)" onblur="validateAccount()" value="<?php echo $this->getAccountNumber() ?>" /></td>
+        </tr>
+        <tr id="msg">
+            <td><label></label></td>
+            <td><span id='message'/></span></td>
+        </tr>
+        <br/>
+        <tr>
+            <td><label>IFSC Code</label></td>
+            <td><input type="text" name="ifsc_code" class="validate-alphanum validate-no-html-tags required-entry" value="<?php echo $this->getIfscCode(); ?>"/></td>
+        </tr>
+        <br/>
+        <tr>
+            <td></td>
+            <td><input type="submit" id="submit"  /></td>
+        </tr>
+        <br/>
+    </table>
+    <input type="hidden" name="rmaItemId" value="<?php echo $this->getRequest()->getParam('rmaItemId')?>">
+</form>
+
 <script type="text/javascript">
 //<![CDATA[
-    var str = "<?php echo $this->getAccountNumber() ?>";
-    var accountNumber = str.replace(/.(?=.{4})/g, 'x');
-    jQuery('#accountNumber').text(accountNumber);
+    var customForm = new VarienForm('bankform');
+    jQuery(document).ready(function()
+    {
+        jQuery('#msg').hide();
+    });
+    function validateAccount()
+    {
+        var accountNum     = jQuery('#account_num').val();
+        var confirmAccount = jQuery('#confirm_account').val();
+      
+        if(Number.isInteger(accountNum) || Number.isInteger(confirmAccount))
+        {
+            jQuery('#msg').show();
+            jQuery('#message').text('please insert valid number');
+            return false;
+        }
+        if( !accountNum.empty() && !confirmAccount.empty())
+        {
+            if(accountNum.length<12 ||accountNum.length>16 || confirmAccount.length<12 || confirmAccount.length>16)
+            {
+                alert('please insert valid bank account number');
+                return false;
+            }
+            if(accountNum != confirmAccount)
+            {  
+                jQuery('#msg').show(); 
+                jQuery('#message').text('Wrong account Number inserted');
+                return false;
+            }
+            else
+            {
+                jQuery('#msg').show(); 
+                jQuery('#message').text('Matched');
+            }
+        }
+        return true;        
+    }
+    function numberValidate(ele) 
+    { 
+        ele = (ele) ? ele : window.event;
+        var charCode = (ele.which) ? ele.which : ele.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+        { 
+            ele.preventDefault(); 
+        }
+    }
 //]]>
 </script>

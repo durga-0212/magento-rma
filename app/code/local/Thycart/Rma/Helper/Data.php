@@ -127,9 +127,9 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
     
-    public function sendMail($to, $recepientName, $subject, $orderid, $productName, $message, $link='')
+    public function sendMail($to, $recepientName, $subject, $productName, $message, $link='')
     { 
-        if(empty($to) || empty($recepientName) || empty($subject) ||empty($orderid) || empty($productName) || empty($message))
+        if(empty($to) || empty($recepientName) || empty($subject) || empty($productName) || empty($message))
         {
             return false;
         }
@@ -146,11 +146,10 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
                 $mail->Port = 465;
                 $mail->IsHTML(true);
                 $mail->Username = Mage::getStoreConfig('rma_email/email_group/sender_email');
-                $mail->Password = 'vipin$90';
+                $mail->Password = '';
                 $mail->SetFrom(Mage::getStoreConfig('rma_email/email_group/sender_email'));
                 $mail->Subject = $subject;
-                $body = $message;
-                $mail->Body = Mage::helper('rma')->getEmailBody($orderid, $productName, $message ,$link);
+                $mail->Body = Mage::helper('rma')->getEmailBody($productName, $message ,$link);
                 $mail->AddAddress($to);
             }
             catch (Exception $e)
@@ -169,7 +168,7 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
             $mail = Mage::getModel('core/email');
             $mail->setToName($recepientName);
             $mail->setToEmail($to);
-            $mail->setBody(Mage::helper('rma')->getEmailBody($orderid, $productName, $message ,$link));
+            $mail->setBody(Mage::helper('rma')->getEmailBody($productName, $message ,$link));
             $mail->setSubject($subject);
             $mail->setFromEmail(Mage::getStoreConfig('rma_email/email_group/sender_email'));
             $mail->setType('html');
@@ -192,7 +191,7 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
             $sender_name  = Mage::getStoreConfig('rma_email/email_group/sender_name');
 
             $mail = new Zend_Mail();
-            $mail->setBodyHtml(Mage::helper('rma')->getEmailBody($orderid, $productName, $message ,$link)); 
+            $mail->setBodyHtml(Mage::helper('rma')->getEmailBody($productName, $message ,$link)); 
             $mail->setFrom(Mage::getStoreConfig('rma_email/email_group/sender_email'),Mage::getStoreConfig('rma_email/email_group/sender_name'));
             $mail->addTo($to, 'customer');
             //$mail->addCc($cc, $ccname);    //can set cc
@@ -221,7 +220,7 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
                                    );              
             $storeId = Mage::app()->getStore()->getId();
             $vars    = array('message' => $message,
-                             'orderid'=> $orderid,
+                             //'orderid'=> $orderid,
                              'productDetails'=>$productName
                             );
             
@@ -245,11 +244,11 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
         return true;
     }
 
-    public function getEmailBody($orderid, $productName, $message , $link='')
+    public function getEmailBody($productName, $message , $link='')
     { 
         $body ='';
         $emailTemplateVars = array();
-        if(empty($orderid) || empty($productName))
+        if(empty($productName))
         {
             return false;
         }
@@ -258,7 +257,6 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
             $emailTemplateVars['link'] = $link;
         }
         $emailTemplateVars['product_details'] = $productName;
-        $emailTemplateVars['orderid'] = $orderid;
         $emailTemplateVars['message'] = $message;
         try
         {
@@ -271,6 +269,7 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
            echo $e->getMessage(); 
            return;
         }
+        
        return $body;
     }
     public function updateInventory($productId,$qtyApproved)

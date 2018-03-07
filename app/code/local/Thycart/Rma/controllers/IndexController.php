@@ -152,7 +152,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     }
     
     public function saveAction()
-    {        
+    {        //echo "<pre>";        print_r($this->getRequest()->getParams());die;     
         if(empty($this->getRequest()->getParam('order')) || empty($this->getRequest()->getParam('products')) 
             || empty($this->getRequest()->getParam('resolution_type')) || empty($this->getRequest()->getParam('delivery_status'))
             || empty($this->getRequest()->getParam('reason')))
@@ -233,33 +233,6 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         }
     }
     
-    public function bankFormAction() 
-    {
-        if(empty($this->getRequest()->getParam('rmaItemId')))
-        {
-            return;
-        }
-        try
-        {
-            $id = $this->getRequest()->getParam('rmaItemId');
-            $validRma = $this->verifyRmaLinkDetails($id);
-            if($validRma)
-            {
-                $this->loadLayout();
-                $this->renderLayout();
-            }
-            else
-            {
-                $this->_redirect('customer/account/');
-                Mage::getSingleton('core/session')->addSuccess('You have already filled bank details');
-            }
-        }
-        catch(Exception $e)
-        {
-            Mage::getSingleton('core/session')->addError('Error while loading Bank Form');
-        }
-    }
-    
     public function savebankdetailsAction()
     {
         if(empty($this->getRequest()->getParam('bankname')) || empty($this->getRequest()->getParam('account_no')) || 
@@ -283,13 +256,6 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             $updateCustomerDetails = $modelCustomer->save();
             if($updateCustomerDetails)
             {
-                $result = $this->changeRmaLinkStatus($rmaItemIdArray,$customerId);
-                if(!$result)
-                {
-                    Mage::getSingleton('core/session')->addError('Error while saving Bank Details');
-                    $this->_redirect('*/*/bankForm');
-                    return;
-                }
                 $resultStatus = $this->changeRmaItemStatus($rmaItemIdArray,$customerModel);
                 $this->_redirect('*/*/index');
                 Mage::getSingleton('core/session')->addSuccess('Bank Details Saved Successfully');
@@ -316,66 +282,6 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $this->renderLayout();
     }
     
-    public function verifyRmaLinkDetails($id)
-    {   
-        if(empty($id))
-        {
-            return;
-        }
-        try
-        {
-            $idArray = explode("-",$id);
-            $modelCollection = Mage::getResourceModel('rma/link_collection')
-                ->addFieldToSelect('status')
-                ->addFieldToFilter('rma_order_item_id',array('in' => $idArray));            
-
-            $collectionData = $modelCollection->getData();
-            if(empty($collectionData))
-            {
-                return 0;
-            }
-            $statusArray = array_column($collectionData, 'status');
-            if(in_array(1,$statusArray))
-            {
-                return 0;
-            }
-            return 1;
-        }
-        catch(Exception $e)
-        {
-            echo $e->getMessage();
-            return;
-        }
-    }
-    
-    public function changeRmaLinkStatus($rmaItemIdArray,$customerId)
-    { 
-        if(empty($rmaItemIdArray) || empty($customerId))
-        {
-            return; 
-        }
-        try
-        {
-            $entityIdArray = Mage::getResourceModel('rma/link_collection')
-                ->addFieldToSelect('entity_id')
-                ->addFieldToFilter('customer_id',$customerId)
-                ->addFieldToFilter('rma_order_item_id',array('in'=>$rmaItemIdArray));
-
-            foreach($entityIdArray as $key => $value)
-            {
-                $modelRmaLink = Mage::getModel('rma/link')->load($value['entity_id']);            
-                $modelRmaLink->addData(array('status'=>1));
-                $result = $modelRmaLink->save();
-            }
-            return $result;
-        }
-        catch(Exception $e)
-        {
-            echo $e->getMessage();
-            return;
-        }
-    }
-    
     public function changeRmaItemStatus($rmaItemIdArray,$customerModel)
     {   
         if(empty($rmaItemIdArray) || empty($customerModel))
@@ -400,8 +306,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             if($changeItemStatus)
             {
                 $subject = 'Payment Requested for OrderId '.$orderId;
-                $message = 'Payment Request';               
-                $resultMail =  Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message);
+                $message = "<h3>Payment Request</h3><br><span>Order Id ".$orderId."</span>";               
+                $resultMail =  Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$productArray,$message);
             }
             return $changeItemStatus;
         }
@@ -421,17 +327,20 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         try
         {
             $link = '';
-            $message = "Rma Request in Pending State";
+            $message = "<h3>Rma Request in Pending State</h3><br><span>Order Id ".$orderId."</span>";
             $subject = 'Return Request for OrderId '.$orderId;
             if($cancelType)
             {
                 $subject = 'Order Cancellation for OrderId '.$orderId;
-                $message = "Order Cancellation Request";
+                $message = "<h3>Order Cancellation Request</h3><br><span>Order Id ".$orderId."</span>";
                 $url = Mage::getBaseUrl();
-                $link = $url."rma/index/bankform/";                
+                if(empty($customerModel->getBankname()) || empty($customerModel->getAccountNo()) || empty($customerModel->getIfscCode()))
+                {
+                    $link = "<a href=".$url."rma/index/bank/>Please fill your bank details</a>";
+                }
+                
             }   
-            
-            $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$orderId,$productArray,$message);
+            $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$productArray,$message,$link);
             return $resultMail;
         }
         catch(Exception $e)
@@ -508,6 +417,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                         'product_sku' => $productInfo['sku'],
                         'order_item_id' => $productInfo['item_id'],
                         'product_id' => $key,
+                        'product_price' => $productInfo['base_original_price']*$value['qty_requested'],
                         'qty_requested' => $value['qty_requested'],
                         'item_status' => $status
                     );
