@@ -232,6 +232,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 $orderItemId = $rmaItemModel->getOrderItemId();                
                 $qtyRequested = $rmaItemModel->getQtyRequested();
                 $qtyApproved = $rmaItemModel->getQtyApproved();
+                $productPrice = ($rmaItemModel->getProductPrice())/($qtyRequested);
                 
                 $processing_status=Thycart_Rma_Model_Rma_Status::STATE_PROCESSING;
                 $return_received_status=Thycart_Rma_Model_Rma_Status::STATE_RETURN_RECEIVED;
@@ -281,7 +282,11 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 
                 if($flag)
                 {
-                    $rmaItemModel->addData(array("item_status" => $value['status'],"qty_approved" => $value['qty_approved']));                
+                    $rmaItemModel->addData(array(
+                        "item_status" => $value['status'],
+                        "qty_approved" => $value['qty_approved'],
+                        "product_price"=>$value['qty_approved']*$productPrice
+                    ));                
                     $result = $rmaItemModel->save();
                 }
                 
