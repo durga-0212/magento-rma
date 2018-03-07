@@ -146,7 +146,7 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
                 $mail->Port = 465;
                 $mail->IsHTML(true);
                 $mail->Username = Mage::getStoreConfig('rma_email/email_group/sender_email');
-                $mail->Password = '';
+                $mail->Password = 'rma@1234';
                 $mail->SetFrom(Mage::getStoreConfig('rma_email/email_group/sender_email'));
                 $mail->Subject = $subject;
                 $mail->Body = Mage::helper('rma')->getEmailBody($productName, $message ,$link);
@@ -154,6 +154,7 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
             }
             catch (Exception $e)
             {
+                echo 'tested';
                 echo $e->getMessage();
                 return false;
             }
