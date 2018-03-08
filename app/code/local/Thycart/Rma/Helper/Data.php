@@ -128,15 +128,15 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
     }
     
     public function sendMail($to, $recepientName, $subject, $productName, $message, $link='')
-    { 
+    {   
         if(empty($to) || empty($recepientName) || empty($subject) || empty($productName) || empty($message))
-        {
+        {   
             return false;
         }
         if(PHP_MAILER)
         { 
             try
-            {
+            {                
                 $mail = new PHPMailer();
                 $mail->IsSMTP();
                 $mail->SMTPDebug = 1; 
@@ -299,7 +299,7 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function encryptBankDetail($data)
     {
-        if(empty($data) || !is_numeric($data))
+        if(empty($data))
         {
             return false;
         }

@@ -168,13 +168,16 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
     {
         $post_data = $this->getRequest()->getPost();
         
-        if(isset($post_data['comment']['status']) == Thycart_Rma_Model_Rma_Status::STATE_CLOSED)
-        {            
-            $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
-            return;
+        if(isset($post_data['comment']['status']))
+        {
+            if($post_data['comment']['status'] == Thycart_Rma_Model_Rma_Status::STATE_CLOSED)
+            {               
+                $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
+                return;
+            }
         }
         if(empty($this->getRequest()->getParam('order_id')) || empty($this->getRequest()->getParam('items')))
-        {
+        {            
             Mage::getSingleton('core/session')->addError('Please fill all the details');
             $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
             return;
@@ -371,9 +374,8 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
     public function saveRmaLink($rmaItemIdArray,$customerModel,$orderId,$productArray)
     {   
         if(empty($rmaItemIdArray) || empty($customerModel)  || empty($orderId) || empty($productArray))
-        {
-            return;
-            
+        {           
+            return;            
         }
         else 
         {
@@ -381,21 +383,28 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
             {   
                 $link = '';             
                 $rmaItemId = implode("-",$rmaItemIdArray);
+                $rmaItemId = Mage::helper('rma')->encryptBankDetail($rmaItemId);
+                $customerId = $customerModel->getEntityId();
+                $customerId = Mage::helper('rma')->encryptBankDetail($customerId);
                 $url = Mage::getBaseUrl();
                 if(empty($customerModel->getBankname()) || empty($customerModel->getAccountNo()) || empty($customerModel->getIfscCode()))
-                {
-                    $link = "<a href=".$url."rma/index/bank/rmaItemId/".$rmaItemId.">Please fill your bank details</a>";                    
-                } 
+                {                    
+                    $link = "<a href=".$url."rma/index/bank/rmaItemId/".$rmaItemId."/customerId/".$customerId.">Please fill your bank details</a>";                    
+                }
+                else 
+                {                   
+                    $link = "Please Login to your account and verify Bank Details";
+                }
                 
                 $message = "<h3>Rma request in Return Received State</h3><br><span>Order Id ".$orderId."</span>";
                 $subject = 'Return Received of OrderId '.$orderId;                
-                $resultMail = Mage::helper('rma')->sendMail($customerModel->getCustomerEmail(),$customerModel->getCustomerName(),$subject,$productArray,$message,$link);
+                $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$productArray,$message,$link);
 
                 if(!empty($customerModel->getBankname()) || !empty($customerModel->getAccountNo()) || !empty($customerModel->getIfscCode()))
                 {
                     $message = $message = "<h3>Rma request in Payment Request State</h3><br><span>Order Id ".$orderId."</span>";
                     $subject = 'Payment Requested for OrderId '.$orderId;                
-                    $resultMail = Mage::helper('rma')->sendMail($customerModel->getCustomerEmail(),$customerModel->getCustomerName(),$subject,$productArray,$message);
+                    $resultMail = Mage::helper('rma')->sendMail($customerModel->getEmail(),$customerModel->getName(),$subject,$productArray,$message);
                 }
                 
             }

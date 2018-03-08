@@ -167,6 +167,7 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract {
                 ->addFieldToFilter('product_id', $productId)
                 ->addFieldToFilter('order_id', $orderId)
                 ->getData();
+            
         } 
         catch (Exception $e) 
         {
@@ -175,6 +176,29 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract {
             return;
         }
         return reset($productInfo);
+    }
+    
+    public function getShippedQty($itemId)
+    {
+        if(empty($itemId))
+        {
+            return;
+        }    
+        try
+        {
+            $shipped_qty = Mage::getResourceModel('sales/order_shipment_item_collection')
+                            ->addFieldToSelect('qty')
+                            ->addFieldToFilter('order_item_id',$itemId)
+                            ->getFirstItem()
+                            ->getData();
+
+            return reset($shipped_qty);
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
     }
 
 }
