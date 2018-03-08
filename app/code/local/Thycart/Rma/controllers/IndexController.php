@@ -479,12 +479,13 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     $productArray[$prodName] = $prodQty;
                 }
             }
-//            if($totalShippedQty == $totalRequestedQty)
-//            {
-//                $orderModel=Mage::getModel('rma/rma_order')->load($rmaOrderId);
-//                $orderModel->addData(array('shipping_charge',))
-//                
-//            }
+            if($totalShippedQty == $totalRequestedQty)
+            {   
+                $shippingCharge = Mage::getModel('rma/order')->getShippingCharge();
+                $orderModel=Mage::getModel('rma/rma_order')->load($rmaOrderId);
+                $orderModel->addData(array('shipping_charge',$shippingCharge));
+                $orderModel->save();
+            }
             return $productArray;
         }
         catch(Exception $e)

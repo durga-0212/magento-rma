@@ -1,9 +1,6 @@
 <?php
 class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml_Block_Widget_Grid
-{
-    
-
-    /**
+{   /**
      * Block constructor
      */
     public function _construct()
@@ -21,25 +18,29 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
     public function getTotals()
     {
         $rmaData = Mage::registry('rma_data');
-      //  if($rmaData['shipping_charge']!='')
-       /// {
+      
         $totals = new Varien_Object();
-        $fields = array(
-            'product_price' => 0, //actual column index, see _prepareColumns()            
-        );
+        if($rmaData['shipping_charge'] == '')
+        {
+            $fields = array(
+                'product_price' => 0,          
+            );
+        }
+        else 
+        {
+            $fields = array(
+                'product_price' => $rmaData['shipping_charge'],             
+            );
+        }
         foreach ($this->getCollection() as $item) {
             foreach($fields as $field=>$value){
                 $fields[$field]+=$item->getData($field);
             }
-        }
-        //First column in the grid
+        }        
         $fields['entity_id']='Totals';
         $totals->setData($fields);
         return $totals;
-        //}
-//        else{
-//            return false;
-//        }
+
     }
 
     protected function _prepareCollection()
@@ -129,7 +130,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
             'index' => 'reason',
         ));
         
-        $this->addColumn('reason', array(
+        $this->addColumn('price', array(
             'header'=> Mage::helper('rma')->__('Price'),
             'width' => '80px',
             'index' => 'product_price',
