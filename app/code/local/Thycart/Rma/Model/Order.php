@@ -202,14 +202,14 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract {
     }
     
     public function getShippingCharge($orderId)
-    {
+    {         
         if(empty($orderId))
         {
             return;
         }
         try
         {
-            $orderModel = Mage::getModel('sales/order')->load($orderId);
+            $orderModel = Mage::getModel('sales/order')->load($orderId);            
             $shippingCharge = $orderModel->getShippingAmount();
             return $shippingCharge; 
         }

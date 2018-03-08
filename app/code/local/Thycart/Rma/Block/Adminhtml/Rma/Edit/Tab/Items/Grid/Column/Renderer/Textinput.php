@@ -5,13 +5,13 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid_Column_Renderer_Textin
 {
    
     public function render(Varien_Object $row) 
-    {   
+    {       
         $html = '';
-        if($row->getEntityId() == 'Totals')
+        $value = $row->getData($this->getColumn()->getIndex());  
+        if(empty($value))
         {
             return $html;
         }
-        $value = $row->getData($this->getColumn()->getIndex());  
         if (!$row->getIsQtyDecimal() && !is_null($value)) {
             $value = intval($value);
         }

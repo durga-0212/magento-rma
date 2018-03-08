@@ -440,13 +440,18 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $totalShippedQty = 0;
         $totalRequestedQty = 0;
         try
-        {   $cnt = count($productsArray);
+        {   
+            $orderModel = Mage::getModel('sales/order')->load($orderId);
+            $cnt = $orderModel->getTotalItemCount();
             $cntChecked = 0;
             foreach ($productsArray as $key => $value) 
             {   
-                if( isset($value['checked']) && !empty($value['checked']) || $cancelType )
+                if(isset($value['checked']) && !empty($value['checked']) || $cancelType )
                 {   
-                    $cntChecked += $value['checked'];
+                    if(!$cancelType)
+                    {
+                        $cntChecked += $value['checked'];
+                    }
                     if(empty($value['qty_requested']))
                     {
                         Mage::getSingleton('core/session')->addError('Please fill all details');
@@ -457,15 +462,16 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     $shippedQty = Mage::getModel('rma/order')->getShippedQty($productInfo['item_id']);
                     $totalShippedQty += $shippedQty;  
                     $totalRequestedQty += $value['qty_requested'];
-                    if($shippedQty !='')
+                    if((!$cancelType && ($value['qty_requested'] > $shippedQty)) 
+                        || ($cancelType && $value['qty_requested'] != $productInfo['qty_ordered']) )
                     {
-                        if($value['qty_requested'] > $shippedQty)
-                        {
-                            Mage::getSingleton('core/session')->addError('You can not return '.$value['qty_requested'].' '.$productInfo['name']);
-                            $this->_redirect('*/*/addrequest/');
-                            return false;
-                        }
+                       
+                        Mage::getSingleton('core/session')->addError('You can not return '.$value['qty_requested'].' '.$productInfo['name']);
+                        $this->_redirect('*/*/addrequest/');
+                        return false;
+                        
                     }
+                    
                     $item_data=array(
                         'rma_entity_id' => $rmaOrderId,
                         'qty_ordered'  => $productInfo['qty_ordered'],
@@ -487,10 +493,10 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             }
             
             if(($totalShippedQty == $totalRequestedQty && $cnt == $cntChecked) || $cancelType )
-            {               
+            {                                  
                 $shippingCharge = Mage::getModel('rma/order')->getShippingCharge($orderId);
                 $orderModel=Mage::getModel('rma/order')->load($rmaOrderId);
-                $orderModel->setData('shipping_charge',$shippingCharge);       
+                $orderModel->setData('shipping_charge',$shippingCharge);                    
                 $orderModel->save();
             }
             
