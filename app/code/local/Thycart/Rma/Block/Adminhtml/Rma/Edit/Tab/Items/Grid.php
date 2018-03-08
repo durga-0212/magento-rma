@@ -37,7 +37,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
                 $fields[$field]+=$item->getData($field);
             }
         }        
-        $fields['entity_id']='Totals';
+        $fields['reason']='SubTotals';
         $totals->setData($fields);
         return $totals;
 
