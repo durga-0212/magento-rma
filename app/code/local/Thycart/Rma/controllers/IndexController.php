@@ -105,9 +105,10 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 $orderArray = array();
                 $order = Mage::getModel('sales/order')->load($orderId);
                 $productInfo = $order->getAllVisibleItems();
+                $orderArray['shipping_charge']=$order->getShippingAmount();
                 $orderArray['total_paid']=$order->getBaseGrandTotal();
                 $orderArray['is_cancel'] = $cancelType;
-                 $shipped_qty = array();
+                $shipped_qty = array();
                 foreach($productInfo as $product)
                 {                   
                     $productModel = Mage::getModel('catalog/product')->load($product->getProductId());
@@ -381,7 +382,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 }
                 else 
                 {                   
-                    $link = "Please Login to your account and verify Bank Details";
+                    $link = "<h3>Please Login to your account and verify Bank Details</h3>";
                 }
                 
             }   
@@ -454,11 +455,14 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     $shippedQty = Mage::getModel('rma/order')->getShippedQty($productInfo['item_id']);
                     $totalShippedQty += $shippedQty;  
                     $totalRequestedQty += $value['qty_requested'];
-                    if($value['qty_requested'] > $shippedQty)
+                    if($shippedQty !='')
                     {
-                        Mage::getSingleton('core/session')->addError('You can not return '.$value['qty_requested'].' '.$productInfo['name']);
-                        $this->_redirect('*/*/addrequest/');
-                        return false;
+                        if($value['qty_requested'] > $shippedQty)
+                        {
+                            Mage::getSingleton('core/session')->addError('You can not return '.$value['qty_requested'].' '.$productInfo['name']);
+                            $this->_redirect('*/*/addrequest/');
+                            return false;
+                        }
                     }
                     $item_data=array(
                         'rma_entity_id' => $rmaOrderId,
@@ -479,13 +483,14 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     $productArray[$prodName] = $prodQty;
                 }
             }
-            if($totalShippedQty == $totalRequestedQty)
-            {   
-                $shippingCharge = Mage::getModel('rma/order')->getShippingCharge();
-                $orderModel=Mage::getModel('rma/rma_order')->load($rmaOrderId);
-                $orderModel->addData(array('shipping_charge',$shippingCharge));
+            if($totalShippedQty == $totalRequestedQty || $cancelType)
+            {               
+                $shippingCharge = Mage::getModel('rma/order')->getShippingCharge($orderId);
+                $orderModel=Mage::getModel('rma/order')->load($rmaOrderId);
+                $orderModel->setData('shipping_charge',$shippingCharge);       
                 $orderModel->save();
             }
+            
             return $productArray;
         }
         catch(Exception $e)

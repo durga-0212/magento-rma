@@ -33,8 +33,10 @@
     <tbody id="ramTable">
     <?php
     $cnt = 0;
+    $Subtotal = 0;
     if($alltrue == 0):
     foreach($productInfo['productDetails'] as $key => $value):
+        $Subtotal +=$value['base_row_total'];
         $returnable = $value['is_returnable'];
         $pid = $value['product_id'];
         if($productInfo['is_cancel'])
@@ -72,10 +74,23 @@
     endforeach;
           if($cancelType): ?>
         <tr>
-            <td>&nbsp;</td>
-             <td>&nbsp;</td>           
-            <td><strong>Grand Total:</strong> <?php echo $productInfo['total_paid']; ?></td>
-        </tr>
+           <td>&nbsp;</td>
+            <td>&nbsp;</td>           
+           <td style="width:40px;"><strong>Sub Total:</strong> </td>
+           <td><?php echo $Subtotal; ?></td>
+       </tr>
+        <tr>
+           <td>&nbsp;</td>
+            <td>&nbsp;</td>           
+           <td><strong>Shipping Charge:</strong> </td>
+           <td><?php echo $productInfo['shipping_charge']; ?></td>
+       </tr>
+       <tr>
+           <td>&nbsp;</td>
+            <td>&nbsp;</td>           
+           <td><strong>Grand Total:</strong> </td>
+           <td><?php echo $productInfo['total_paid']; ?></td>
+       </tr>
       <?php
         endif;     
     else: ?> 
@@ -185,3 +200,15 @@
     });   
 //]]>
 </script>
+<style type="text/css"> 
+tbody td .productQty {
+ width: 60px;
+ max-width: 60%;
+}
+.data-table thead th,
+.data-table tbody td {
+ /* border-bottom: 1px solid silver; */
+ /* border: 1px solid red; */
+ width: 10%;
+}
+</style>

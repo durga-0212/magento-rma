@@ -279,14 +279,18 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                     $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
                     return;
                 }
+                $rmaItemArray = array(
+                    "item_status" => $value['status'],
+                    "qty_approved" => $value['qty_approved'],
+                );
+                if($value['status']== $processing_status)
+                {
+                   $rmaItemArray['product_price'] = $value['qty_approved']*$productPrice;   
+                }
                 
                 if($flag)
                 {
-                    $rmaItemModel->addData(array(
-                        "item_status" => $value['status'],
-                        "qty_approved" => $value['qty_approved'],
-                        "product_price"=>$value['qty_approved']*$productPrice
-                    ));                
+                    $rmaItemModel->addData($rmaItemArray);                
                     $result = $rmaItemModel->save();
                 }
                 
@@ -398,7 +402,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 }
                 else 
                 {                   
-                    $link = "Please Login to your account and verify Bank Details";
+                    $link = "<h3>Please Login to your account and verify Bank Details</h3>";
                 }
                 
                 $message = "<h3>Rma request in Return Received State</h3><br><span>Order Id ".$orderId."</span>";
