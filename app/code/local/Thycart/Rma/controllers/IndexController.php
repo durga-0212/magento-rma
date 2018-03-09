@@ -440,11 +440,13 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $totalShippedQty = 0;
         $totalRequestedQty = 0;
         try
-        {
+        {   $cnt = count($productsArray);
+            $cntChecked = 0;
             foreach ($productsArray as $key => $value) 
             {   
                 if( isset($value['checked']) && !empty($value['checked']) || $cancelType )
-                {                
+                {   
+                    $cntChecked += $value['checked'];
                     if(empty($value['qty_requested']))
                     {
                         Mage::getSingleton('core/session')->addError('Please fill all details');
@@ -483,7 +485,8 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     $productArray[$prodName] = $prodQty;
                 }
             }
-            if($totalShippedQty == $totalRequestedQty || $cancelType)
+            
+            if(($totalShippedQty == $totalRequestedQty && $cnt == $cntChecked) || $cancelType )
             {               
                 $shippingCharge = Mage::getModel('rma/order')->getShippingCharge($orderId);
                 $orderModel=Mage::getModel('rma/order')->load($rmaOrderId);
