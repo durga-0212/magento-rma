@@ -9,7 +9,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
     public function _construct()
     {
         parent::_construct();
-       $this->setTemplate('rma/customer/tab.phtml');       
+        $this->setTemplate('rma/customer/tab.phtml');       
     }
    /**
      * Retrieve the label used for the tab relating to this block

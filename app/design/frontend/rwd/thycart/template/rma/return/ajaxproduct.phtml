@@ -63,7 +63,7 @@
                     endif; ?>
                 <input type="text" class="productQty validate-digits validate-greater-than-zero validate-no-html-tags" id="productQty_<?php echo $key;?>" name="products[<?php echo $pid;?>][qty_requested]" value="<?php echo round($value['qty_ordered']); ?>" <?php echo $readonly;?> data-pid="<?php echo $pid;?>" data-price="<?php echo $value['base_original_price'];?>" data-orderedqty="<?php echo $value['qty_ordered'];?>" data-name="<?php echo $value['name'];?>">
             </td>
-            <td class="total" id="productPrice_<?php echo $pid;?>"><?php echo $value['base_row_total'] ?></td>
+            <td class="total" id="productPrice_<?php echo $pid;?>"><?php echo ($value['base_original_price']*$value['qty_ordered']) ?></td>
         </tr>            
 
         <?php $product_price = isset($value['base_original_price'])? $value['base_original_price']: '';
@@ -89,7 +89,7 @@
            <td>&nbsp;</td>
             <td>&nbsp;</td>           
            <td><strong>Grand Total:</strong> </td>
-           <td><?php echo $productInfo['total_paid']; ?></td>
+           <td><?php echo $Subtotal+$productInfo['shipping_charge']; ?></td>
        </tr>
       <?php
         endif;     
@@ -162,7 +162,7 @@
         <?php endif;?>
         <tr>
             <td><label>Reason</label></td>
-            <td><input type="text" name="reason" class="required-entry"></td>
+            <td><input type="text" name="reason" class="required-entry validate-no-html-tags validate-alphanum-with-spaces"></td>
         </tr>
         
         <tr>

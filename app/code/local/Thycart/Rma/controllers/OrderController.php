@@ -21,7 +21,7 @@ class Thycart_Rma_OrderController extends Mage_Sales_OrderController
                 $shipmentIds = Mage::helper('rma')->orderShipment($order['entity_id']);
                 $status = $order->getStatus();
 
-                if(empty($shipmentIds) &&  strtolower($status)!= Mage_Sales_Model_Order::STATE_CANCELED)
+                if(empty($shipmentIds) &&  strtolower($status)!= Mage_Sales_Model_Order::STATE_CANCELED && strtolower($status)!= Mage_Sales_Model_Order::STATE_CLOSED)
                 {
                     $order->setshowCancelBtn(1);
                 }

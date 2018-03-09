@@ -14,11 +14,11 @@
     </h1>
 </div>
 <form id="requestForm" method="POST" action="<?php echo Mage::getUrl('rma/index/save'); ?>">
-    <label><h4>Order Id : </h4></label>
     <?php 
     $orderInfo = $this->getOrders(1);
     $orderInfo->setOrder('entity_id','DESC');
     if(count($orderInfo)>0) : ?>
+    <label><h4>Order Id : </h4></label>
     <select name="order" id="selectOrder" class="validate-select">
         <option value="">-- Select Orders --</option>
         <?php
@@ -41,6 +41,8 @@
                 </option>
         <?php $selected = ''; endforeach;?>
     </select>
+    <?php else: ?>
+    <p>You have no orders to refund or cancel</p>
     <?php endif; ?>
 
     <div id="results"></div>

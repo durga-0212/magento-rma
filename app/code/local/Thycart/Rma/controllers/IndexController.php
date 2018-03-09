@@ -105,8 +105,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 $orderArray = array();
                 $order = Mage::getModel('sales/order')->load($orderId);
                 $productInfo = $order->getAllVisibleItems();
-                $orderArray['shipping_charge']=$order->getShippingAmount();
-                $orderArray['total_paid']=$order->getBaseGrandTotal();
+                $orderArray['shipping_charge']=$order->getShippingAmount();               
                 $orderArray['is_cancel'] = $cancelType;
                 $shipped_qty = array();
                 foreach($productInfo as $product)
