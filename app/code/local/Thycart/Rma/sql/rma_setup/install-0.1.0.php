@@ -10,24 +10,26 @@ $installer->startSetup();
 
 $installer->run("Drop table if exists `rma_order`;
 CREATE TABLE `rma_order` (
-`entity_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Entity Id',
-`order_id` int(11) NOT NULL COMMENT 'Order Id',
-`increment_id` int(11) NOT NULL COMMENT 'Increment Id',
-`order_increment_id` int(11) NOT NULL COMMENT 'Order Increment ID',
-`consignment_number` varchar(50) DEFAULT NULL,
-`order_date` timestamp NULL DEFAULT NULL COMMENT 'Order Date',
-`date_requested` timestamp NULL DEFAULT NULL COMMENT 'Date Requested',
-`store_id` smallint(5) unsigned NOT NULL COMMENT 'Store Id',
-`customer_id` int(10) unsigned NOT NULL COMMENT 'Customer Id',
-`customer_name` varchar(255) NOT NULL COMMENT 'Customer Name',
-`customer_email` varchar(255) NOT NULL COMMENT 'Customer Email',
-`status` varchar(20) NOT NULL COMMENT 'Status',
-PRIMARY KEY (`entity_id`),
-KEY `FK_RMA_ORDER_CUSTOMER_ID_CUSTOMER_ENTITY_ENTITY_ID` (`customer_id`),
-KEY `FK_RMA_ORDER_STORE_ID_CORE_STORE_STORE_ID` (`store_id`),
-CONSTRAINT `FK_RMA_ORDER_CUSTOMER_ID_CUSTOMER_ENTITY_ENTITY_ID` FOREIGN KEY (`customer_id`) REFERENCES `customer_entity` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-CONSTRAINT `FK_RMA_ORDER_STORE_ID_CORE_STORE_STORE_ID` FOREIGN KEY (`store_id`) REFERENCES `core_store` (`store_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='rma_order'");
+ `entity_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Entity Id',
+ `order_id` int(11) NOT NULL COMMENT 'Order Id',
+ `increment_id` int(11) NOT NULL COMMENT 'Increment Id',
+ `order_increment_id` int(11) NOT NULL COMMENT 'Order Increment ID',
+ `consignment_number` varchar(50) DEFAULT NULL,
+ `order_date` timestamp NULL DEFAULT NULL COMMENT 'Order Date',
+ `date_requested` timestamp NULL DEFAULT NULL COMMENT 'Date Requested',
+ `store_id` smallint(5) unsigned NOT NULL COMMENT 'Store Id',
+ `customer_id` int(10) unsigned NOT NULL COMMENT 'Customer Id',
+ `customer_name` varchar(255) NOT NULL COMMENT 'Customer Name',
+ `customer_email` varchar(255) NOT NULL COMMENT 'Customer Email',
+ `shipping_charge` int(11) DEFAULT NULL COMMENT 'Shipping Charge',
+ `status` varchar(20) NOT NULL COMMENT 'Status',
+ PRIMARY KEY (`entity_id`),
+ KEY `FK_RMA_ORDER_CUSTOMER_ID_CUSTOMER_ENTITY_ENTITY_ID` (`customer_id`),
+ KEY `FK_RMA_ORDER_STORE_ID_CORE_STORE_STORE_ID` (`store_id`),
+ CONSTRAINT `FK_RMA_ORDER_CUSTOMER_ID_CUSTOMER_ENTITY_ENTITY_ID` FOREIGN KEY (`customer_id`) REFERENCES `customer_entity` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+ CONSTRAINT `FK_RMA_ORDER_STORE_ID_CORE_STORE_STORE_ID` FOREIGN KEY (`store_id`) REFERENCES `core_store` (`store_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COMMENT='rma_order'
+");
 
 
 $installer->run("Drop table if exists `rma_order_item`;
