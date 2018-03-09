@@ -3,6 +3,8 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
 {   /**
      * Block constructor
      */
+    protected $_countTotals = true;
+    
     public function _construct()
     {
         parent::_construct();
@@ -13,8 +15,6 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
         $this->setSortable(false);
     }
     
-    protected $_countTotals = true;
-
     public function getTotals()
     {
         $rmaData = Mage::registry('rma_data');
