@@ -19,26 +19,6 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
             return;
         }
     }
-    
-    public function orderInvoices($orderId=0)
-    {
-        $invoiceIds = array();
-        if(empty($orderId))
-        {
-            return $invoiceIds;
-        }
-        try
-        {
-            $orderObject = Mage::getModel('sales/order')->load($orderId);
-            $invoiceIds = $orderObject->getInvoiceCollection()->getAllIds();
-            return $invoiceIds;
-        }
-        catch(Exception $e)
-        {
-            echo $e->getMessage();
-            return;
-        }
-    }
 
     public function orderShipment($orderId=0)
     {
