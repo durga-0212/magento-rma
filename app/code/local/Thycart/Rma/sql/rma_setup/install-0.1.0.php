@@ -150,3 +150,23 @@ $installer->addAttribute("customer", "bankname",  array(
     ));
 
 $installer->endSetup();
+
+$installer = Mage::getResourceModel('catalog/setup','catalog_setup');
+
+$installer->startSetup();
+
+$installer->addAttribute("catalog_product", "is_returnable",  array(
+    "group" => "General",
+    "type"  => "int",
+    "input" => "boolean",
+    "label" => "Enable RMA",
+    "source" => 'eav/entity_attribute_source_boolean',
+    "user_defined" => TRUE,
+    "unique" => FALSE,
+    'visible' => TRUE,
+    'required' => FALSE,
+    "default" => 0,
+    'global' => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_STORE,
+    ));  
+
+$installer->endSetup();

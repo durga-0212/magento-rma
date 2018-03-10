@@ -6,21 +6,19 @@
  */
 class Thycart_Rma_Block_Return_History extends Mage_Core_Block_Template
 {
-    public function __construct() {      
+    public function __construct() 
+    {      
         parent::__construct(); 
         $this->setTemplate('rma/return/history.phtml'); 
         Mage::app()->getFrontController()->getAction()->getLayout()->getBlock('root')->setHeaderTitle(Mage::helper('rma')->__('My Returns'));
-        $returns=Mage::getModel('rma/order')->getAllRmas();    
+        $returns = Mage::getModel('rma/order')->getAllRmas(); 
         $this->setReturns($returns);               
     }
     
     protected function _prepareLayout()
     {
         parent::_prepareLayout();
-
         $pager = $this->getLayout()->createBlock('page/html_pager', 'rma.return.history.pager')
-                //->setCurPage(0)
-                //->setLimit(1)
             ->setCollection($this->getReturns());
         $this->setChild('pager', $pager);
         $this->getReturns()->load();

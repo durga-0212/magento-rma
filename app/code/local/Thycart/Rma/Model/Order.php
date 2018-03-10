@@ -62,14 +62,26 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract {
     }
 
     public function getAllRmas() 
-    {   
+    {  
         try
         {
             $returns = Mage::getResourceModel('rma/order_collection')
-                ->join(array('sfo' => 'sales/order'), 'main_table.order_id = sfo.entity_id', array(
-                    'grand_total'))
                 ->addFieldToFilter('customer_id', Mage::getSingleton('customer/session')->getCustomer()->getId())
                 ->setOrder('date_requested', 'desc');
+            foreach($returns as $key=> $return)
+            {   
+                $totalPrice = 0;
+                $returnItem = Mage::getModel('rma/rma_item')->getCollection()
+                    ->addFieldToSelect('product_price')
+                    ->addFieldToFilter('rma_entity_id',$return->getId())
+                    ->getData();
+                foreach($returnItem as $key => $value)
+                {
+                    $totalPrice += $value['product_price'];
+                }
+                $totalPrice = $totalPrice + $return['shipping_charge'];
+                $return->setGrandTotal($totalPrice);
+            } 
             return $returns;
         }
         catch(Exception $e)
