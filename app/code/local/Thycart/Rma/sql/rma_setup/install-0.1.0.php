@@ -106,23 +106,23 @@ CONSTRAINT `FK_RMA_EAV_ATTR_OPT_ATTR_ID_RMA_EAV_ATTR_OPT_ATTR_ID` FOREIGN KEY (`
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='rma_eav_attribute_option'
 ");
 
-$installer->run("INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`,`scope`) VALUES ('1','resolution','3');
-INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`, `scope`) VALUES ('2','delivery_status','3');
-INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`,`scope`) VALUES ('3','item_status','3');
-");
-
-
-$installer->run("INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('1','1','cancel');
-INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('2','1','refund');
-INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('3','2','not delivered');
-INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('4','2','delivered');
-INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('5','3','canceled');
-INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('6','3','complete');
-INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('7','3','payment request');
-INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('8','3','return received');
-INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('9','3','processing');
-INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('10','3','pending');
-");
+//$installer->run("INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`,`scope`) VALUES ('1','resolution','3');
+//INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`, `scope`) VALUES ('2','delivery_status','3');
+//INSERT INTO `rma_eav_attribute` (`attribute_id`, `attribute_code`,`scope`) VALUES ('3','item_status','3');
+//");
+//
+//
+//$installer->run("INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('1','1','cancel');
+//INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('2','1','refund');
+//INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('3','2','not delivered');
+//INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('4','2','delivered');
+//INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('5','3','canceled');
+//INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('6','3','complete');
+//INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('7','3','payment request');
+//INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('8','3','return received');
+//INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('9','3','processing');
+//INSERT INTO `rma_eav_attribute_option` (`entity_id`, `attribute_id`, `value`) VALUES ('10','3','pending');
+//");
 
 $installer->endSetup();
 
