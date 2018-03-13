@@ -240,7 +240,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     public function savebankdetailsAction()
     {
         if(empty($this->getRequest()->getParam('bankname')) || empty($this->getRequest()->getParam('account_no')) || 
-            empty($this->getRequest()->getParam('ifsc_code')) || empty($this->getRequest()->getParam('rmaItemId')))
+            empty($this->getRequest()->getParam('ifsc_code')))
         {
             Mage::getSingleton('core/session')->addError('Please fill all the details');
             $this->_redirect('*/*/bankForm');
@@ -260,8 +260,11 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             $modelCustomer->addData($postData);
             $updateCustomerDetails = $modelCustomer->save();
             if($updateCustomerDetails)
-            {
-                $resultStatus = $this->changeRmaItemStatus($rmaItemIdArray,$customerModel);
+            {   
+                if(isset($rmaItemId) && !empty($rmaItemId))
+                {
+                    $resultStatus = $this->changeRmaItemStatus($rmaItemIdArray,$customerModel);
+                }
                 $this->_redirect('*/*/index');
                 Mage::getSingleton('core/session')->addSuccess('Bank Details Saved Successfully');
             }
