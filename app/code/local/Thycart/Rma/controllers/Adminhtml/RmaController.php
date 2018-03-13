@@ -250,7 +250,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                     $modelProductName = Mage::getModel('rma/rma_item')->load($productId,'product_id');
                     $name = $modelProductName->getProductName();
                     $returnProductArray[$name] = $value['qty_approved'];                    
-                    $rmaItemArray[] = $key;
+                    $rmaItemProductArray[] = $key;
                     $sendLink = 1; 
                     $flag = 1;
                     if(!empty($customerModel->getBankname()) || !empty($customerModel->getAccountNo()) || !empty($customerModel->getIfscCode()))
@@ -315,7 +315,7 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
             }
             if($sendLink)
             {
-                $this->saveRmaLink($rmaItemArray,$customerModel,$orderId,$returnProductArray);
+                $this->saveRmaLink($rmaItemProductArray,$customerModel,$orderId,$returnProductArray);
             }
             if($completeMail)
             {
