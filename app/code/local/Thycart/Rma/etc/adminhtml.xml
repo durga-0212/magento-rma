@@ -35,6 +35,16 @@
                             <rma>
                                 <title>RMA</title>
                                 <sort_order>10</sort_order>
+                                <children>
+                                    <rma_grid>
+                                        <title>Manage RMA</title>
+                                    </rma_grid>
+                                </children>
+                                <children>
+                                    <rma_grid_attributes>
+                                        <title>Manage RMA Attributes</title>
+                                    </rma_grid_attributes>
+                                </children>
                             </rma>
                         </children>
                     </sales>
@@ -51,7 +61,7 @@
                             <config>
                                 <children>
                                     <rma_section>
-                                        <title>RMA</title>
+                                        <title>Rma Settings Section</title>
                                     </rma_section>
                                 </children>
                             </config>
@@ -68,7 +78,7 @@
                             <config>
                                 <children>
                                     <rma_email>
-                                        <title>RMA EMAIL</title>
+                                        <title>Email Settings Section</title>
                                     </rma_email>
                                 </children>
                             </config>

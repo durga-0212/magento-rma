@@ -264,12 +264,9 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
             $inventoryModel = Mage::getModel('cataloginventory/stock_item')->load($productId);
             $originalQty = $inventoryModel->getQty();
             $updatedQty = $originalQty+$qtyApproved;
-            if($originalQty>=0)
-            {
-                $inventoryModel->addData(array('qty'=>$updatedQty));
-                $successInventory = $inventoryModel->save();
-                return $successInventory;
-            }
+            $inventoryModel->addData(array('qty'=>$updatedQty));
+            $successInventory = $inventoryModel->save();
+            return $successInventory;            
         }
         catch(Exception $e)
         {
