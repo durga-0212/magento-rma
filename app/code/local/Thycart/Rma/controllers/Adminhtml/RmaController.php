@@ -273,12 +273,6 @@ class Thycart_Rma_Adminhtml_RmaController extends Mage_Adminhtml_Controller_Acti
                 {
                     $flag = 1;
                 }
-                else 
-                {
-                    Mage::getSingleton('adminhtml/session')->addError('Enter valid approved quantity');
-                    $this->_redirect('*/*/edit',array("id" => $this->getRequest()->getParam("id")));
-                    return;
-                }
                 $rmaItemArray = array(
                     "item_status" => $value['status'],
                     "qty_approved" => $value['qty_approved'],
