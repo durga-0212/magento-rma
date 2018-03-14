@@ -20,7 +20,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
         $rmaData = Mage::registry('rma_data');
       
         $totals = new Varien_Object();
-        if($rmaData['shipping_charge'] == '')
+        if($rmaData['shipping_charge'] == '' )
         {
             $fields = array(
                 'product_price' => 0,          
@@ -34,6 +34,12 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
         }
         foreach ($this->getCollection() as $item) {
             foreach($fields as $field=>$value){
+                if($item['qty_requested']!=$item['qty_approved'] 
+                    && $item['item_status']!= Thycart_Rma_Model_Rma_Status::STATE_PENDING
+                    && $rmaData['status']!=Thycart_Rma_Model_Rma_Status::STATE_CANCELED)
+                {
+                    $fields[$field] = 0;
+                }
                 $fields[$field]+=$item->getData($field);
             }
         }        
