@@ -112,6 +112,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
                 'width' => '10px',
                 'index' => 'qty_requested',
                 'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
+                'validate_class' => 'validate-no-html-tags validate-greater-than-zero validate-digits'
             ));
         }
         else
@@ -121,6 +122,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
                 'width' => '10px',
                 'index' => 'qty_approved',
                 'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textinput',
+                'validate_class' => 'validate-no-html-tags validate-greater-than-zero validate-digits'
             ));  
         }    
         
@@ -155,6 +157,7 @@ class Thycart_Rma_Block_Adminhtml_Rma_Edit_Tab_Items_Grid extends Mage_Adminhtml
             'index' => 'item_status',           
             'renderer'  => 'rma/adminhtml_rma_edit_tab_items_grid_column_renderer_textselect',
             'options' => Mage::helper('rma')->getAttributeOptionValues('item_status'),
+            'validate_class' => 'validate-select required-entry'            
         )); 
         
         return parent::_prepareColumns();
