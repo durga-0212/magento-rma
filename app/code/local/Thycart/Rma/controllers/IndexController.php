@@ -293,25 +293,31 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
         $rmaItemIdArray = explode("-",$rmaItemId);
         $cust_sess_id=Mage::getSingleton('customer/session')->getCustomer()->getEntityId();
         $cust_bank_name =Mage::getSingleton('customer/session')->getCustomer()->getBankname();
-        if(isset($customerId) && !empty($customerId) && isset($cust_bank_name) && empty($cust_bank_name))
-        {
-            if($customerId != $cust_sess_id)
+        if(isset($customerId) && !empty($customerId))
+        {   
+            if(isset($cust_bank_name) && empty($cust_bank_name))
             {
-                session_destroy();
-                $sessionName = Mage::getSingleton('customer/session')->getSessionName();
-                Mage::getSingleton('core/cookie')->delete($sessionName);
-                $this->_redirect('customer/account/login');
-                return;
-            }
-            
-            foreach($rmaItemIdArray as $rmaItemArray)
-            {   
-                $rmaItemModel = Mage::getModel('rma/rma_item')->load($rmaItemArray);
-                if($rmaItemModel->getItemStatus() == Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST)
-                { 
-                    Mage::getSingleton('core/session')->addSuccess('You have already filled Bank Details');
-                    $this->_redirect('customer/account');
+                if($customerId != $cust_sess_id)
+                {
+                    session_destroy();
+                    $sessionName = Mage::getSingleton('customer/session')->getSessionName();
+                    Mage::getSingleton('core/cookie')->delete($sessionName);
+                    $this->_redirect('customer/account/login');
                     return;
+                }
+
+            }
+            else 
+            {
+                foreach($rmaItemIdArray as $rmaItemArray)
+                {   
+                    $rmaItemModel = Mage::getModel('rma/rma_item')->load($rmaItemArray);
+                    if($rmaItemModel->getItemStatus() == Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST)
+                    { 
+                        Mage::getSingleton('core/session')->addSuccess('You have already filled Bank Details');
+                        $this->_redirect('customer/account');
+                        return;
+                    }
                 }
             }
             
