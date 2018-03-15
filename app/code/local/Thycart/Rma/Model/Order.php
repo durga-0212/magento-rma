@@ -175,7 +175,7 @@ class Thycart_Rma_Model_Order extends Mage_Core_Model_Abstract {
         try 
         {
             $productInfo = Mage::getResourceModel('sales/order_item_collection')
-                ->addFieldToSelect(array('name', 'sku', 'qty_ordered', 'item_id','base_original_price'))
+                ->addFieldToSelect(array('name', 'sku', 'qty_ordered', 'item_id','base_original_price','discount_amount'))
                 ->addFieldToFilter('product_id', $productId)
                 ->addFieldToFilter('order_id', $orderId)
                 ->getData();

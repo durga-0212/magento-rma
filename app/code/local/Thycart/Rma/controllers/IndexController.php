@@ -222,7 +222,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     );
                     if($rmaAttributeModel->save())
                     {
-                        $mailResult = $this->checkForSendingMail($data['cancelType'],$orderId,$productArray,$customerModel);            
+                       // $mailResult = $this->checkForSendingMail($data['cancelType'],$orderId,$productArray,$customerModel);            
                     }
                     $this->_redirect('*/*/index');
                 }
@@ -484,7 +484,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                         'product_sku' => $productInfo['sku'],
                         'order_item_id' => $productInfo['item_id'],
                         'product_id' => $key,
-                        'product_price' => $productInfo['base_original_price']*$value['qty_requested'],
+                        'product_price' => ($productInfo['base_original_price']-$productInfo['discount_amount'])*$value['qty_requested'],
                         'qty_requested' => $value['qty_requested'],
                         'item_status' => $status
                     );

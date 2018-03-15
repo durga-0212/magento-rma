@@ -35,8 +35,8 @@
     $cnt = 0;
     $Subtotal = 0;
     if($alltrue == 0):
-    foreach($productInfo['productDetails'] as $key => $value):
-        $Subtotal +=$value['base_row_total'];
+    foreach($productInfo['productDetails'] as $key => $value):       
+        $Subtotal +=($value['base_row_total']-$value['discount_amount']);
         $returnable = $value['is_returnable'];
         $pid = $value['product_id'];
         if($productInfo['is_cancel'])
@@ -61,9 +61,9 @@
                     if(empty($cancelType)): 
                         $readonly='';
                     endif; ?>
-                <input type="text" class="productQty validate-digits validate-greater-than-zero validate-no-html-tags" id="productQty_<?php echo $key;?>" name="products[<?php echo $pid;?>][qty_requested]" value="<?php echo round($value['qty_ordered']); ?>" <?php echo $readonly;?> data-pid="<?php echo $pid;?>" data-price="<?php echo $value['base_original_price'];?>" data-orderedqty="<?php echo $value['qty_ordered'];?>" data-name="<?php echo $value['name'];?>">
+                <input type="text" class="productQty validate-digits validate-greater-than-zero validate-no-html-tags" id="productQty_<?php echo $key;?>" name="products[<?php echo $pid;?>][qty_requested]" value="<?php echo round($value['qty_ordered']); ?>" <?php echo $readonly;?> data-pid="<?php echo $pid;?>" data-price="<?php echo ($value['base_original_price']-$value['discount_amount']);?>" data-orderedqty="<?php echo $value['qty_ordered'];?>" data-name="<?php echo $value['name'];?>">
             </td>
-            <td class="total" id="productPrice_<?php echo $pid;?>"><?php echo ($value['base_original_price']*$value['qty_ordered']) ?></td>
+            <td class="total" id="productPrice_<?php echo $pid;?>"><?php echo (($value['base_original_price']-$value['discount_amount'])*$value['qty_ordered']) ?></td>
         </tr>            
 
         <?php $product_price = isset($value['base_original_price'])? $value['base_original_price']: '';
