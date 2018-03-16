@@ -286,14 +286,14 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     
     public function bankAction()
     {
-        $customerId = $this->getRequest()->getParam('customerId');
-        $rmaItemId = $this->getRequest()->getParam('rmaItemId');
-        $customerId = Mage::helper('rma')->decryptBankDetail($customerId);
-        $rmaItemId = Mage::helper('rma')->decryptBankDetail($rmaItemId);
+        $customerIdEncrypted = $this->getRequest()->getParam('customerId');
+        $rmaItemIdEncrypted = $this->getRequest()->getParam('rmaItemId');
+        $customerId = Mage::helper('rma')->decryptBankDetail($customerIdEncrypted);
+        $rmaItemId = Mage::helper('rma')->decryptBankDetail($rmaItemIdEncrypted);
         $rmaItemIdArray = explode("-",$rmaItemId);
         $cust_sess_id=Mage::getSingleton('customer/session')->getCustomer()->getEntityId();
         $cust_bank_name =Mage::getSingleton('customer/session')->getCustomer()->getBankname();
-        if(isset($customerId) && !empty($customerId))
+        if(isset($customerId) && !empty($customerId) && isset($cust_bank_name) && empty($cust_bank_name))
         {
             if($customerId != $cust_sess_id)
             {
@@ -305,21 +305,10 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             }
             
             foreach($rmaItemIdArray as $rmaItemArray)
-            {
+            {   
                 $rmaItemModel = Mage::getModel('rma/rma_item')->load($rmaItemArray);
-                if(empty($rmaItemModel->getLinkStatus()))
-                {                    
-                    $rmaItemModel->addData(array('link_status'=>1));
-                    $rmaItemModel->save();
-                }
-                elseif(empty($cust_bank_name) && isset($cust_bank_name))
-                {
-                    Mage::getSingleton('core/session')->addSuccess('Please fill bank details');
-                    $this->_redirect('rma/index/bank');
-                    return; 
-                }
-                else 
-                {
+                if($rmaItemModel->getItemStatus() == Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST)
+                { 
                     Mage::getSingleton('core/session')->addSuccess('You have already filled Bank Details');
                     $this->_redirect('customer/account');
                     return;
@@ -344,7 +333,9 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             foreach($rmaItemIdArray as $id)
             {
                 $modelRmaItem = Mage::getModel('rma/rma_item')->load($id);
-                $modelRmaItem->addData(array('item_status'=> Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST));
+                $modelRmaItem->addData(array(
+                    'item_status'=> Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST,
+                    'link_status'=>1));
                 $changeItemStatus = $modelRmaItem->save();
                 $name = $modelRmaItem->getProductName();
                 $quantity = $modelRmaItem->getQtyApproved();
