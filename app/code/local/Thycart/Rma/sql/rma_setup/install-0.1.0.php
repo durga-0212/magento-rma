@@ -45,11 +45,10 @@ CREATE TABLE `rma_order_item` (
  `product_price` decimal(12,4) DEFAULT NULL COMMENT 'PRODUCT PRICE',
  `product_sku` text COMMENT 'Product Sku For Backend',
  `item_status` text NOT NULL COMMENT 'Status',
- `link_status` smallint(4) DEFAULT NULL COMMENT 'LINK STATUS',
  PRIMARY KEY (`entity_id`),
  KEY `rma_order_item_ibfk_1` (`rma_entity_id`),
  CONSTRAINT `rma_order_item_ibfk_1` FOREIGN KEY (`rma_entity_id`) REFERENCES `rma_order` (`entity_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8 COMMENT='rma_order_item'
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8 COMMENT='rma_order_item'
 ");
 
 
