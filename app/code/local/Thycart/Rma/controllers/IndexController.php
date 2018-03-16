@@ -286,13 +286,14 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
     
     public function bankAction()
     {
-        $customerIdEncrypted = $this->getRequest()->getParam('customerId');
-        $rmaItemIdEncrypted = $this->getRequest()->getParam('rmaItemId');
-        $customerId = Mage::helper('rma')->decryptBankDetail($customerIdEncrypted);
-        $rmaItemId = Mage::helper('rma')->decryptBankDetail($rmaItemIdEncrypted);
+        $customerId = $this->getRequest()->getParam('customerId');
+        $rmaItemId = $this->getRequest()->getParam('rmaItemId');
+        $customerId = Mage::helper('rma')->decryptBankDetail($customerId);
+        $rmaItemId = Mage::helper('rma')->decryptBankDetail($rmaItemId);
         $rmaItemIdArray = explode("-",$rmaItemId);
         $cust_sess_id=Mage::getSingleton('customer/session')->getCustomer()->getEntityId();
         $cust_bank_name =Mage::getSingleton('customer/session')->getCustomer()->getBankname();
+        $flag = 0;
         if(isset($customerId) && !empty($customerId))
         {   
             if(isset($cust_bank_name) && empty($cust_bank_name))
@@ -307,18 +308,27 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                 }
 
             }
-            else 
+            elseif(isset($rmaItemId) && !empty($rmaItemId)) 
             {
                 foreach($rmaItemIdArray as $rmaItemArray)
                 {   
                     $rmaItemModel = Mage::getModel('rma/rma_item')->load($rmaItemArray);
                     if($rmaItemModel->getItemStatus() == Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST)
                     { 
-                        Mage::getSingleton('core/session')->addSuccess('You have already filled Bank Details');
-                        $this->_redirect('customer/account');
-                        return;
+                        $flag = 1;
                     }
                 }
+            }
+            else
+            {
+                $flag = 1;
+            }
+            
+            if($flag)
+            {
+                Mage::getSingleton('core/session')->addSuccess('You have already filled Bank Details');
+                $this->_redirect('customer/account');
+                return;
             }
             
         }
@@ -339,9 +349,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             foreach($rmaItemIdArray as $id)
             {
                 $modelRmaItem = Mage::getModel('rma/rma_item')->load($id);
-                $modelRmaItem->addData(array(
-                    'item_status'=> Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST,
-                    'link_status'=>1));
+                $modelRmaItem->addData(array('item_status'=> Thycart_Rma_Model_Rma_Status::STATE_PAYMENT_REQUEST));
                 $changeItemStatus = $modelRmaItem->save();
                 $name = $modelRmaItem->getProductName();
                 $quantity = $modelRmaItem->getQtyApproved();
@@ -377,13 +385,15 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             $message = "<h3>Rma Request in Pending State</h3><br><span>Order Id ".$orderId."</span>";
             $subject = 'Return Request for OrderId '.$orderId;
             if($cancelType)
-            {
+            {   
+                $customerId = $customerModel->getEntityId();
+                $encryptedCustomerId = Mage::helper('rma')->encryptBankDetail($customerId);
                 $subject = 'Order Cancellation for OrderId '.$orderId;
                 $message = "<h3>Order Cancellation Request</h3><br><span>Order Id ".$orderId."</span>";
                 $url = Mage::getBaseUrl();
                 if(empty($customerModel->getBankname()) || empty($customerModel->getAccountNo()) || empty($customerModel->getIfscCode()))
                 {
-                    $link = "<a href=".$url."rma/index/bank/>Please fill your bank details</a>";
+                    $link = "<a href=".$url."rma/index/bank/customerId/".$encryptedCustomerId.">Please fill your bank details</a>";
                 }
                 else 
                 {                   
