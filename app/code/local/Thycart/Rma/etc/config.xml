@@ -34,11 +34,6 @@
                     </rma_eav_attributeoption>
                 </entities>
             </rma_resource>
-<!--            <customer>
-                <rewrite>
-                    <session>Thycart_Rma_Model_Session</session>
-                </rewrite>
-            </customer>-->
         </models>
         <resources>
             <rma_setup>

@@ -222,7 +222,7 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
                     );
                     if($rmaAttributeModel->save())
                     {
-                       // $mailResult = $this->checkForSendingMail($data['cancelType'],$orderId,$productArray,$customerModel);            
+                        $mailResult = $this->checkForSendingMail($data['cancelType'],$orderId,$productArray,$customerModel);            
                     }
                     $this->_redirect('*/*/index');
                 }
@@ -524,5 +524,25 @@ class Thycart_Rma_IndexController extends Mage_Core_Controller_Front_Action
             $this->_redirect('*/*/addrequest');
             return;
         }
+    }
+    
+    public function getBankDetailsAction()
+    {
+        if(!$this->getRequest()->isXmlHttpRequest() || empty($this->getRequest()->getParam('IFSC')))
+        {
+            return;
+        }
+        try
+        {
+            $ifscCode = $this->getRequest()->getParam('IFSC');
+            IFSC_URL.$ifscCode;
+            $response = Mage::helper('rma')->curlUrl(IFSC_URL.$ifscCode);
+            $this->getResponse()->setBody($response);
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }        
     }
 }

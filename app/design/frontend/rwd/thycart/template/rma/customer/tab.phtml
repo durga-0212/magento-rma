@@ -1,7 +1,13 @@
 <form id="bankform" action="<?php echo Mage::getUrl('rma/index/savebankdetails'); ?>" method="post" onsubmit="return validateAccount()">
+    <div class="field name-ifsc_code">
+        <label for="ifsc_code" class="required"><em>*</em>IFSC Code</label>
+        <div class="input-box">
+            <input type="text" id="IFSC" name="ifsc_code" class="validate-alphanum validate-no-html-tags required-entry" value="<?php echo $this->getIfscCode(); ?>"/>
+        </div>
+    </div>
     <div class="field name-bankname">
         <label for="bankname" class="required"><em>*</em>Bank Name</label>
-        <div class="input-box">
+        <div class="input-box"><div class="loader"></div>
             <input type="text" id="bankname" name="bankname" value="<?php echo $this->getBankName(); ?>" title="Bank Name" maxlength="255" class="input-text validate-no-html-tags required-entry validate-alphanum-with-spaces">
         </div>
     </div>
@@ -20,26 +26,71 @@
     <div id="msg">
         <span id='message'></span>
     </div>
-    <div class="field name-ifsc_code">
-        <label for="ifsc_code" class="required"><em>*</em>IFSC Code</label>
-        <div class="input-box">
-            <input type="text" name="ifsc_code" class="validate-alphanum validate-no-html-tags required-entry" value="<?php echo $this->getIfscCode(); ?>"/>
-        </div>
-    </div>
     <div class="buttons-set">
         <p class="back-link"><a href="<?php echo Mage::getUrl('customer/account/'); ?>"><small>« </small>Back</a></p>
         <input type="submit" id="submit" class="button"/>        
     </div> 
         <input type="hidden" name="rmaItemId" value="<?php echo $this->getRequest()->getParam('rmaItemId')?>">
 </form>
+<style>
+    .loader {
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid blue;
+        border-bottom: 16px solid blue;
+        width: 60px;
+        height: 60px;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+    }
 
+    @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
 <script type="text/javascript">
 //<![CDATA[
     var customForm = new VarienForm('bankform');
+    
     jQuery(document).ready(function()
     {
         jQuery('#msg').hide();
+        jQuery('.loader').hide(); 
     });
+    jQuery("#IFSC").keyup(function(){
+        var ifsc = jQuery('#IFSC').val();
+        if(ifsc.length === 11)
+        {   
+            jQuery('.loader').show(); 
+            jQuery.ajax({           
+                        type: "GET",
+                        datatype : "application/json",
+                        contentType: "text/plain",
+                        url: "<?php echo $this->getUrl('rma/index/getBankDetails')?>",
+                        data: {IFSC:ifsc},
+                        success: function(response) {
+                            if(response)
+                            {
+                                var myJson = JSON.stringify(response);
+                                obj = JSON.parse(response);
+                                jQuery('#bankname').val(obj.BANK);
+                                jQuery('.loader').hide(); 
+                            }                 
+                        },
+                        error: function() {
+                            alert("error");
+                            jQuery('.loader').hide(); 
+                        }
+            });
+        }
+    });
+   
     function validateAccount()
     {
         var accountNum     = jQuery('#account_num').val();
@@ -81,5 +132,6 @@
             ele.preventDefault(); 
         }
     }
+    
 //]]>
 </script>

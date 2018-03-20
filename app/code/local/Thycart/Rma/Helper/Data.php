@@ -281,11 +281,19 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
         {
             return false;
         }
-        $key        = hash('sha256',KEY);
-        $iv         = substr(hash('sha256', IV), 0, 16);
-        $encrypted  = openssl_encrypt($data, ENCRYPTMETHOD, $key, 0, $iv);
-        $encrypted  = base64_encode($encrypted);
-        return $encrypted;
+        try
+        {
+            $key        = hash('sha256',KEY);
+            $iv         = substr(hash('sha256', IV), 0, 16);
+            $encrypted  = openssl_encrypt($data, ENCRYPTMETHOD, $key, 0, $iv);
+            $encrypted  = base64_encode($encrypted);
+            return $encrypted;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
     }
 
     public function decryptBankDetail($data)
@@ -294,9 +302,41 @@ class Thycart_Rma_Helper_Data extends Mage_Core_Helper_Abstract
         {
             return false;
         }
-        $key        = hash('sha256',KEY);
-        $iv         = substr(hash('sha256', IV), 0, 16);
-        $decrypted  = openssl_decrypt(base64_decode($data),ENCRYPTMETHOD , $key, 0, $iv);
-        return $decrypted;
+        try
+        {
+            $key        = hash('sha256',KEY);
+            $iv         = substr(hash('sha256', IV), 0, 16);
+            $decrypted  = openssl_decrypt(base64_decode($data),ENCRYPTMETHOD , $key, 0, $iv);
+            return $decrypted;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
+    }
+    
+    public function curlUrl($url)
+    {
+        if(empty($url))
+        {
+            return false;
+        }
+        try
+        {
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_URL => $url
+            ));
+            $resp = curl_exec($curl);
+            curl_close($curl);
+            return $resp;
+        }
+        catch(Exception $e)
+        {
+            echo $e->getMessage();
+            return;
+        }
     }
 }
