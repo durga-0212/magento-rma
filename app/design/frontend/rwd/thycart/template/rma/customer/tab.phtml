@@ -75,13 +75,10 @@
                         url: "<?php echo $this->getUrl('rma/index/getBankDetails')?>",
                         data: {IFSC:ifsc},
                         success: function(response) {
-                            if(response)
-                            {
                                 JSON.stringify(response);
                                 obj = JSON.parse(response);
                                 jQuery('#bankname').val(obj.BANK);
-                                jQuery('.loader').hide(); 
-                            }                 
+                                jQuery('.loader').hide();                                           
                         },
                         error: function() {
                             alert("error");
